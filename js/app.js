@@ -183,7 +183,7 @@
     if (state.view === 'album') renderAlbum();
     if (state.view === 'weight') renderWeight();
     if (state.view === 'cats') renderCats();
-    $('#fab').hidden = state.view === 'cats';
+    $('#fab').hidden = state.view === 'cats' || state.view === 'game';
   }
 
   function renderFilter() {
@@ -528,6 +528,7 @@
     });
     window.scrollTo(0, 0);
     render();
+    if (view === 'game') CatGame.show(); else CatGame.pause();
   }
 
   /* ---------- 日記表單 ---------- */

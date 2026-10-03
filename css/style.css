@@ -277,6 +277,42 @@ button { cursor: pointer; }
 .weight-list { list-style: none; padding: 0; margin: 8px 0 0; }
 .weight-list li { display: flex; justify-content: space-between; padding: 6px 4px; border-top: 1px solid var(--line); font-size: 0.92rem; }
 
+/* ---------- 小遊戲 ---------- */
+.game-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 2px 8px;
+  font-size: 0.95rem;
+}
+.game-hud strong { font-size: 1.2rem; color: var(--primary); }
+.game-stage {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: linear-gradient(180deg, #dff1fb 0%, #f4fbff 70%, #ffffff 100%);
+}
+@media (prefers-color-scheme: dark) {
+  .game-stage { background: linear-gradient(180deg, #1d2a36 0%, #24323d 70%, #2c3a44 100%); }
+}
+#game-canvas { display: block; width: 100%; touch-action: none; user-select: none; -webkit-user-select: none; }
+.game-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 24px;
+  text-align: center;
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+}
+.game-title { font-size: 1.4rem; font-weight: 700; margin: 0; }
+.game-text { margin: 0 0 12px; color: var(--muted); }
+.game-help { text-align: center; margin-top: 10px; }
+
 /* ---------- 貓咪頁 ---------- */
 .section-title { font-size: 1.05rem; margin: 20px 4px 10px; }
 .cat-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }

@@ -41,6 +41,20 @@
       <div id="weight-charts"></div>
     </section>
 
+    <!-- 小遊戲 -->
+    <section id="view-game" class="view" aria-label="小遊戲" hidden>
+      <div class="game-hud">
+        <span>分數 <strong id="game-score">0</strong></span>
+        <span id="game-lives" aria-label="剩下的命">❤️❤️❤️</span>
+        <span>最高 <strong id="game-best">0</strong></span>
+      </div>
+      <div class="game-stage">
+        <canvas id="game-canvas" aria-label="貓咪接魚乾遊戲畫面"></canvas>
+        <div id="game-overlay" class="game-overlay"></div>
+      </div>
+      <p class="hint game-help">手指在畫面上左右拖曳，讓貓咪去接東西。電腦可以用 ← → 鍵。</p>
+    </section>
+
     <!-- 貓咪與設定 -->
     <section id="view-cats" class="view" aria-label="貓咪" hidden>
       <h2 class="section-title">我的貓咪</h2>
@@ -69,6 +83,7 @@
     <button class="tab is-active" data-view="diary"><span aria-hidden="true">📔</span>日記</button>
     <button class="tab" data-view="album"><span aria-hidden="true">🖼️</span>相簿</button>
     <button class="tab" data-view="weight"><span aria-hidden="true">⚖️</span>體重</button>
+    <button class="tab" data-view="game"><span aria-hidden="true">🎮</span>遊戲</button>
     <button class="tab" data-view="cats"><span aria-hidden="true">🐱</span>貓咪</button>
   </nav>
 
@@ -162,6 +177,7 @@
 
   <script src="js/quotes.js"></script>
   <script src="js/db.js"></script>
+  <script src="js/game.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
