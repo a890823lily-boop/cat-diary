@@ -120,6 +120,20 @@ button { cursor: pointer; }
 .quote-text { margin: 0; font-size: 1.02rem; line-height: 1.7; }
 .quote-card .quote-btn { padding: 8px 16px; font-size: 0.95rem; }
 .quote-card .quote-again { margin-top: 8px; padding: 4px 14px; font-size: 0.85rem; background: transparent; }
+.quote-card { align-items: flex-start; }
+.quote-cat { margin-top: 8px; }
+.mood-ask { margin: 0 0 6px; font-size: 0.85rem; color: var(--muted); }
+.mood-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.mood-chip {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.85rem;
+}
+.mood-chip.is-active { background: var(--primary); border-color: var(--primary); color: var(--primary-ink); font-weight: 600; }
+.mood-chip:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .quote-card.reveal .quote-text { animation: quote-in 0.6s ease-out; }
 @keyframes quote-in {
   from { opacity: 0; transform: translateY(8px) scale(0.96); }

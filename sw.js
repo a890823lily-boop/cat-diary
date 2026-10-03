@@ -1,5 +1,5 @@
 /* 貓咪日記 Service Worker：預先快取所有檔案，讓 APP 離線也能開啟 */
-var CACHE_NAME = 'cat-diary-v7';
+var CACHE_NAME = 'cat-diary-v8';
 var PRECACHE = [
   './',
   'index.html',

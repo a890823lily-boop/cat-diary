@@ -222,25 +222,51 @@
     ]);
   }
 
-  /* 抽一句鼓勵：可以一直抽；所有句子輪過一遍才會重複，重新打開時顯示最後抽到的那句 */
-  function readQuote() {
-    try { return JSON.parse(readPref('quote', 'null')); } catch (e) { return null; }
+  /* 抽一句鼓勵：可以選今天的心情，依心情抽句子；可以一直抽，
+     每種心情的句子都會輪過一遍才重複，重新打開時顯示最後抽到的那句 */
+  function readJson(key) {
+    try { return JSON.parse(readPref(key, 'null')); } catch (e) { return null; }
   }
 
-  function drawQuote() {
-    const saved = readQuote() || {};
-    let bag = Array.isArray(saved.bag) ? saved.bag.filter(function (i) { return i < QUOTES.length; }) : [];
+  function readQuote() {
+    const q = readJson('quote');
+    if (!q) return null;
+    if (!q.pool) q.pool = 'general'; // 舊版資料只有一般句子
+    if (!q.bags) q.bags = { general: Array.isArray(q.bag) ? q.bag : [] };
+    return q;
+  }
+
+  /* 今天選的心情；隔天自動清空 */
+  function todayMood() {
+    const m = readJson('mood');
+    return m && m.date === today() ? m.mood : null;
+  }
+
+  function quotePool(mood) {
+    return mood && MOOD_QUOTES[mood] ? mood : 'general';
+  }
+
+  function poolList(pool) {
+    return pool === 'general' ? QUOTES : MOOD_QUOTES[pool] || QUOTES;
+  }
+
+  function drawQuote(pool) {
+    const saved = readQuote() || { bags: {} };
+    const list = poolList(pool);
+    const last = saved.pool === pool ? saved.index : -1;
+    let bag = (saved.bags[pool] || []).filter(function (i) { return i < list.length; });
     if (!bag.length) {
-      bag = QUOTES.map(function (_, i) { return i; });
+      bag = list.map(function (_, i) { return i; });
       for (let i = bag.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         const t = bag[i]; bag[i] = bag[j]; bag[j] = t;
       }
       // 新的一輪第一句不要和上一句一樣
-      if (bag.length > 1 && bag[bag.length - 1] === saved.index) bag.unshift(bag.pop());
+      if (bag.length > 1 && bag[bag.length - 1] === last) bag.unshift(bag.pop());
     }
     const index = bag.pop();
-    writePref('quote', JSON.stringify({ index: index, bag: bag }));
+    saved.bags[pool] = bag;
+    writePref('quote', JSON.stringify({ index: index, pool: pool, bags: saved.bags }));
   }
 
   function quoteCard() {
@@ -251,16 +277,42 @@
 
   function fillQuoteCard(card, justDrawn) {
     const saved = readQuote();
-    const quote = saved && QUOTES[saved.index];
+    const quote = saved && poolList(saved.pool)[saved.index];
+    const mood = todayMood();
     card.textContent = '';
     card.classList.toggle('reveal', !!justDrawn);
     card.appendChild(el('img', { class: 'quote-cat deco-wave', src: 'images/deco-wizard.png', alt: '' }));
-    const body = el('div', { class: 'quote-body' }, [el('p', { class: 'quote-label', text: '抽一句鼓勵 ✨' })]);
+
+    const chips = el('div', { class: 'mood-chips', role: 'group', 'aria-label': '今天的心情' },
+      MOODS.map(function (m) {
+        const on = mood === m.id;
+        return el('button', {
+          class: 'mood-chip' + (on ? ' is-active' : ''),
+          'aria-pressed': on ? 'true' : 'false',
+          onclick: function () {
+            if (on) {
+              // 再點一次取消心情
+              writePref('mood', JSON.stringify({ date: today(), mood: null }));
+              fillQuoteCard(card, false);
+              return;
+            }
+            writePref('mood', JSON.stringify({ date: today(), mood: m.id }));
+            drawQuote(quotePool(m.id));
+            fillQuoteCard(card, true);
+          }
+        }, [m.icon + ' ' + m.label]);
+      }));
+
+    const body = el('div', { class: 'quote-body' }, [
+      el('p', { class: 'quote-label', text: '抽一句鼓勵 ✨' }),
+      el('p', { class: 'mood-ask', text: '今天心情如何？' }),
+      chips
+    ]);
     if (quote) body.appendChild(el('p', { class: 'quote-text', text: quote }));
     body.appendChild(el('button', {
       class: quote ? 'btn btn-outline quote-btn quote-again' : 'btn quote-btn',
       text: quote ? '再抽一句' : '抽一句鼓勵的話',
-      onclick: function () { drawQuote(); fillQuoteCard(card, true); }
+      onclick: function () { drawQuote(quotePool(todayMood())); fillQuoteCard(card, true); }
     }));
     card.appendChild(body);
   }
