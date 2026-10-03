@@ -42,5 +42,6 @@ js/db.js              IndexedDB 資料庫（貓咪、日記、照片）
 js/app.js             畫面、表單、照片處理、體重圖、備份
 manifest.webmanifest  App 名稱、圖示、主題色
 sw.js                 Service Worker（離線快取）
-icons/                App 圖示
+icons/                App 圖示（用自家貓咪的照片）
+images/               自家貓咪照片（歡迎頁、空白頁面用）
 ```

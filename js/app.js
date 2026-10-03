@@ -205,7 +205,9 @@
 
   function emptyState(icon, title, text, btnLabel, onClick) {
     return el('div', { class: 'empty' }, [
-      el('div', { class: 'empty-icon', text: icon }),
+      /\.jpg$/.test(icon)
+        ? el('img', { class: 'empty-photo', src: icon, alt: '我家的貓咪' })
+        : el('div', { class: 'empty-icon', text: icon }),
       el('p', { class: 'empty-title', text: title }),
       el('p', { class: 'hint', text: text }),
       btnLabel ? el('button', { class: 'btn', text: btnLabel, onclick: onClick }) : null
@@ -216,12 +218,12 @@
     const list = $('#diary-list');
     list.textContent = '';
     if (!state.cats.length) {
-      list.appendChild(emptyState('🐱', '歡迎使用貓咪日記', '先新增你的貓咪，再開始記錄每天的照片與生活。', '新增第一隻貓咪', function () { openCatDialog(); }));
+      list.appendChild(emptyState('images/cat-window.jpg', '歡迎使用貓咪日記', '先新增你的貓咪，再開始記錄每天的照片與生活。', '新增第一隻貓咪', function () { openCatDialog(); }));
       return;
     }
     const entries = sortedEntries();
     if (!entries.length) {
-      list.appendChild(emptyState('📔', '還沒有日記', '點右下角的「＋」記錄今天的貓咪吧！', '寫第一篇日記', function () { openEntryDialog(); }));
+      list.appendChild(emptyState('images/cat-floor.jpg', '還沒有日記', '點右下角的「＋」記錄今天的貓咪吧！', '寫第一篇日記', function () { openEntryDialog(); }));
       return;
     }
     let lastDate = null;
@@ -282,7 +284,7 @@
       });
     });
     if (!list.length) {
-      grid.appendChild(emptyState('🖼️', '相簿是空的', '在日記裡加入照片，就會出現在這裡。', state.cats.length ? '新增照片日記' : null, function () { openEntryDialog(); }));
+      grid.appendChild(emptyState('images/cat-window.jpg', '相簿是空的', '在日記裡加入照片，就會出現在這裡。', state.cats.length ? '新增照片日記' : null, function () { openEntryDialog(); }));
       return;
     }
     const photos = list.map(function (x) { return x.photo; });
