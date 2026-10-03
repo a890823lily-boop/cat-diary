@@ -64,7 +64,44 @@ button { cursor: pointer; }
   border-bottom: 1px solid var(--line);
 }
 .header-row { display: flex; align-items: center; justify-content: space-between; max-width: 720px; margin: 0 auto; }
-.app-title { font-size: 1.25rem; margin: 0; }
+.app-title { font-size: 1.25rem; margin: 0; flex: none; }
+
+/* 標題旁溜冰的貓咪 */
+.rink { position: relative; flex: 1; height: 44px; margin: 0 8px; overflow: hidden; }
+.rink img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 44px;
+  animation: skate 9s ease-in-out infinite;
+}
+@keyframes skate {
+  0%   { left: 0; transform: scaleX(1) rotate(0); }
+  22%  { transform: scaleX(1) rotate(-6deg); }
+  45%  { left: calc(100% - 38px); transform: scaleX(1) rotate(0); }
+  50%  { left: calc(100% - 38px); transform: scaleX(-1) rotate(0); }
+  72%  { transform: scaleX(-1) rotate(-6deg); }
+  95%  { left: 0; transform: scaleX(-1) rotate(0); }
+  100% { left: 0; transform: scaleX(1) rotate(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rink img { animation: none; left: auto; right: 0; }
+}
+
+/* 備份提醒（西裝貓） */
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 12px 14px 12px 8px;
+  margin-bottom: 12px;
+}
+.notice-cat { width: 72px; height: auto; flex: none; }
+.notice p { margin: 0; font-size: 0.9rem; color: var(--muted); }
+.notice strong { color: var(--text); }
 
 .cat-filter {
   display: flex;

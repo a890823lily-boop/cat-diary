@@ -23,6 +23,10 @@
 
 > 注意：刪除 App、清除 Safari 網站資料，資料就會消失，請定期到「貓咪」分頁匯出備份。
 
+## 插圖來源
+
+裝飾用的溜冰貓、西裝貓插圖來自 [いらすとや（Irasutoya）](https://www.irasutoya.com/)。
+
 ## 本機測試
 
 ```
@@ -43,5 +47,5 @@ js/app.js             畫面、表單、照片處理、體重圖、備份
 manifest.webmanifest  App 名稱、圖示、主題色
 sw.js                 Service Worker（離線快取）
 icons/                App 圖示（用自家貓咪的照片）
-images/               自家貓咪照片（歡迎頁、空白頁面用）
+images/               自家貓咪照片（歡迎頁、空白頁面用）與裝飾插圖
 ```
