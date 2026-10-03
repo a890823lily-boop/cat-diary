@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="貓咪日記：記錄貓咪的照片、飲食、體重與日常，資料只存在你的裝置。">
+  <meta name="theme-color" content="#e07a3f">
+  <title>貓咪日記</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="貓咪日記">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-row">
+      <h1 class="app-title"><span aria-hidden="true">🐾</span> 貓咪日記</h1>
+      <button id="install-btn" class="btn-small" hidden>安裝 APP</button>
+    </div>
+    <div id="cat-filter" class="cat-filter" role="tablist" aria-label="選擇貓咪"></div>
+  </header>
+
+  <main id="main" class="app-main">
+    <!-- 日記 -->
+    <section id="view-diary" class="view" aria-label="日記">
+      <div id="diary-list" class="diary-list"></div>
+    </section>
+
+    <!-- 相簿 -->
+    <section id="view-album" class="view" aria-label="相簿" hidden>
+      <div id="album-grid" class="album"></div>
+    </section>
+
+    <!-- 體重 -->
+    <section id="view-weight" class="view" aria-label="體重" hidden>
+      <div id="weight-charts"></div>
+    </section>
+
+    <!-- 貓咪與設定 -->
+    <section id="view-cats" class="view" aria-label="貓咪" hidden>
+      <h2 class="section-title">我的貓咪</h2>
+      <div id="cat-cards" class="cat-cards"></div>
+      <button id="add-cat-btn" class="btn btn-outline btn-block">＋ 新增貓咪</button>
+
+      <h2 class="section-title">資料備份</h2>
+      <p class="hint">所有照片與日記只存在這台裝置的瀏覽器裡，不會上傳到網路。清除瀏覽器資料或換手機前，請先匯出備份。</p>
+      <div class="backup-row">
+        <button id="export-btn" class="btn btn-outline">匯出備份</button>
+        <label class="btn btn-outline">
+          匯入備份
+          <input id="import-input" type="file" accept="application/json,.json" hidden>
+        </label>
+      </div>
+      <p id="storage-info" class="hint"></p>
+    </section>
+  </main>
+
+  <button id="fab" class="fab" aria-label="新增日記">＋</button>
+
+  <nav class="tabbar" aria-label="主選單">
+    <button class="tab is-active" data-view="diary"><span aria-hidden="true">📔</span>日記</button>
+    <button class="tab" data-view="album"><span aria-hidden="true">🖼️</span>相簿</button>
+    <button class="tab" data-view="weight"><span aria-hidden="true">⚖️</span>體重</button>
+    <button class="tab" data-view="cats"><span aria-hidden="true">🐱</span>貓咪</button>
+  </nav>
+
+  <!-- 新增 / 編輯日記 -->
+  <dialog id="entry-dialog" class="sheet">
+    <form id="entry-form" method="dialog">
+      <div class="sheet-head">
+        <button type="button" class="link-btn" data-close>取消</button>
+        <h2 id="entry-title">新增日記</h2>
+        <button type="submit" class="link-btn strong">儲存</button>
+      </div>
+      <div class="sheet-body">
+        <label class="field">貓咪
+          <select id="entry-cat" required></select>
+        </label>
+        <div class="field-row">
+          <label class="field">日期<input id="entry-date" type="date" required></label>
+          <label class="field">時間<input id="entry-time" type="time"></label>
+        </div>
+        <fieldset class="field">
+          <legend>類別</legend>
+          <div id="entry-tags" class="chips"></div>
+        </fieldset>
+        <label class="field">體重（公斤，可不填）
+          <input id="entry-weight" type="number" inputmode="decimal" step="0.01" min="0" max="30" placeholder="例如 4.25">
+        </label>
+        <label class="field">記事
+          <textarea id="entry-note" rows="4" placeholder="今天發生了什麼事？"></textarea>
+        </label>
+        <div class="field">
+          <span>照片</span>
+          <div id="entry-photos" class="photo-picker">
+            <label class="photo-add" aria-label="加入照片">
+              ＋
+              <input id="entry-photo-input" type="file" accept="image/*" multiple hidden>
+            </label>
+          </div>
+        </div>
+        <button type="button" id="entry-delete" class="btn btn-danger btn-block" hidden>刪除這篇日記</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 新增 / 編輯貓咪 -->
+  <dialog id="cat-dialog" class="sheet">
+    <form id="cat-form" method="dialog">
+      <div class="sheet-head">
+        <button type="button" class="link-btn" data-close>取消</button>
+        <h2 id="cat-title">新增貓咪</h2>
+        <button type="submit" class="link-btn strong">儲存</button>
+      </div>
+      <div class="sheet-body">
+        <div class="avatar-pick">
+          <label class="avatar avatar-lg" id="cat-avatar-preview" aria-label="選擇大頭照">
+            <span>🐱</span>
+            <input id="cat-avatar-input" type="file" accept="image/*" hidden>
+          </label>
+          <span class="hint">點圖片換大頭照</span>
+        </div>
+        <label class="field">名字<input id="cat-name" type="text" required maxlength="30" placeholder="例如 麻糬"></label>
+        <div class="field-row">
+          <label class="field">生日<input id="cat-birthday" type="date"></label>
+          <label class="field">性別
+            <select id="cat-gender">
+              <option value="">未填</option>
+              <option value="男生">男生</option>
+              <option value="女生">女生</option>
+            </select>
+          </label>
+        </div>
+        <label class="field">品種 / 花色<input id="cat-breed" type="text" maxlength="30" placeholder="例如 橘貓"></label>
+        <button type="button" id="cat-delete" class="btn btn-danger btn-block" hidden>刪除這隻貓咪（含所有日記）</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 看大圖 -->
+  <dialog id="viewer" class="viewer">
+    <button class="viewer-close" data-close aria-label="關閉">✕</button>
+    <button class="viewer-nav prev" aria-label="上一張">‹</button>
+    <img id="viewer-img" alt="">
+    <button class="viewer-nav next" aria-label="下一張">›</button>
+    <p id="viewer-caption" class="viewer-caption"></p>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/db.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
