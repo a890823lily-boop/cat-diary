@@ -205,12 +205,20 @@
 
   function emptyState(icon, title, text, btnLabel, onClick) {
     return el('div', { class: 'empty' }, [
-      /\.jpg$/.test(icon)
+      /\.(jpg|png)$/.test(icon)
         ? el('img', { class: 'empty-photo', src: icon, alt: '我家的貓咪' })
         : el('div', { class: 'empty-icon', text: icon }),
       el('p', { class: 'empty-title', text: title }),
       el('p', { class: 'hint', text: text }),
       btnLabel ? el('button', { class: 'btn', text: btnLabel, onclick: onClick }) : null
+    ]);
+  }
+
+  /* 列表最下方的裝飾插圖 */
+  function listEnd(src, motion, text) {
+    return el('div', { class: 'list-end' }, [
+      el('img', { class: 'list-end-img ' + motion, src: src, alt: '' }),
+      el('p', { class: 'hint', text: text })
     ]);
   }
 
@@ -234,6 +242,7 @@
       }
       list.appendChild(entryCard(e));
     });
+    list.appendChild(listEnd('images/deco-sax.png', 'deco-sway', '今天也是可愛的一天 🎵'));
   }
 
   function entryCard(e) {
@@ -312,7 +321,7 @@
     box.textContent = '';
     const cats = state.filter === 'all' ? state.cats : state.cats.filter(function (c) { return c.id === state.filter; });
     if (!cats.length) {
-      box.appendChild(emptyState('⚖️', '還沒有貓咪', '先新增貓咪，才能記錄體重。', '新增貓咪', function () { openCatDialog(); }));
+      box.appendChild(emptyState('images/deco-fish.png', '還沒有貓咪', '先新增貓咪，才能記錄體重。', '新增貓咪', function () { openCatDialog(); }));
       return;
     }
     cats.forEach(function (cat) {
@@ -344,6 +353,7 @@
       }
       box.appendChild(card);
     });
+    box.appendChild(listEnd('images/deco-fish.png', 'deco-float', '健康長大，記得定期量體重喔'));
   }
 
   function weightChart(points) {

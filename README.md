@@ -25,7 +25,7 @@
 
 ## 插圖來源
 
-裝飾用的溜冰貓、西裝貓插圖來自 [いらすとや（Irasutoya）](https://www.irasutoya.com/)。
+裝飾用的溜冰貓、西裝貓、薩克斯風貓、坐魚貓、魔法師貓插圖來自 [いらすとや（Irasutoya）](https://www.irasutoya.com/)。
 
 ## 本機測試
 

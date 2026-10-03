@@ -1,5 +1,5 @@
 /* 貓咪日記 Service Worker：預先快取所有檔案，讓 APP 離線也能開啟 */
-var CACHE_NAME = 'cat-diary-v3';
+var CACHE_NAME = 'cat-diary-v4';
 var PRECACHE = [
   './',
   'index.html',
@@ -11,6 +11,9 @@ var PRECACHE = [
   'images/cat-floor.jpg',
   'images/deco-skate.png',
   'images/deco-suit.png',
+  'images/deco-sax.png',
+  'images/deco-fish.png',
+  'images/deco-wizard.png',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',

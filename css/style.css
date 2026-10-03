@@ -103,6 +103,26 @@ button { cursor: pointer; }
 .notice p { margin: 0; font-size: 0.9rem; color: var(--muted); }
 .notice strong { color: var(--text); }
 
+/* 列表底部的裝飾插圖 */
+.list-end { text-align: center; padding: 16px 0 8px; }
+.list-end-img { width: 110px; height: auto; }
+.empty-photo[src$=".png"] { width: 160px; aspect-ratio: auto; object-fit: contain; border-radius: 0; box-shadow: none; }
+
+/* 日記表單裡的魔法師貓 */
+.magic-tip { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.85rem; color: var(--muted); }
+.magic-tip img { width: 56px; height: auto; flex: none; }
+
+/* 插圖動畫：吹薩克斯風搖擺、坐魚飄浮、揮魔杖 */
+.deco-sway { transform-origin: 50% 100%; animation: sway 2.4s ease-in-out infinite; }
+.deco-float { animation: float 3.2s ease-in-out infinite; }
+.deco-wave { transform-origin: 50% 90%; animation: wave 1.8s ease-in-out infinite; }
+@keyframes sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes wave { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-8deg); } 75% { transform: rotate(6deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .deco-sway, .deco-float, .deco-wave { animation: none; }
+}
+
 .cat-filter {
   display: flex;
   gap: 8px;
