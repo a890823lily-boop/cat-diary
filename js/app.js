@@ -797,7 +797,22 @@
   });
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js'); });
+    // 已經有舊版在控制頁面時，新版接手後自動重新載入一次
+    const hadController = !!navigator.serviceWorker.controller;
+    let reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (!hadController || reloaded) return;
+      reloaded = true;
+      location.reload();
+    });
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(function (reg) {
+        // iPhone 主畫面 App 切回前景時不會重新開啟，所以回來時主動檢查更新
+        document.addEventListener('visibilitychange', function () {
+          if (document.visibilityState === 'visible') reg.update().catch(function () {});
+        });
+      }).catch(function () {});
+    });
   }
   // 請瀏覽器不要自動清掉資料（照片很重要）
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});

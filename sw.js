@@ -1,5 +1,5 @@
 /* 貓咪日記 Service Worker：預先快取所有檔案，讓 APP 離線也能開啟 */
-var CACHE_NAME = 'cat-diary-v4';
+var CACHE_NAME = 'cat-diary-v5';
 var PRECACHE = [
   './',
   'index.html',
@@ -23,7 +23,10 @@ var PRECACHE = [
 self.addEventListener('install', function (event) {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(function (cache) { return cache.addAll(PRECACHE); })
+      .then(function (cache) {
+        // reload：略過瀏覽器 HTTP 快取，確保存進去的是伺服器上的最新檔案
+        return cache.addAll(PRECACHE.map(function (url) { return new Request(url, { cache: 'reload' }); }));
+      })
       .then(function () { return self.skipWaiting(); })
   );
 });
@@ -40,13 +43,14 @@ self.addEventListener('activate', function (event) {
   );
 });
 
-/* 先用網路取得最新版本並更新快取；斷網時改用快取 */
+/* 先用網路取得最新版本並更新快取；斷網時改用快取
+   no-cache：每次都向伺服器確認，避免拿到瀏覽器 HTTP 快取裡的舊檔 */
 self.addEventListener('fetch', function (event) {
   var request = event.request;
   if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
 
   event.respondWith(
-    fetch(request)
+    fetch(request, { cache: 'no-cache' })
       .then(function (response) {
         if (response.ok) {
           var copy = response.clone();
