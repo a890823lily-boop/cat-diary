@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="貓咪日記">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=12">
+  <link rel="stylesheet" href="css/style.css?v=13">
 </head>
 <body>
   <header class="app-header">
@@ -41,19 +41,43 @@
       <div id="weight-charts"></div>
     </section>
 
-    <!-- 小遊戲 -->
-    <section id="view-game" class="view" aria-label="小遊戲" hidden>
-      <div class="game-hud">
-        <span>分數 <strong id="game-score">0</strong></span>
-        <span class="game-timer">⏱ <strong id="game-time">60</strong></span>
-        <span id="game-lives" aria-label="剩下的命">❤️❤️❤️</span>
-        <span>最高 <strong id="game-best">0</strong></span>
+    <!-- 玩樂：塗色、小遊戲 -->
+    <section id="view-play" class="view" aria-label="玩樂" hidden>
+      <div class="seg" role="tablist" aria-label="選擇玩樂項目">
+        <button class="seg-btn" role="tab" data-mode="color">🎨 塗色</button>
+        <button class="seg-btn" role="tab" data-mode="game">🐟 接魚乾</button>
       </div>
-      <div class="game-stage">
-        <canvas id="game-canvas" aria-label="貓咪接魚乾遊戲畫面"></canvas>
-        <div id="game-overlay" class="game-overlay"></div>
+
+      <div id="play-color" class="play-pane">
+        <div id="color-pictures" class="pic-picker" aria-label="選擇圖案"></div>
+        <div id="color-board" class="color-board" role="img"></div>
+        <div class="color-tools">
+          <span class="pen-label">畫筆 <span id="color-current" class="swatch-current"></span></span>
+          <button id="color-undo" class="btn btn-outline btn-tool">↩ 復原</button>
+          <button id="color-clear" class="btn btn-outline btn-tool">🧽 清除</button>
+        </div>
+        <div id="color-palette" class="palette" aria-label="顏色"></div>
+        <label class="custom-color">🌈 其他顏色 <input id="color-custom" type="color" value="#f4a261"></label>
+        <div class="color-actions">
+          <button id="color-save" class="btn btn-outline">💾 存成圖片</button>
+          <button id="color-diary" class="btn">📔 存到日記</button>
+        </div>
+        <p class="hint color-help">選一個顏色，點一下圖上的區塊就會塗滿。塗到一半離開也會自動保存。</p>
       </div>
-      <p class="hint game-help">手指在畫面上左右拖曳，讓貓咪去接東西。電腦可以用 ← → 鍵。</p>
+
+      <div id="play-game" class="play-pane" hidden>
+        <div class="game-hud">
+          <span>分數 <strong id="game-score">0</strong></span>
+          <span class="game-timer">⏱ <strong id="game-time">60</strong></span>
+          <span id="game-lives" aria-label="剩下的命">❤️❤️❤️</span>
+          <span>最高 <strong id="game-best">0</strong></span>
+        </div>
+        <div class="game-stage">
+          <canvas id="game-canvas" aria-label="貓咪接魚乾遊戲畫面"></canvas>
+          <div id="game-overlay" class="game-overlay"></div>
+        </div>
+        <p class="hint game-help">手指在畫面上左右拖曳，讓貓咪去接東西。電腦可以用 ← → 鍵。</p>
+      </div>
     </section>
 
     <!-- 貓咪與設定 -->
@@ -84,7 +108,7 @@
     <button class="tab is-active" data-view="diary"><span aria-hidden="true">📔</span>日記</button>
     <button class="tab" data-view="album"><span aria-hidden="true">🖼️</span>相簿</button>
     <button class="tab" data-view="weight"><span aria-hidden="true">⚖️</span>體重</button>
-    <button class="tab" data-view="game"><span aria-hidden="true">🎮</span>遊戲</button>
+    <button class="tab" data-view="play"><span aria-hidden="true">🎨</span>玩樂</button>
     <button class="tab" data-view="cats"><span aria-hidden="true">🐱</span>貓咪</button>
   </nav>
 
@@ -176,9 +200,10 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/quotes.js?v=12"></script>
-  <script src="js/db.js?v=12"></script>
-  <script src="js/game.js?v=12"></script>
-  <script src="js/app.js?v=12"></script>
+  <script src="js/quotes.js?v=13"></script>
+  <script src="js/db.js?v=13"></script>
+  <script src="js/game.js?v=13"></script>
+  <script src="js/coloring.js?v=13"></script>
+  <script src="js/app.js?v=13"></script>
 </body>
 </html>

@@ -183,7 +183,7 @@
     if (state.view === 'album') renderAlbum();
     if (state.view === 'weight') renderWeight();
     if (state.view === 'cats') renderCats();
-    $('#fab').hidden = state.view === 'cats' || state.view === 'game';
+    $('#fab').hidden = state.view === 'cats' || state.view === 'play';
   }
 
   function renderFilter() {
@@ -309,11 +309,20 @@
       chips
     ]);
     if (quote) body.appendChild(el('p', { class: 'quote-text', text: quote }));
-    body.appendChild(el('button', {
+    const actions = el('div', { class: 'quote-actions' }, [el('button', {
       class: quote ? 'btn btn-outline quote-btn quote-again' : 'btn quote-btn',
       text: quote ? '再抽一句' : '抽一句鼓勵的話',
       onclick: function () { drawQuote(quotePool(todayMood())); fillQuoteCard(card, true); }
-    }));
+    })]);
+    // 心情不好時，建議去塗色放鬆
+    if (['sad', 'anxious', 'angry', 'tired', 'lonely'].indexOf(mood) !== -1) {
+      actions.appendChild(el('button', {
+        class: 'btn quote-btn quote-color',
+        text: '🎨 去塗色放鬆一下',
+        onclick: function () { playMode = 'color'; setView('play'); }
+      }));
+    }
+    body.appendChild(actions);
     card.appendChild(body);
   }
 
@@ -528,8 +537,47 @@
     });
     window.scrollTo(0, 0);
     render();
-    if (view === 'game') CatGame.show(); else CatGame.pause();
+    if (view === 'play') setPlayMode(playMode); else CatGame.pause();
   }
+
+  /* ---------- 玩樂：塗色／小遊戲 ---------- */
+  let playMode = readPref('play', 'color');
+
+  function setPlayMode(mode) {
+    playMode = mode === 'game' ? 'game' : 'color';
+    writePref('play', playMode);
+    document.querySelectorAll('.seg-btn').forEach(function (b) {
+      const on = b.dataset.mode === playMode;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    $('#play-color').hidden = playMode !== 'color';
+    $('#play-game').hidden = playMode !== 'game';
+    if (playMode === 'game') { CatGame.show(); } else { CatGame.pause(); Coloring.show(); }
+  }
+
+  document.querySelectorAll('.seg-btn').forEach(function (b) {
+    b.addEventListener('click', function () { setPlayMode(b.dataset.mode); });
+  });
+
+  /* 塗色作品存到日記 */
+  document.addEventListener('coloring:to-diary', async function (ev) {
+    if (!state.cats.length) { toast('請先到「貓咪」分頁新增貓咪'); return; }
+    try {
+      const r = await processImage(ev.detail.blob);
+      const entryId = uid();
+      const photoId = uid();
+      const catId = state.filter !== 'all' ? state.filter : state.cats[0].id;
+      await DB.write([
+        { store: 'entries', put: { id: entryId, catId: catId, date: today(), time: nowTime(), tags: ['other'], weight: null, note: '🎨 塗色作品「' + ev.detail.name + '」', photoIds: [photoId], createdAt: Date.now(), updatedAt: Date.now() } },
+        { store: 'photos', put: { id: photoId, entryId: entryId, catId: catId, blob: r.blob, thumb: r.thumb, createdAt: Date.now() } }
+      ]);
+      await loadAll();
+      toast('已存到日記 📔');
+    } catch (e) {
+      toast('存到日記失敗，請再試一次');
+    }
+  });
 
   /* ---------- 日記表單 ---------- */
   const entryForm = { editing: null, photos: [], removed: [] };
