@@ -1,9 +1,10 @@
 /* 貓咪日記 Service Worker：預先快取所有檔案，讓 APP 離線也能開啟 */
-var CACHE_NAME = 'cat-diary-v5';
+var CACHE_NAME = 'cat-diary-v6';
 var PRECACHE = [
   './',
   'index.html',
   'css/style.css',
+  'js/quotes.js',
   'js/db.js',
   'js/app.js',
   'manifest.webmanifest',

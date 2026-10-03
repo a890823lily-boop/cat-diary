@@ -222,9 +222,46 @@
     ]);
   }
 
+  /* 每日一抽：同一天顯示同一句，隔天可以再抽，且不會和上一次重複 */
+  function readQuote() {
+    try { return JSON.parse(readPref('quote', 'null')); } catch (e) { return null; }
+  }
+
+  function quoteCard() {
+    const card = el('section', { class: 'quote-card', 'aria-live': 'polite' });
+    fillQuoteCard(card, false);
+    return card;
+  }
+
+  function fillQuoteCard(card, justDrawn) {
+    const saved = readQuote();
+    const drawn = saved && saved.date === today() && QUOTES[saved.index];
+    card.textContent = '';
+    card.classList.toggle('reveal', !!justDrawn);
+    card.appendChild(el('img', { class: 'quote-cat deco-wave', src: 'images/deco-wizard.png', alt: '' }));
+    const body = el('div', { class: 'quote-body' }, [el('p', { class: 'quote-label', text: '今日一抽 ✨' })]);
+    if (drawn) {
+      body.appendChild(el('p', { class: 'quote-text', text: QUOTES[saved.index] }));
+    } else {
+      body.appendChild(el('button', {
+        class: 'btn quote-btn',
+        text: '抽一句鼓勵的話',
+        onclick: function () {
+          let index;
+          do { index = Math.floor(Math.random() * QUOTES.length); }
+          while (QUOTES.length > 1 && saved && index === saved.index);
+          writePref('quote', JSON.stringify({ date: today(), index: index }));
+          fillQuoteCard(card, true);
+        }
+      }));
+    }
+    card.appendChild(body);
+  }
+
   function renderDiary() {
     const list = $('#diary-list');
     list.textContent = '';
+    list.appendChild(quoteCard());
     if (!state.cats.length) {
       list.appendChild(emptyState('images/cat-window.jpg', '歡迎使用貓咪日記', '先新增你的貓咪，再開始記錄每天的照片與生活。', '新增第一隻貓咪', function () { openCatDialog(); }));
       return;

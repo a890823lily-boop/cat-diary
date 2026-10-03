@@ -103,6 +103,31 @@ button { cursor: pointer; }
 .notice p { margin: 0; font-size: 0.9rem; color: var(--muted); }
 .notice strong { color: var(--text); }
 
+/* 每日一抽 */
+.quote-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 4px;
+  padding: 12px 14px 12px 8px;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--primary-soft), var(--surface));
+  box-shadow: var(--shadow);
+}
+.quote-cat { width: 64px; height: auto; flex: none; }
+.quote-body { flex: 1; min-width: 0; }
+.quote-label { margin: 0 0 4px; font-size: 0.85rem; font-weight: 700; color: var(--primary); }
+.quote-text { margin: 0; font-size: 1.02rem; line-height: 1.7; }
+.quote-btn { padding: 8px 16px; font-size: 0.95rem; }
+.quote-card.reveal .quote-text { animation: quote-in 0.6s ease-out; }
+@keyframes quote-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quote-card.reveal .quote-text { animation: none; }
+}
+
 /* 列表底部的裝飾插圖 */
 .list-end { text-align: center; padding: 16px 0 8px; }
 .list-end-img { width: 110px; height: auto; }
