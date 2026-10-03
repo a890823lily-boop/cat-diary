@@ -2,11 +2,17 @@
 const CatGame = (function () {
   'use strict';
 
+  /* 掉落物用圖片畫：iPhone 的 canvas 畫 emoji 文字可能會是空白 */
   const ITEMS = {
-    fish: { emoji: '🐟', points: 1 },
-    shrimp: { emoji: '🍤', points: 3 },
-    cucumber: { emoji: '🥒', points: 0 }
+    fish: { src: 'images/game-fish.png', points: 1 },
+    shrimp: { src: 'images/game-shrimp.png', points: 3 },
+    cucumber: { src: 'images/game-cucumber.png', points: 0 }
   };
+  Object.keys(ITEMS).forEach(function (k) {
+    const img = new Image();
+    img.src = ITEMS[k].src;
+    ITEMS[k].img = img;
+  });
   const LIVES = 3;
   const BEST_KEY = 'cat-diary:game-best';
 
@@ -166,7 +172,7 @@ const CatGame = (function () {
     const r = Math.random();
     const cucumberRate = 0.22 + level * 0.13;
     const type = r < cucumberRate ? 'cucumber' : r < cucumberRate + 0.1 ? 'shrimp' : 'fish';
-    const size = 34;
+    const size = 40;
     s.items.push({
       type: type,
       x: size / 2 + Math.random() * (W - size),
@@ -260,8 +266,8 @@ const CatGame = (function () {
       ctx.save();
       ctx.translate(it.x, it.y);
       ctx.rotate(it.angle);
-      ctx.font = it.size + 'px sans-serif';
-      ctx.fillText(ITEMS[it.type].emoji, 0, 0);
+      const img = ITEMS[it.type].img;
+      if (img.complete && img.naturalWidth) ctx.drawImage(img, -it.size / 2, -it.size / 2, it.size, it.size);
       ctx.restore();
     });
 
