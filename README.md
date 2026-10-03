@@ -37,7 +37,7 @@ python3 -m http.server
 
 再開啟 http://localhost:8000 。
 
-修改網站內容後，請把 `sw.js` 裡的 `CACHE_NAME` 版本號加一（例如 `v1` → `v2`），讓已安裝的使用者更新快取。
+修改網站內容後，請把 `sw.js` 裡的 `VERSION` 加一，並把 `index.html` 裡 css、js 網址後面的 `?v=` 改成同一個數字。這樣已安裝的 App 才會更新，而且不會混到舊版檔案。
 
 ## 檔案結構
 

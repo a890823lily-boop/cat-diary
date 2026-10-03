@@ -57,6 +57,7 @@ button { cursor: pointer; }
   position: sticky;
   top: 0;
   z-index: 10;
+  background: var(--bg); /* 舊版 Safari 不支援 color-mix 時使用 */
   background: color-mix(in srgb, var(--bg) 92%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -307,6 +308,7 @@ button { cursor: pointer; }
   gap: 4px;
   padding: 24px;
   text-align: center;
+  background: rgba(253, 248, 243, 0.85); /* 舊版 Safari 不支援 color-mix 時使用 */
   background: color-mix(in srgb, var(--bg) 80%, transparent);
 }
 .game-title { font-size: 1.4rem; font-weight: 700; margin: 0; }

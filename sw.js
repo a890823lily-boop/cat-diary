@@ -1,13 +1,15 @@
 /* 貓咪日記 Service Worker：預先快取所有檔案，讓 APP 離線也能開啟 */
-var CACHE_NAME = 'cat-diary-v9';
+/* 改版時把 VERSION 加一，並同步修改 index.html 裡 css/js 網址後面的 ?v= */
+var VERSION = 10;
+var CACHE_NAME = 'cat-diary-v' + VERSION;
 var PRECACHE = [
   './',
   'index.html',
-  'css/style.css',
-  'js/quotes.js',
-  'js/db.js',
-  'js/game.js',
-  'js/app.js',
+  'css/style.css?v=' + VERSION,
+  'js/quotes.js?v=' + VERSION,
+  'js/db.js?v=' + VERSION,
+  'js/game.js?v=' + VERSION,
+  'js/app.js?v=' + VERSION,
   'manifest.webmanifest',
   'images/cat-window.jpg',
   'images/cat-floor.jpg',
