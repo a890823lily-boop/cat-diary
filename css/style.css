@@ -287,6 +287,10 @@ button { cursor: pointer; }
   font-size: 0.95rem;
 }
 .game-hud strong { font-size: 1.2rem; color: var(--primary); }
+.game-timer strong { display: inline-block; min-width: 1.6em; text-align: left; }
+.game-timer.is-hurry strong { color: var(--danger); animation: hurry 1s ease-in-out infinite; }
+@keyframes hurry { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
+@media (prefers-reduced-motion: reduce) { .game-timer.is-hurry strong { animation: none; } }
 .game-stage {
   position: relative;
   border-radius: var(--radius);

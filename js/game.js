@@ -14,9 +14,10 @@ const CatGame = (function () {
     ITEMS[k].img = img;
   });
   const LIVES = 3;
+  const TIME_LIMIT = 60; // 每局秒數
   const BEST_KEY = 'cat-diary:game-best';
 
-  let canvas, ctx, overlay, scoreEl, livesEl, bestEl;
+  let canvas, ctx, overlay, scoreEl, livesEl, bestEl, timeEl;
   let W = 0, H = 0, dpr = 1;
   const catImg = new Image();
   catImg.src = 'images/deco-skate.png';
@@ -50,6 +51,7 @@ const CatGame = (function () {
     scoreEl = document.getElementById('game-score');
     livesEl = document.getElementById('game-lives');
     bestEl = document.getElementById('game-best');
+    timeEl = document.getElementById('game-time');
 
     // 手指或滑鼠在畫面上的位置就是貓咪要去的位置
     function pointTo(clientX) {
@@ -92,6 +94,13 @@ const CatGame = (function () {
     scoreEl.textContent = s.score;
     livesEl.textContent = '❤️'.repeat(s.lives) + '🤍'.repeat(LIVES - s.lives);
     bestEl.textContent = readBest();
+    updateTimer();
+  }
+
+  function updateTimer() {
+    const left = Math.max(0, Math.ceil(TIME_LIMIT - s.elapsed));
+    if (timeEl.textContent !== String(left)) timeEl.textContent = left;
+    timeEl.parentElement.classList.toggle('is-hurry', s.running && left <= 10);
   }
 
   function showOverlay(title, text, btnLabel, onClick) {
@@ -150,7 +159,7 @@ const CatGame = (function () {
     s.frame = requestAnimationFrame(loop);
   }
 
-  function gameOver() {
+  function gameOver(timeUp) {
     s.running = false;
     cancelAnimationFrame(s.frame);
     const best = readBest();
@@ -160,15 +169,15 @@ const CatGame = (function () {
     updateHud();
     draw();
     showOverlay(
-      record ? '🎉 新紀錄！' : '被小黃瓜嚇跑了！',
-      '這次得到 ' + s.score + ' 分' + (record ? '，好厲害！' : '，最高紀錄 ' + best + ' 分'),
+      timeUp ? '⏰ 時間到！' : '被小黃瓜嚇跑了！',
+      record ? '🎉 新紀錄！這次得到 ' + s.score + ' 分，好厲害！' : '這次得到 ' + s.score + ' 分，最高紀錄 ' + best + ' 分',
       '再玩一次'
     );
   }
 
   function spawn() {
     // 越玩越難：小黃瓜比例和掉落速度都會增加
-    const level = Math.min(1, s.elapsed / 60);
+    const level = Math.min(1, s.elapsed / TIME_LIMIT);
     const r = Math.random();
     const cucumberRate = 0.22 + level * 0.13;
     const type = r < cucumberRate ? 'cucumber' : r < cucumberRate + 0.1 ? 'shrimp' : 'fish';
@@ -200,6 +209,8 @@ const CatGame = (function () {
 
   function update(dt) {
     s.elapsed += dt;
+    updateTimer();
+    if (s.elapsed >= TIME_LIMIT) { gameOver(true); return; }
     s.spawnIn -= dt;
     if (s.spawnIn <= 0) spawn();
 
@@ -297,7 +308,7 @@ const CatGame = (function () {
     updateHud();
     if (!overlay.dataset.ready) {
       overlay.dataset.ready = '1';
-      showOverlay('貓咪接魚乾', '左右拖曳貓咪，接住 🐟 +1 分、🍤 +3 分，碰到 🥒 會被嚇到喔！', '開始遊戲');
+      showOverlay('貓咪接魚乾', '限時 ' + TIME_LIMIT + ' 秒！左右拖曳貓咪，接住 🐟 +1 分、🍤 +3 分，碰到 🥒 會被嚇到，3 次就結束喔！', '開始遊戲');
     }
   }
 
