@@ -222,9 +222,25 @@
     ]);
   }
 
-  /* 每日一抽：同一天顯示同一句，隔天可以再抽，且不會和上一次重複 */
+  /* 抽一句鼓勵：可以一直抽；所有句子輪過一遍才會重複，重新打開時顯示最後抽到的那句 */
   function readQuote() {
     try { return JSON.parse(readPref('quote', 'null')); } catch (e) { return null; }
+  }
+
+  function drawQuote() {
+    const saved = readQuote() || {};
+    let bag = Array.isArray(saved.bag) ? saved.bag.filter(function (i) { return i < QUOTES.length; }) : [];
+    if (!bag.length) {
+      bag = QUOTES.map(function (_, i) { return i; });
+      for (let i = bag.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const t = bag[i]; bag[i] = bag[j]; bag[j] = t;
+      }
+      // 新的一輪第一句不要和上一句一樣
+      if (bag.length > 1 && bag[bag.length - 1] === saved.index) bag.unshift(bag.pop());
+    }
+    const index = bag.pop();
+    writePref('quote', JSON.stringify({ index: index, bag: bag }));
   }
 
   function quoteCard() {
@@ -235,26 +251,17 @@
 
   function fillQuoteCard(card, justDrawn) {
     const saved = readQuote();
-    const drawn = saved && saved.date === today() && QUOTES[saved.index];
+    const quote = saved && QUOTES[saved.index];
     card.textContent = '';
     card.classList.toggle('reveal', !!justDrawn);
     card.appendChild(el('img', { class: 'quote-cat deco-wave', src: 'images/deco-wizard.png', alt: '' }));
-    const body = el('div', { class: 'quote-body' }, [el('p', { class: 'quote-label', text: '今日一抽 ✨' })]);
-    if (drawn) {
-      body.appendChild(el('p', { class: 'quote-text', text: QUOTES[saved.index] }));
-    } else {
-      body.appendChild(el('button', {
-        class: 'btn quote-btn',
-        text: '抽一句鼓勵的話',
-        onclick: function () {
-          let index;
-          do { index = Math.floor(Math.random() * QUOTES.length); }
-          while (QUOTES.length > 1 && saved && index === saved.index);
-          writePref('quote', JSON.stringify({ date: today(), index: index }));
-          fillQuoteCard(card, true);
-        }
-      }));
-    }
+    const body = el('div', { class: 'quote-body' }, [el('p', { class: 'quote-label', text: '抽一句鼓勵 ✨' })]);
+    if (quote) body.appendChild(el('p', { class: 'quote-text', text: quote }));
+    body.appendChild(el('button', {
+      class: quote ? 'btn btn-outline quote-btn quote-again' : 'btn quote-btn',
+      text: quote ? '再抽一句' : '抽一句鼓勵的話',
+      onclick: function () { drawQuote(); fillQuoteCard(card, true); }
+    }));
     card.appendChild(body);
   }
 
