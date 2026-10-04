@@ -1,6 +1,6 @@
 /* 貓咪日記 Service Worker：預先快取所有檔案，讓 APP 離線也能開啟 */
 /* 改版時把 VERSION 加一，並同步修改 index.html 裡 css/js 網址後面的 ?v= */
-var VERSION = 30;
+var VERSION = 31;
 var CACHE_NAME = 'cat-diary-v' + VERSION;
 var PRECACHE = [
   './',
@@ -83,6 +83,23 @@ self.addEventListener('activate', function (event) {
 self.addEventListener('fetch', function (event) {
   var request = event.request;
   if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+
+  // 圖片：先用快取（預先存好的），沒有才上網抓，網路不穩時也能顯示
+  if (request.destination === 'image' || /\.(png|jpe?g|svg|webp)$/i.test(new URL(request.url).pathname)) {
+    event.respondWith(
+      caches.match(request, { ignoreSearch: true }).then(function (cached) {
+        if (cached) return cached;
+        return fetch(request).then(function (response) {
+          if (response.ok) {
+            var copy = response.clone();
+            caches.open(CACHE_NAME).then(function (cache) { cache.put(request, copy); });
+          }
+          return response;
+        });
+      })
+    );
+    return;
+  }
 
   event.respondWith(
     fetch(request, { cache: 'no-cache' })

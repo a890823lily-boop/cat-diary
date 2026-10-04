@@ -167,9 +167,14 @@ const Stickers = (function () {
       const got = !!o[s.id];
       const card = el('div', 'sticker' + (got ? '' : ' is-locked'));
       const img = el('img');
+      // 不要延遲載入：iPhone 上隱藏分頁裡的延遲載入圖片可能會一直顯示破圖；失敗時再試一次
+      img.onerror = function () {
+        if (img.dataset.retry) return;
+        img.dataset.retry = '1';
+        img.src = s.img + '?retry=' + Date.now();
+      };
       img.src = s.img;
       img.alt = got ? s.name : '';
-      img.loading = 'lazy';
       card.append(img, el('span', 'sticker-name', got ? s.name : '？？？'),
         el('span', 'sticker-how', got ? '🗓 ' + o[s.id] : s.how));
       grid.appendChild(card);
