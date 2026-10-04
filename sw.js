@@ -1,6 +1,6 @@
 /* 貓咪日記 Service Worker：預先快取所有檔案，讓 APP 離線也能開啟 */
 /* 改版時把 VERSION 加一，並同步修改 index.html 裡 css/js 網址後面的 ?v= */
-var VERSION = 14;
+var VERSION = 15;
 var CACHE_NAME = 'cat-diary-v' + VERSION;
 var PRECACHE = [
   './',
@@ -23,6 +23,7 @@ var PRECACHE = [
   'images/game-fish.png',
   'images/game-shrimp.png',
   'images/game-cucumber.png',
+  'images/video-poster.jpg',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',
@@ -57,6 +58,8 @@ self.addEventListener('activate', function (event) {
 self.addEventListener('fetch', function (event) {
   var request = event.request;
   if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+  // 影片直接走網路：iPhone 播影片要用分段下載，經過快取會播不出來
+  if (/\.mp4$/i.test(new URL(request.url).pathname)) return;
 
   event.respondWith(
     fetch(request, { cache: 'no-cache' })

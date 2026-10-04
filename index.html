@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="貓咪日記">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=14">
+  <link rel="stylesheet" href="css/style.css?v=15">
 </head>
 <body>
   <header class="app-header">
@@ -199,6 +199,12 @@
     <p id="viewer-caption" class="viewer-caption"></p>
   </dialog>
 
+  <!-- 我家貓咪的影片 -->
+  <dialog id="video-dialog" class="viewer video-viewer">
+    <button class="viewer-close" data-close aria-label="關閉">✕</button>
+    <video id="cat-video" controls playsinline preload="none" poster="images/video-poster.jpg"></video>
+  </dialog>
+
   <!-- 背景音樂 -->
   <div id="music-panel" class="music-panel" hidden>
     <p class="music-title">🎵 背景音樂</p>
@@ -212,11 +218,11 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/quotes.js?v=14"></script>
-  <script src="js/db.js?v=14"></script>
-  <script src="js/game.js?v=14"></script>
-  <script src="js/coloring.js?v=14"></script>
-  <script src="js/music.js?v=14"></script>
-  <script src="js/app.js?v=14"></script>
+  <script src="js/quotes.js?v=15"></script>
+  <script src="js/db.js?v=15"></script>
+  <script src="js/game.js?v=15"></script>
+  <script src="js/coloring.js?v=15"></script>
+  <script src="js/music.js?v=15"></script>
+  <script src="js/app.js?v=15"></script>
 </body>
 </html>
