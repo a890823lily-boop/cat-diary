@@ -282,7 +282,9 @@
     const mood = todayMood();
     card.textContent = '';
     card.classList.toggle('reveal', !!justDrawn);
-    card.appendChild(el('img', { class: 'quote-cat deco-wave', src: 'images/deco-wizard.png', alt: '' }));
+    // 依今天的心情換一隻表情不同的貓
+    const moodCat = { happy: 'deco-love', normal: 'deco-blep', tired: 'deco-hmph', sad: 'deco-cry', anxious: 'deco-sweat', angry: 'deco-shock', lonely: 'deco-phone' }[mood];
+    card.appendChild(el('img', { class: 'quote-cat' + (moodCat ? ' is-mood' : ' deco-wave'), src: 'images/' + (moodCat || 'deco-wizard') + '.png', alt: '' }));
 
     const chips = el('div', { class: 'mood-chips', role: 'group', 'aria-label': '今天的心情' },
       MOODS.map(function (m) {
@@ -519,7 +521,9 @@
       ts.forEach(function (t) { box.appendChild(el('p', { class: 'cal-worry-item', text: '⭐ ' + t.text })); });
     }
 
-    if (!ents.length && !ws.length && !popped[key] && !mood && !ts.length) box.appendChild(el('p', { class: 'hint', text: '這天沒有紀錄。' }));
+    if (!ents.length && !ws.length && !popped[key] && !mood && !ts.length) {
+      box.appendChild(el('div', { class: 'cal-empty' }, [el('img', { src: 'images/deco-question.png', alt: '' }), el('p', { class: 'hint', text: '這天沒有紀錄耶？' })]));
+    }
     if (key <= today() && state.cats.length) {
       box.appendChild(el('button', { class: 'btn btn-outline btn-block cal-add', text: '＋ 寫這天的日記', onclick: function () { openEntryDialog(null, key); } }));
     }
@@ -604,6 +608,10 @@
       return;
     }
     const photos = list.map(function (x) { return x.photo; });
+    grid.appendChild(el('div', { class: 'album-banner' }, [
+      el('img', { src: 'images/deco-laptop.png', alt: '' }),
+      el('div', {}, [el('strong', { text: '我的貓咪相簿' }), el('span', { class: 'hint', text: '一共 ' + list.length + ' 張照片 📷' })])
+    ]));
     let lastMonth = null;
     let section = null;
     list.forEach(function (x, i) {

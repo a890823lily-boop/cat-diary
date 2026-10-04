@@ -8,13 +8,13 @@ const Stickers = (function () {
     { id: 'suit', name: '西裝貓', img: 'images/deco-suit.png', how: '匯出一次備份' },
     { id: 'sax', name: '薩克斯風貓', img: 'images/deco-sax.png', how: '播放背景音樂' },
     { id: 'fish', name: '坐魚貓', img: 'images/deco-fish.png', how: '在日記記錄體重' },
-    { id: 'painter', name: '畫家貓', img: 'images/stickers/painter.png', how: '塗色累積塗滿 10 塊' },
-    { id: 'sleep', name: '好眠貓', img: 'images/stickers/sleep.png', how: '完成一次呼吸練習' },
-    { id: 'happy', name: '幸福貓', img: 'images/stickers/happy.png', how: '擼貓開心度到 100%' },
-    { id: 'fortune', name: '籤筒貓', img: 'images/stickers/fortune.png', how: '抽今日貓咪運勢' },
-    { id: 'game', name: '接魚乾高手', img: 'images/stickers/game.png', how: '接魚乾拿到 20 分' },
-    { id: 'photo', name: '小小攝影師', img: 'images/stickers/photo.png', how: '日記累積 10 張照片' },
-    { id: 'diary', name: '日記達人', img: 'images/stickers/diary.png', how: '寫滿 7 篇日記' }
+    { id: 'painter', name: '藝術家貓', img: 'images/deco-guitar.png', how: '塗色累積塗滿 10 塊' },
+    { id: 'sleep', name: '冥想貓', img: 'images/deco-hmph.png', how: '完成一次呼吸練習' },
+    { id: 'happy', name: '幸福貓', img: 'images/deco-love.png', how: '擼貓開心度到 100%' },
+    { id: 'fortune', name: '驚喜貓', img: 'images/deco-surprise.png', how: '抽今日貓咪運勢' },
+    { id: 'game', name: '全壘打貓', img: 'images/deco-baseball.png', how: '接魚乾拿到 20 分' },
+    { id: 'photo', name: '攝影貓', img: 'images/deco-phone.png', how: '日記累積 10 張照片' },
+    { id: 'diary', name: '作家貓', img: 'images/deco-laptop.png', how: '寫滿 7 篇日記' }
   ];
   const KEY = 'cat-diary:stickers';
   const DONE_KEY = 'cat-diary:stickers-complete';

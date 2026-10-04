@@ -1,6 +1,6 @@
 /* 貓咪日記 Service Worker：預先快取所有檔案，讓 APP 離線也能開啟 */
 /* 改版時把 VERSION 加一，並同步修改 index.html 裡 css/js 網址後面的 ?v= */
-var VERSION = 29;
+var VERSION = 30;
 var CACHE_NAME = 'cat-diary-v' + VERSION;
 var PRECACHE = [
   './',
@@ -30,16 +30,24 @@ var PRECACHE = [
   'images/deco-sax.png',
   'images/deco-fish.png',
   'images/deco-wizard.png',
+  'images/deco-laptop.png',
+  'images/deco-love.png',
+  'images/deco-question.png',
+  'images/deco-cry.png',
+  'images/deco-blep.png',
+  'images/deco-surprise.png',
+  'images/deco-hmph.png',
+  'images/deco-sweat.png',
+  'images/deco-shock.png',
+  'images/deco-phone.png',
+  'images/deco-guitar.png',
+  'images/deco-baseball.png',
+  'images/deco-fishmonger.png',
+  'images/deco-chef.png',
+  'images/deco-station.png',
   'images/game-fish.png',
   'images/game-shrimp.png',
   'images/game-cucumber.png',
-  'images/stickers/painter.png',
-  'images/stickers/sleep.png',
-  'images/stickers/happy.png',
-  'images/stickers/fortune.png',
-  'images/stickers/game.png',
-  'images/stickers/photo.png',
-  'images/stickers/diary.png',
   'images/stickers/master.png',
   'icons/icon-192.png',
   'icons/icon-512.png',

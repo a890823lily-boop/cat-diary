@@ -103,8 +103,15 @@ const CatGame = (function () {
     timeEl.parentElement.classList.toggle('is-hurry', s.running && left <= 10);
   }
 
-  function showOverlay(title, text, btnLabel, onClick) {
+  function showOverlay(title, text, btnLabel, onClick, deco) {
     overlay.textContent = '';
+    if (deco) {
+      const img = new Image();
+      img.className = 'overlay-deco';
+      img.src = deco;
+      img.alt = '';
+      overlay.appendChild(img);
+    }
     const t = document.createElement('p');
     t.className = 'game-title';
     t.textContent = title;
@@ -310,7 +317,7 @@ const CatGame = (function () {
     updateHud();
     if (!overlay.dataset.ready) {
       overlay.dataset.ready = '1';
-      showOverlay('貓咪接魚乾', '限時 ' + TIME_LIMIT + ' 秒！左右拖曳貓咪，接住 🐟 +1 分、🍤 +3 分，碰到 🥒 會被嚇到，3 次就結束喔！', '開始遊戲');
+      showOverlay('貓咪接魚乾', '限時 ' + TIME_LIMIT + ' 秒！左右拖曳貓咪，接住 🐟 +1 分、🍤 +3 分，碰到 🥒 會被嚇到，3 次就結束喔！', '開始遊戲', null, 'images/deco-fishmonger.png');
     }
   }
 

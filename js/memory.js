@@ -11,7 +11,8 @@ const Memory = (function () {
   const BUILTIN = [
     'images/cat-window.jpg', 'images/cat-floor.jpg', 'images/cat-cuddle.jpg', 'images/cat-peek.jpg', 'icons/icon-192.png',
     'images/deco-skate.png', 'images/deco-wizard.png', 'images/deco-suit.png', 'images/deco-sax.png', 'images/deco-fish.png',
-    'images/stickers/sleep.png', 'images/stickers/happy.png', 'images/stickers/painter.png'
+    'images/deco-love.png', 'images/deco-blep.png', 'images/deco-guitar.png', 'images/deco-baseball.png', 'images/deco-chef.png',
+    'images/deco-fishmonger.png', 'images/deco-station.png', 'images/deco-laptop.png'
   ];
   const BEST_KEY = 'cat-diary:memory-best';
 
@@ -137,6 +138,11 @@ const Memory = (function () {
     const title = document.createElement('p');
     title.className = 'game-title';
     title.textContent = record ? '🎉 新紀錄！' : '🎉 全部配對成功！';
+    const deco = new Image();
+    deco.className = 'overlay-deco';
+    deco.src = 'images/deco-station.png';
+    deco.alt = '';
+    overlay.appendChild(deco);
     const text = document.createElement('p');
     text.className = 'game-text';
     text.textContent = moves + ' 步・' + fmt(time) + (record ? '' : '（最佳：' + prev.moves + ' 步・' + fmt(prev.time) + '）');

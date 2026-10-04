@@ -221,6 +221,13 @@ const Kitty = (function () {
     say(['好吃！謝謝你 😋', '吃飽飽，好幸福～', '小魚乾最棒了！🐟'][Math.floor(Math.random() * 3)], 2800);
     gain('feed');
     render(true);
+    // 廚師貓端著平底鍋出來
+    const chef = new Image();
+    chef.className = 'kitty-chef';
+    chef.src = 'images/deco-chef.png';
+    chef.alt = '';
+    root.querySelector('.kitty-room').appendChild(chef);
+    setTimeout(function () { chef.remove(); }, 2400);
   }
   function pat() {
     data.lastPat = Date.now();
