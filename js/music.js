@@ -198,7 +198,8 @@ const Music = (function () {
     }, 100);
   }
 
-  function startPurr() {
+  /* 建立呼嚕聲，接到 dest；回傳需要停止的節點 */
+  function makePurr(dest) {
     const src = ctx.createBufferSource();
     src.buffer = noiseBuffer(4, true);
     src.loop = true;
@@ -221,9 +222,38 @@ const Music = (function () {
     const slowDepth = ctx.createGain();
     slowDepth.gain.value = 0.35;
     slow.connect(slowDepth); slowDepth.connect(breath.gain);
-    src.connect(lp); lp.connect(am); am.connect(breath); breath.connect(master);
+    src.connect(lp); lp.connect(am); am.connect(breath); breath.connect(dest);
     src.start(); lfo.start(); slow.start();
-    nodes.push(src, lfo, slow);
+    return [src, lfo, slow];
+  }
+
+  function startPurr() {
+    nodes.push.apply(nodes, makePurr(master));
+  }
+
+  /* 獨立的呼嚕聲（呼吸練習、擼貓用），level 0～1，0 就淡出關閉 */
+  let purrOut = null, purrNodes = [];
+  function purr(level) {
+    level = Math.max(0, Math.min(1, level || 0));
+    if (!level && !purrOut) return;
+    setup();
+    if (ctx.state === 'suspended') ctx.resume();
+    if (!purrOut) {
+      purrOut = ctx.createGain();
+      purrOut.gain.value = 0;
+      purrOut.connect(ctx.destination);
+      purrNodes = makePurr(purrOut);
+    }
+    purrOut.gain.setTargetAtTime(level * 1.1, ctx.currentTime, 0.3);
+    if (!level) {
+      const out = purrOut, ns = purrNodes;
+      purrOut = null;
+      purrNodes = [];
+      setTimeout(function () {
+        ns.forEach(function (n) { try { n.stop(); } catch (e) { /* 忽略 */ } });
+        out.disconnect();
+      }, 1500);
+    }
   }
 
   function stopAll() {
@@ -255,7 +285,8 @@ const Music = (function () {
   function pause() {
     if (!playing) return;
     stopAll();
-    if (ctx) ctx.suspend();
+    // 呼嚕聲還在時不要整個停掉音效
+    if (ctx && !purrOut) ctx.suspend();
     playing = false;
     notify();
   }
@@ -283,6 +314,9 @@ const Music = (function () {
     toggle: function () { playing ? pause() : play(); },
     select: select,
     setVolume: setVolume,
+    purr: purr,
+    // iPhone 只允許在手指點擊時啟動聲音，先喚醒音效
+    unlock: function () { setup(); if (ctx.state === 'suspended') ctx.resume(); },
     state: function () { return { playing: playing, track: track, volume: volume }; },
     onChange: function (fn) { listeners.push(fn); fn(this.state()); }
   };

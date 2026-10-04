@@ -356,23 +356,31 @@ button { cursor: pointer; }
 
 /* ---------- 玩樂：切換 ---------- */
 .seg {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: 4px;
   margin: 12px 0 4px;
   padding: 4px;
   background: var(--surface);
-  border-radius: 999px;
+  border-radius: 18px;
   box-shadow: var(--shadow);
 }
 .seg-btn {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
   border: 0;
   background: transparent;
-  border-radius: 999px;
-  padding: 8px 10px;
+  border-radius: 14px;
+  padding: 6px 2px;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--muted);
+  white-space: nowrap;
 }
+.seg-btn span { font-size: 1.3rem; line-height: 1.2; }
 .seg-btn.is-active { background: var(--primary); color: var(--primary-ink); }
 
 /* ---------- 塗色 ---------- */
@@ -428,6 +436,91 @@ button { cursor: pointer; }
 /* 心情不好時的塗色建議 */
 .quote-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .quote-card .quote-color { margin-top: 8px; padding: 4px 14px; font-size: 0.85rem; }
+
+/* ---------- 呼吸練習 ---------- */
+.breathe { text-align: center; }
+.breathe-stage { position: relative; max-width: 360px; margin: 10px auto 0; aspect-ratio: 300 / 210; }
+.breathe-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 84%;
+  aspect-ratio: 1;
+  margin: -42% 0 0 -42%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244, 162, 97, 0.55) 0%, rgba(244, 162, 97, 0.15) 55%, transparent 72%);
+  transform: scale(0.75);
+  opacity: 0.35;
+}
+.breathe-svg { position: relative; width: 100%; height: 100%; display: block; overflow: visible; }
+.breathe-svg .b-body { transform-box: fill-box; transform-origin: 50% 100%; }
+.breathe-svg .b-head { transform-box: fill-box; }
+.breathe-svg .b-z { opacity: 0; }
+.breathe.is-running .b-z { animation: zzz 3s ease-in-out infinite; }
+.breathe.is-running .b-z2 { animation-delay: 1.5s; }
+@keyframes zzz { 0% { opacity: 0; transform: translateY(6px); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(-14px); } }
+.breathe-label { font-size: 1.5rem; font-weight: 700; margin: 6px 0 0; min-height: 2.2rem; }
+.breathe-count { font-size: 2.2rem; font-weight: 800; color: var(--primary); margin: 0; min-height: 3rem; }
+.breathe-lens { display: inline-flex; gap: 6px; margin: 6px 0 10px; }
+.breathe-len { border: 1.5px solid var(--line); background: var(--surface); color: var(--text); border-radius: 999px; padding: 4px 12px; font-size: 0.88rem; }
+.breathe-len.is-active { border-color: var(--primary); background: var(--primary-soft); font-weight: 700; }
+.breathe.is-running .breathe-lens { opacity: 0.4; pointer-events: none; }
+.breathe-actions { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.breathe-actions .btn { min-width: 110px; }
+.breathe-time { color: var(--muted); }
+.breathe-time strong { color: var(--text); font-variant-numeric: tabular-nums; }
+.breathe-sound { display: inline-flex; align-items: center; gap: 6px; margin: 12px 0 4px; font-size: 0.92rem; }
+.breathe-sound input { width: 18px; height: 18px; accent-color: var(--primary); }
+
+/* ---------- 擼貓模式 ---------- */
+.pet { text-align: center; }
+.pet-meter { display: flex; align-items: center; gap: 10px; margin: 12px 4px 4px; font-size: 0.9rem; color: var(--muted); }
+.pet-meter-bar { flex: 1; height: 12px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.pet-meter-fill { height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, #f7a1b9, #e76f96); transition: width 0.15s linear; }
+.pet-meter strong { min-width: 3em; text-align: right; color: #e76f96; font-variant-numeric: tabular-nums; }
+.pet-stage {
+  position: relative;
+  max-width: 340px;
+  margin: 0 auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  cursor: grab;
+}
+.pet-svg { width: 100%; height: auto; display: block; }
+.pet-svg .p-eyes { display: none; }
+.pet-svg[data-state="open"] .eyes-open,
+.pet-svg:not([data-state]) .eyes-open,
+.pet-svg[data-state="half"] .eyes-half,
+.pet-svg[data-state="closed"] .eyes-closed,
+.pet-svg[data-state="angry"] .eyes-angry { display: inline; }
+.pet-svg .p-blush { opacity: var(--blush, 0); transition: opacity 0.3s; }
+.pet-svg .p-hiss { display: none; }
+.pet-svg[data-state="angry"] .p-hiss { display: inline; }
+.pet-svg[data-state="angry"] .p-mouth { display: none; }
+.pet-svg .p-ear-l, .pet-svg .p-ear-r { transform-box: fill-box; transition: transform 0.2s; }
+.pet-svg .p-ear-l { transform-origin: 100% 100%; }
+.pet-svg .p-ear-r { transform-origin: 0 100%; }
+.pet-svg[data-state="angry"] .p-ear-l { transform: rotate(-28deg) scaleY(0.75); }
+.pet-svg[data-state="angry"] .p-ear-r { transform: rotate(28deg) scaleY(0.75); }
+.pet-svg[data-state="angry"] .p-head { animation: hiss 0.12s linear 6; }
+@keyframes hiss { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
+.pet-svg .p-tail { transform-box: fill-box; transform-origin: 0% 100%; }
+.pet-svg.is-wagging .p-tail { animation: wag 1.1s ease-in-out infinite; }
+@keyframes wag { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-10deg); } }
+.pet-heart {
+  position: absolute;
+  font-size: 1.4rem;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: heart-up 1.2s ease-out forwards;
+}
+@keyframes heart-up { from { opacity: 1; transform: translate(-50%, -50%) scale(0.6); } to { opacity: 0; transform: translate(-50%, -160%) scale(1.2); } }
+.pet-msg { font-weight: 700; margin: 8px 0 2px; min-height: 1.6em; }
+@media (prefers-reduced-motion: reduce) {
+  .breathe.is-running .b-z, .pet-svg.is-wagging .p-tail, .pet-svg[data-state="angry"] .p-head { animation: none; }
+}
 
 /* ---------- 今日貓咪運勢 ---------- */
 .fortune-start { text-align: center; padding: 16px 0 8px; }

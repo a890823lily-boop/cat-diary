@@ -315,11 +315,19 @@
       onclick: function () { drawQuote(quotePool(todayMood())); fillQuoteCard(card, true); }
     })]);
     // 心情不好時，建議去塗色放鬆
-    if (['sad', 'anxious', 'angry', 'tired', 'lonely'].indexOf(mood) !== -1) {
+    // 心情不好時，推薦適合的放鬆方式
+    const comfort = {
+      anxious: ['breathe', '🫁 跟貓咪一起呼吸'],
+      tired: ['breathe', '🫁 跟貓咪一起呼吸'],
+      sad: ['pet', '🐈 去摸摸貓咪'],
+      lonely: ['pet', '🐈 去摸摸貓咪'],
+      angry: ['color', '🎨 去塗色放鬆一下']
+    }[mood];
+    if (comfort) {
       actions.appendChild(el('button', {
         class: 'btn quote-btn quote-color',
-        text: '🎨 去塗色放鬆一下',
-        onclick: function () { playMode = 'color'; setView('play'); }
+        text: comfort[1],
+        onclick: function () { playMode = comfort[0]; setView('play'); }
       }));
     }
     body.appendChild(actions);
@@ -584,14 +592,14 @@
     });
     window.scrollTo(0, 0);
     render();
-    if (view === 'play') setPlayMode(playMode); else CatGame.pause();
+    if (view === 'play') setPlayMode(playMode); else { CatGame.pause(); Breathe.pause(); Pet.pause(); }
   }
 
   /* ---------- 玩樂：塗色／小遊戲 ---------- */
   let playMode = readPref('play', 'color');
 
   function setPlayMode(mode) {
-    playMode = ['color', 'game', 'fortune'].indexOf(mode) !== -1 ? mode : 'color';
+    playMode = ['color', 'breathe', 'pet', 'fortune', 'game'].indexOf(mode) !== -1 ? mode : 'color';
     writePref('play', playMode);
     document.querySelectorAll('.seg-btn').forEach(function (b) {
       const on = b.dataset.mode === playMode;
@@ -601,9 +609,16 @@
     $('#play-color').hidden = playMode !== 'color';
     $('#play-game').hidden = playMode !== 'game';
     $('#play-fortune').hidden = playMode !== 'fortune';
-    if (playMode === 'game') { CatGame.show(); return; }
-    CatGame.pause();
-    if (playMode === 'color') Coloring.show(); else Fortune.show();
+    $('#play-breathe').hidden = playMode !== 'breathe';
+    $('#play-pet').hidden = playMode !== 'pet';
+    if (playMode !== 'game') CatGame.pause();
+    if (playMode !== 'breathe') Breathe.pause();
+    if (playMode !== 'pet') Pet.pause();
+    if (playMode === 'game') CatGame.show();
+    else if (playMode === 'color') Coloring.show();
+    else if (playMode === 'breathe') Breathe.show();
+    else if (playMode === 'pet') Pet.show();
+    else Fortune.show();
   }
 
   document.querySelectorAll('.seg-btn').forEach(function (b) {

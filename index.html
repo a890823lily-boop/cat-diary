@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="貓咪日記">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=19">
+  <link rel="stylesheet" href="css/style.css?v=20">
 </head>
 <body>
   <header class="app-header">
@@ -45,9 +45,11 @@
     <!-- 玩樂：塗色、小遊戲 -->
     <section id="view-play" class="view" aria-label="玩樂" hidden>
       <div class="seg" role="tablist" aria-label="選擇玩樂項目">
-        <button class="seg-btn" role="tab" data-mode="color">🎨 塗色</button>
-        <button class="seg-btn" role="tab" data-mode="game">🐟 接魚乾</button>
-        <button class="seg-btn" role="tab" data-mode="fortune">🔮 運勢</button>
+        <button class="seg-btn" role="tab" data-mode="color"><span aria-hidden="true">🎨</span>塗色</button>
+        <button class="seg-btn" role="tab" data-mode="breathe"><span aria-hidden="true">🫁</span>呼吸</button>
+        <button class="seg-btn" role="tab" data-mode="pet"><span aria-hidden="true">🐈</span>擼貓</button>
+        <button class="seg-btn" role="tab" data-mode="fortune"><span aria-hidden="true">🔮</span>運勢</button>
+        <button class="seg-btn" role="tab" data-mode="game"><span aria-hidden="true">🐟</span>接魚乾</button>
       </div>
 
       <div id="play-color" class="play-pane">
@@ -83,6 +85,38 @@
 
       <div id="play-fortune" class="play-pane" hidden>
         <div id="fortune-box" class="fortune-box" aria-live="polite"></div>
+      </div>
+
+      <div id="play-breathe" class="play-pane" hidden>
+        <div id="breathe" class="breathe">
+          <div class="breathe-stage"><div class="breathe-glow"></div></div>
+          <p id="breathe-label" class="breathe-label" aria-live="polite">準備好了嗎？</p>
+          <p id="breathe-count" class="breathe-count"></p>
+          <div class="breathe-lens" role="group" aria-label="練習時間">
+            <button class="breathe-len is-active" data-secs="60">1 分鐘</button>
+            <button class="breathe-len" data-secs="180">3 分鐘</button>
+            <button class="breathe-len" data-secs="300">5 分鐘</button>
+          </div>
+          <div class="breathe-actions">
+            <button id="breathe-start" class="btn">▶ 開始</button>
+            <span class="breathe-time">剩下 <strong id="breathe-time">1:00</strong></span>
+          </div>
+          <label class="breathe-sound"><input id="breathe-sound" type="checkbox" checked> 🐱 呼嚕聲陪伴</label>
+          <p class="hint">跟著貓咪的肚子：吸氣 4 秒、停 2 秒、慢慢吐氣 6 秒。焦慮或睡不著的時候試試看。</p>
+        </div>
+      </div>
+
+      <div id="play-pet" class="play-pane" hidden>
+        <div id="pet" class="pet">
+          <div class="pet-meter" aria-label="開心度">
+            <span>開心度</span>
+            <div class="pet-meter-bar"><div id="pet-meter-fill" class="pet-meter-fill"></div></div>
+            <strong id="pet-meter-text">0%</strong>
+          </div>
+          <div class="pet-stage"></div>
+          <p id="pet-msg" class="pet-msg" aria-live="polite">摸摸貓咪的頭和背，牠會越來越開心。</p>
+          <p class="hint">手指在貓咪身上滑來滑去。小提醒：貓咪不喜歡一直被摸肚子喔！</p>
+        </div>
       </div>
     </section>
 
@@ -217,12 +251,13 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/quotes.js?v=19"></script>
-  <script src="js/db.js?v=19"></script>
-  <script src="js/game.js?v=19"></script>
-  <script src="js/coloring.js?v=19"></script>
-  <script src="js/fortune.js?v=19"></script>
-  <script src="js/music.js?v=19"></script>
-  <script src="js/app.js?v=19"></script>
+  <script src="js/quotes.js?v=20"></script>
+  <script src="js/db.js?v=20"></script>
+  <script src="js/game.js?v=20"></script>
+  <script src="js/coloring.js?v=20"></script>
+  <script src="js/fortune.js?v=20"></script>
+  <script src="js/relax.js?v=20"></script>
+  <script src="js/music.js?v=20"></script>
+  <script src="js/app.js?v=20"></script>
 </body>
 </html>
