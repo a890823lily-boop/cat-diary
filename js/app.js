@@ -322,7 +322,7 @@
     const comfort = {
       anxious: ['breathe', '🫁 跟貓咪一起呼吸'],
       tired: ['breathe', '🫁 跟貓咪一起呼吸'],
-      sad: ['pet', '🐈 去摸摸貓咪'],
+      sad: ['thanks', '⭐ 搖一搖感恩罐'],
       lonely: ['pet', '🐈 去摸摸貓咪'],
       angry: ['color', '🎨 去塗色放鬆一下']
     }[mood];
@@ -330,7 +330,7 @@
       actions.appendChild(el('button', {
         class: 'btn quote-btn quote-color',
         text: comfort[1],
-        onclick: function () { playMode = comfort[0]; setView('play'); }
+        onclick: function () { document.dispatchEvent(new CustomEvent('play:go', { detail: comfort[0] })); }
       }));
     }
     body.appendChild(actions);
@@ -434,6 +434,7 @@
     const moods = moodLog();
     const worries = worriesByDate();
     const popped = poppedByDate();
+    const thanks = Gratitude.byDate();
     const entriesByDate = {};
     state.entries.forEach(function (e) {
       if (state.filter !== 'all' && e.catId !== state.filter) return;
@@ -461,6 +462,7 @@
       ents.some(function (e) { return (e.photoIds || []).some(function (id) { photo = state.photos.get(id); return !!photo; }); });
       const mood = moodInfo(moods[key]);
       const hasWorry = (worries[key] || []).length || popped[key];
+      const hasStar = (thanks[key] || []).length;
       const cell = el('button', {
         class: 'cal-day' + (key === todayKey ? ' is-today' : '') + (key === cal.selected ? ' is-selected' : '') + (photo ? ' has-photo' : '') + (key > todayKey ? ' is-future' : ''),
         'aria-label': (mo + 1) + ' 月 ' + d + ' 日' + (ents.length ? '，' + ents.length + ' 篇日記' : '') + (mood ? '，心情' + mood.label : ''),
@@ -469,13 +471,14 @@
         el('span', { class: 'cal-num', text: String(d) }),
         mood ? el('span', { class: 'cal-mood', text: mood.icon }) : null,
         !photo && ents.length ? el('span', { class: 'cal-dot' }) : null,
-        hasWorry ? el('span', { class: 'cal-worry', text: '🫧' }) : null
+        hasWorry ? el('span', { class: 'cal-worry', text: '🫧' }) : null,
+        hasStar ? el('span', { class: 'cal-star', text: '⭐' }) : null
       ]);
       if (photo) cell.style.backgroundImage = 'url(' + blobUrl('thumb:' + photo.id, photo.thumb) + ')';
       grid.appendChild(cell);
     }
     card.appendChild(grid);
-    card.appendChild(el('p', { class: 'cal-legend hint', text: '📷／• 日記　😊 心情　🫧 內耗球' }));
+    card.appendChild(el('p', { class: 'cal-legend hint', text: '📷／• 日記　😊 心情　🫧 內耗球　⭐ 好事' }));
 
     if (cal.selected && cal.selected.slice(0, 7) === y + '-' + pad(mo + 1)) card.appendChild(dayDetail(cal.selected, entriesByDate[cal.selected] || [], moods, worries, popped));
   }
@@ -510,7 +513,13 @@
       });
     }
 
-    if (!ents.length && !ws.length && !popped[key] && !mood) box.appendChild(el('p', { class: 'hint', text: '這天沒有紀錄。' }));
+    const ts = Gratitude.byDate()[key] || [];
+    if (ts.length) {
+      box.appendChild(el('p', { class: 'cal-sub', text: '⭐ 感恩罐（' + ts.length + '）' }));
+      ts.forEach(function (t) { box.appendChild(el('p', { class: 'cal-worry-item', text: '⭐ ' + t.text })); });
+    }
+
+    if (!ents.length && !ws.length && !popped[key] && !mood && !ts.length) box.appendChild(el('p', { class: 'hint', text: '這天沒有紀錄。' }));
     if (key <= today() && state.cats.length) {
       box.appendChild(el('button', { class: 'btn btn-outline btn-block cal-add', text: '＋ 寫這天的日記', onclick: function () { openEntryDialog(null, key); } }));
     }
@@ -657,7 +666,7 @@
     });
     window.scrollTo(0, 0);
     render();
-    if (view === 'play') setPlayMode(playMode); else { CatGame.pause(); Memory.pause(); Breathe.pause(); Pet.pause(); Worry.pause(); }
+    if (view === 'play') setPlayMode(playMode); else { CatGame.pause(); Memory.pause(); Breathe.pause(); Pet.pause(); Worry.pause(); Gratitude.pause(); }
   }
 
   /* ---------- 玩樂：塗色／小遊戲 ---------- */
@@ -677,7 +686,7 @@
     $('#play-breathe').hidden = playMode !== 'breathe';
     $('#play-pet').hidden = playMode !== 'pet';
     $('#play-worry').hidden = playMode !== 'worry';
-    if (playMode !== 'worry') Worry.pause();
+    if (playMode !== 'worry') { Worry.pause(); Gratitude.pause(); }
     if (playMode !== 'game') { CatGame.pause(); Memory.pause(); }
     if (playMode !== 'breathe') Breathe.pause();
     if (playMode !== 'pet') Pet.pause();
@@ -685,7 +694,7 @@
     else if (playMode === 'color') Coloring.show();
     else if (playMode === 'breathe') Breathe.show();
     else if (playMode === 'pet') Pet.show();
-    else if (playMode === 'worry') Worry.show();
+    else if (playMode === 'worry') setJar(jarSub);
     else Fortune.show();
   }
 
@@ -711,7 +720,24 @@
   });
 
   // 其他地方要切換到某個玩樂項目（例如聊天室結束後去呼吸）
-  document.addEventListener('play:go', function (e) { playMode = e.detail; setView('play'); });
+  document.addEventListener('play:go', function (e) {
+    if (e.detail === 'thanks') { jarSub = 'thanks'; playMode = 'worry'; } else playMode = e.detail;
+    setView('play');
+  });
+
+  /* 心情罐：內耗球／感恩罐 */
+  let jarSub = readPref('jar', 'worry');
+  function setJar(sub) {
+    jarSub = sub === 'thanks' ? 'thanks' : 'worry';
+    writePref('jar', jarSub);
+    document.querySelectorAll('.jar-pick').forEach(function (b) { b.classList.toggle('is-active', b.dataset.jar === jarSub); });
+    $('#jar-worry').hidden = jarSub !== 'worry';
+    $('#jar-thanks').hidden = jarSub !== 'thanks';
+    if (jarSub === 'worry') { Gratitude.pause(); Worry.show(); } else { Worry.pause(); Gratitude.show(); }
+  }
+  document.querySelectorAll('.jar-pick').forEach(function (b) {
+    b.addEventListener('click', function () { setJar(b.dataset.jar); });
+  });
 
   document.querySelectorAll('.seg-btn').forEach(function (b) {
     b.addEventListener('click', function () { setPlayMode(b.dataset.mode); });

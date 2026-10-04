@@ -16,6 +16,7 @@ const Kitty = (function () {
     game: { exp: 8, daily: 3, label: '玩遊戲' },
     worryAdd: { exp: 3, daily: 3, label: '放下煩惱' },
     worryPop: { exp: 5, daily: 3, label: '戳破煩惱' },
+    gratitude: { exp: 5, daily: 3, label: '存好事' },
     feed: { exp: 2, daily: 3, label: '餵食' },
     play: { exp: 2, daily: 5, label: '陪小貓玩' },
     pat: { exp: 1, daily: 5, label: '摸摸小貓' }

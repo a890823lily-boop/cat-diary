@@ -543,6 +543,42 @@ button { cursor: pointer; }
 .worry-sheet-text { font-size: 1.15rem; line-height: 1.7; margin: 10px 0 4px; white-space: pre-wrap; word-break: break-word; }
 .worry-sheet-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
 
+/* 感恩罐 */
+.jar-pick { flex: 1; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); border-radius: 999px; padding: 7px 10px; font-weight: 700; }
+.jar-pick.is-active { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
+.g-jar { height: min(40vh, 320px); min-height: 260px; background: linear-gradient(180deg, rgba(255, 241, 179, 0.25), rgba(255, 209, 102, 0.35)); }
+.g-jar.is-shaking { animation: jar-shake 0.6s ease-in-out; }
+@keyframes jar-shake { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-5deg); } 40% { transform: rotate(5deg); } 60% { transform: rotate(-4deg); } 80% { transform: rotate(3deg); } }
+.g-star {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  will-change: transform;
+}
+.g-star::before, .g-fly::before, .g-big-star::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 40% 35%, #fff 0 12%, var(--c) 45%);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+}
+.g-star.is-new { animation: ball-in 0.4s ease-out; }
+.g-actions { text-align: center; margin-top: 10px; }
+.g-actions .btn { padding: 12px 22px; font-size: 1rem; }
+.g-fly { position: fixed; width: 48px; height: 48px; margin: -24px 0 0 -24px; z-index: 50; pointer-events: none; animation: g-fly 0.7s ease-in forwards; }
+@keyframes g-fly { to { transform: translate(0, -160px) scale(2.2) rotate(180deg); opacity: 0; } }
+.g-big-star { position: relative; width: 110px; height: 110px; margin: 10px auto 4px; animation: sticker-bounce 1.6s ease-in-out infinite; }
+.g-text { font-size: 1.2rem; font-weight: 700; line-height: 1.7; margin: 6px 0 4px; white-space: pre-wrap; word-break: break-word; }
+.g-note { margin: 8px 0 0; color: var(--primary); font-size: 0.9rem; }
+.g-note:empty { display: none; }
+.cal-star { position: absolute; left: 50%; top: 2px; margin-left: 4px; font-size: 0.62rem; line-height: 1; }
+@media (prefers-reduced-motion: reduce) { .g-jar.is-shaking, .g-big-star, .g-fly { animation: none; } }
+
 /* 喵喵聊天室 */
 .talk-dialog[open] { display: flex; flex-direction: column; height: 92vh; height: 92dvh; }
 .talk-spacer { width: 40px; }
