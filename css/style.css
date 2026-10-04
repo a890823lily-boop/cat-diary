@@ -795,6 +795,14 @@ button { cursor: pointer; }
 .mem-actions { text-align: center; margin-top: 12px; }
 @media (prefers-reduced-motion: reduce) { .mem-inner { transition: none; } }
 
+/* 小貓跑酷 */
+.run-stage { background: #ffe9d1; }
+.run-stage .overlay-deco { width: 76px; }
+.run-stage .game-overlay { padding: 12px 20px; }
+.run-stage .game-text { margin-bottom: 8px; font-size: 0.9rem; }
+#run-canvas { display: block; width: 100%; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+.game-switch .game-pick { padding: 7px 4px; font-size: 0.9rem; }
+
 /* ---------- 小遊戲 ---------- */
 .game-hud {
   display: flex;

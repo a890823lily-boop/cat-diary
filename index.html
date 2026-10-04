@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="貓咪日記">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=38">
+  <link rel="stylesheet" href="css/style.css?v=39">
 </head>
 <body>
   <header class="app-header">
@@ -105,6 +105,7 @@
         <div class="game-switch" role="tablist" aria-label="選擇遊戲">
           <button class="game-pick" data-game="catch">🐟 接魚乾</button>
           <button class="game-pick" data-game="memory">🃏 翻翻樂</button>
+          <button class="game-pick" data-game="run">🏃 跑酷</button>
         </div>
         <div id="game-catch">
           <div class="game-hud">
@@ -118,6 +119,18 @@
             <div id="game-overlay" class="game-overlay"></div>
           </div>
           <p class="hint game-help">手指在畫面上左右拖曳，讓貓咪去接東西。電腦可以用 ← → 鍵。</p>
+        </div>
+        <div id="game-run" hidden>
+          <div class="game-hud">
+            <span>分數 <strong id="run-score">0</strong></span>
+            <span>🐟 <strong id="run-fish">0</strong></span>
+            <span>最高 <strong id="run-best">0</strong></span>
+          </div>
+          <div class="game-stage run-stage">
+            <canvas id="run-canvas" aria-label="小貓跑酷遊戲畫面"></canvas>
+            <div id="run-overlay" class="game-overlay"></div>
+          </div>
+          <p class="hint game-help">點一下畫面跳起來，在空中再點一次可以二段跳。電腦可以按空白鍵。</p>
         </div>
         <div id="game-memory" hidden>
           <div id="memory" class="memory">
@@ -382,22 +395,23 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/quotes.js?v=38"></script>
-  <script src="js/db.js?v=38"></script>
-  <script src="js/stickers.js?v=38"></script>
-  <script src="js/weather.js?v=38"></script>
-  <script src="js/birthday.js?v=38"></script>
-  <script src="js/kitty.js?v=38"></script>
-  <script src="js/fishing.js?v=38"></script>
-  <script src="js/game.js?v=38"></script>
-  <script src="js/memory.js?v=38"></script>
-  <script src="js/coloring.js?v=38"></script>
-  <script src="js/fortune.js?v=38"></script>
-  <script src="js/relax.js?v=38"></script>
-  <script src="js/worry-talk.js?v=38"></script>
-  <script src="js/worry.js?v=38"></script>
-  <script src="js/gratitude.js?v=38"></script>
-  <script src="js/music.js?v=38"></script>
-  <script src="js/app.js?v=38"></script>
+  <script src="js/quotes.js?v=39"></script>
+  <script src="js/db.js?v=39"></script>
+  <script src="js/stickers.js?v=39"></script>
+  <script src="js/weather.js?v=39"></script>
+  <script src="js/birthday.js?v=39"></script>
+  <script src="js/kitty.js?v=39"></script>
+  <script src="js/fishing.js?v=39"></script>
+  <script src="js/game.js?v=39"></script>
+  <script src="js/memory.js?v=39"></script>
+  <script src="js/runner.js?v=39"></script>
+  <script src="js/coloring.js?v=39"></script>
+  <script src="js/fortune.js?v=39"></script>
+  <script src="js/relax.js?v=39"></script>
+  <script src="js/worry-talk.js?v=39"></script>
+  <script src="js/worry.js?v=39"></script>
+  <script src="js/gratitude.js?v=39"></script>
+  <script src="js/music.js?v=39"></script>
+  <script src="js/app.js?v=39"></script>
 </body>
 </html>

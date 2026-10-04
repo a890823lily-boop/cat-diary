@@ -705,7 +705,7 @@
     });
     window.scrollTo(0, 0);
     render();
-    if (view === 'play') setPlayMode(playMode); else { CatGame.pause(); Memory.pause(); Breathe.pause(); Pet.pause(); }
+    if (view === 'play') setPlayMode(playMode); else { CatGame.pause(); Memory.pause(); Runner.pause(); Breathe.pause(); Pet.pause(); }
     if (view === 'jar') setJar(jarSub); else { Worry.pause(); Gratitude.pause(); }
   }
 
@@ -726,7 +726,7 @@
     $('#play-fortune').hidden = playMode !== 'fortune';
     $('#play-breathe').hidden = playMode !== 'breathe';
     $('#play-pet').hidden = playMode !== 'pet';
-    if (playMode !== 'game') { CatGame.pause(); Memory.pause(); }
+    if (playMode !== 'game') { CatGame.pause(); Memory.pause(); Runner.pause(); }
     if (playMode !== 'breathe') Breathe.pause();
     if (playMode !== 'pet') Pet.pause();
     if (playMode === 'game') setGame(gameSub);
@@ -739,12 +739,15 @@
   /* 遊戲：接魚乾／翻翻樂 */
   let gameSub = readPref('game', 'catch');
   function setGame(sub) {
-    gameSub = sub === 'memory' ? 'memory' : 'catch';
+    gameSub = ['memory', 'run'].indexOf(sub) !== -1 ? sub : 'catch';
     writePref('game', gameSub);
     document.querySelectorAll('.game-pick').forEach(function (b) { b.classList.toggle('is-active', b.dataset.game === gameSub); });
     $('#game-catch').hidden = gameSub !== 'catch';
     $('#game-memory').hidden = gameSub !== 'memory';
+    $('#game-run').hidden = gameSub !== 'run';
+    if (gameSub !== 'run') Runner.pause();
     if (gameSub === 'catch') { Memory.pause(); CatGame.show(); }
+    else if (gameSub === 'run') { Memory.pause(); CatGame.pause(); Runner.show(); }
     else {
       CatGame.pause();
       // 翻翻樂優先用日記裡的照片
