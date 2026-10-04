@@ -184,7 +184,7 @@
     if (state.view === 'diary') renderDiary();
     if (state.view === 'album') renderAlbum();
     if (state.view === 'cats') renderCats();
-    $('#fab').hidden = state.view === 'cats' || state.view === 'play';
+    $('#fab').hidden = state.view === 'cats' || state.view === 'play' || state.view === 'jar';
   }
 
   function renderFilter() {
@@ -705,14 +705,16 @@
     });
     window.scrollTo(0, 0);
     render();
-    if (view === 'play') setPlayMode(playMode); else { CatGame.pause(); Memory.pause(); Breathe.pause(); Pet.pause(); Worry.pause(); Gratitude.pause(); }
+    if (view === 'play') setPlayMode(playMode); else { CatGame.pause(); Memory.pause(); Breathe.pause(); Pet.pause(); }
+    if (view === 'jar') setJar(jarSub); else { Worry.pause(); Gratitude.pause(); }
   }
 
   /* ---------- 玩樂：塗色／小遊戲 ---------- */
   let playMode = readPref('play', 'color');
+  if (playMode === 'worry') playMode = 'color'; // 心情罐已經搬到自己的頁面
 
   function setPlayMode(mode) {
-    playMode = ['worry', 'color', 'breathe', 'pet', 'fortune', 'game'].indexOf(mode) !== -1 ? mode : 'color';
+    playMode = ['color', 'breathe', 'pet', 'fortune', 'game'].indexOf(mode) !== -1 ? mode : 'color';
     writePref('play', playMode);
     document.querySelectorAll('.seg-btn').forEach(function (b) {
       const on = b.dataset.mode === playMode;
@@ -724,8 +726,6 @@
     $('#play-fortune').hidden = playMode !== 'fortune';
     $('#play-breathe').hidden = playMode !== 'breathe';
     $('#play-pet').hidden = playMode !== 'pet';
-    $('#play-worry').hidden = playMode !== 'worry';
-    if (playMode !== 'worry') { Worry.pause(); Gratitude.pause(); }
     if (playMode !== 'game') { CatGame.pause(); Memory.pause(); }
     if (playMode !== 'breathe') Breathe.pause();
     if (playMode !== 'pet') Pet.pause();
@@ -733,7 +733,6 @@
     else if (playMode === 'color') Coloring.show();
     else if (playMode === 'breathe') Breathe.show();
     else if (playMode === 'pet') Pet.show();
-    else if (playMode === 'worry') setJar(jarSub);
     else Fortune.show();
   }
 
@@ -760,7 +759,8 @@
 
   // 其他地方要切換到某個玩樂項目（例如聊天室結束後去呼吸）
   document.addEventListener('play:go', function (e) {
-    if (e.detail === 'thanks') { jarSub = 'thanks'; playMode = 'worry'; } else playMode = e.detail;
+    if (e.detail === 'thanks' || e.detail === 'worry') { jarSub = e.detail; setView('jar'); return; }
+    playMode = e.detail;
     setView('play');
   });
 

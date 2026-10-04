@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="貓咪日記">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=37">
+  <link rel="stylesheet" href="css/style.css?v=38">
 </head>
 <body>
   <header class="app-header">
@@ -37,51 +37,51 @@
       <div id="album-grid" class="album"></div>
     </section>
 
+    <!-- 心情罐：內耗球、感恩罐 -->
+    <section id="view-jar" class="view" aria-label="心情罐" hidden>
+      <div class="game-switch" role="tablist" aria-label="選擇罐子">
+        <button class="jar-pick" data-jar="worry">🫧 內耗球</button>
+        <button class="jar-pick" data-jar="thanks">⭐ 感恩罐</button>
+      </div>
+      <div id="jar-worry">
+        <form id="worry-form" class="worry-form">
+          <label for="worry-input" class="worry-title">有什麼事一直在腦袋裡轉嗎？</label>
+          <textarea id="worry-input" rows="2" maxlength="120" placeholder="把讓你內耗的事情打出來，它就會變成一顆球…"></textarea>
+          <p class="worry-mood-label">這顆球的心情 <span class="hint">（打字時自動偵測，也可以自己改）</span></p>
+          <div id="worry-moods" class="worry-moods" role="group" aria-label="這顆球的心情"></div>
+          <div class="worry-row">
+            <span class="worry-size-label">有多困擾</span>
+            <label class="chip"><input type="radio" name="worry-size" value="s"><span>一點點</span></label>
+            <label class="chip"><input type="radio" name="worry-size" value="m" checked><span>普通</span></label>
+            <label class="chip"><input type="radio" name="worry-size" value="l"><span>很大</span></label>
+            <button class="btn worry-add" type="submit">變成球 🫧</button>
+          </div>
+        </form>
+        <div id="worry-jar" class="worry-jar is-empty"><p class="worry-empty"><img src="images/deco-sweat.png" alt="">把煩惱放進來吧 🫙</p></div>
+        <p id="worry-count" class="hint worry-count"></p>
+        <p class="hint worry-help">點一下球可以跟貓咪聊聊，或戳破它把煩惱放下；也可以用手指拖著球甩來甩去。</p>
+      </div>
+      <div id="jar-thanks" hidden>
+        <form id="g-form" class="worry-form">
+          <label for="g-input" class="worry-title">今天有什麼開心的小事？</label>
+          <textarea id="g-input" rows="2" maxlength="120" placeholder="再小的事都可以，例如：貓咪今天主動來蹭我…"></textarea>
+          <div class="worry-row"><button class="btn worry-add" type="submit">變成星星 ⭐</button></div>
+        </form>
+        <div id="g-jar" class="worry-jar g-jar is-empty"><p class="worry-empty"><img src="images/deco-blep.png" alt="">把開心的小事存進來吧 ✨</p></div>
+        <p id="g-count" class="hint worry-count"></p>
+        <div class="g-actions"><button id="g-shake" class="btn">🫙 搖一搖，掉出一顆好事</button></div>
+        <p class="hint worry-help">心情不好的時候搖一搖（也可以直接搖手機），會隨機掉出一顆以前存的好事。點星星可以看內容。</p>
+      </div>
+    </section>
+
     <!-- 玩樂：塗色、小遊戲 -->
     <section id="view-play" class="view" aria-label="玩樂" hidden>
       <div class="seg" role="tablist" aria-label="選擇玩樂項目">
-        <button class="seg-btn" role="tab" data-mode="worry"><span aria-hidden="true">🫙</span>心情罐</button>
         <button class="seg-btn" role="tab" data-mode="color"><span aria-hidden="true">🎨</span>塗色</button>
         <button class="seg-btn" role="tab" data-mode="breathe"><span aria-hidden="true">🫁</span>呼吸</button>
         <button class="seg-btn" role="tab" data-mode="pet"><span aria-hidden="true">🐈</span>擼貓</button>
         <button class="seg-btn" role="tab" data-mode="fortune"><span aria-hidden="true">🔮</span>運勢</button>
         <button class="seg-btn" role="tab" data-mode="game"><span aria-hidden="true">🎮</span>遊戲</button>
-      </div>
-
-      <div id="play-worry" class="play-pane" hidden>
-        <div class="game-switch" role="tablist" aria-label="選擇罐子">
-          <button class="jar-pick" data-jar="worry">🫧 內耗球</button>
-          <button class="jar-pick" data-jar="thanks">⭐ 感恩罐</button>
-        </div>
-        <div id="jar-worry">
-          <form id="worry-form" class="worry-form">
-            <label for="worry-input" class="worry-title">有什麼事一直在腦袋裡轉嗎？</label>
-            <textarea id="worry-input" rows="2" maxlength="120" placeholder="把讓你內耗的事情打出來，它就會變成一顆球…"></textarea>
-            <p class="worry-mood-label">這顆球的心情 <span class="hint">（打字時自動偵測，也可以自己改）</span></p>
-            <div id="worry-moods" class="worry-moods" role="group" aria-label="這顆球的心情"></div>
-            <div class="worry-row">
-              <span class="worry-size-label">有多困擾</span>
-              <label class="chip"><input type="radio" name="worry-size" value="s"><span>一點點</span></label>
-              <label class="chip"><input type="radio" name="worry-size" value="m" checked><span>普通</span></label>
-              <label class="chip"><input type="radio" name="worry-size" value="l"><span>很大</span></label>
-              <button class="btn worry-add" type="submit">變成球 🫧</button>
-            </div>
-          </form>
-          <div id="worry-jar" class="worry-jar is-empty"><p class="worry-empty"><img src="images/deco-sweat.png" alt="">把煩惱放進來吧 🫙</p></div>
-          <p id="worry-count" class="hint worry-count"></p>
-          <p class="hint worry-help">點一下球可以跟貓咪聊聊，或戳破它把煩惱放下；也可以用手指拖著球甩來甩去。</p>
-        </div>
-        <div id="jar-thanks" hidden>
-          <form id="g-form" class="worry-form">
-            <label for="g-input" class="worry-title">今天有什麼開心的小事？</label>
-            <textarea id="g-input" rows="2" maxlength="120" placeholder="再小的事都可以，例如：貓咪今天主動來蹭我…"></textarea>
-            <div class="worry-row"><button class="btn worry-add" type="submit">變成星星 ⭐</button></div>
-          </form>
-          <div id="g-jar" class="worry-jar g-jar is-empty"><p class="worry-empty"><img src="images/deco-blep.png" alt="">把開心的小事存進來吧 ✨</p></div>
-          <p id="g-count" class="hint worry-count"></p>
-          <div class="g-actions"><button id="g-shake" class="btn">🫙 搖一搖，掉出一顆好事</button></div>
-          <p class="hint worry-help">心情不好的時候搖一搖（也可以直接搖手機），會隨機掉出一顆以前存的好事。點星星可以看內容。</p>
-        </div>
       </div>
 
       <div id="play-color" class="play-pane">
@@ -215,6 +215,7 @@
   <nav class="tabbar" aria-label="主選單">
     <button class="tab is-active" data-view="diary"><span aria-hidden="true">📔</span>日記</button>
     <button class="tab" data-view="album"><span aria-hidden="true">🖼️</span>相簿</button>
+    <button class="tab" data-view="jar"><span aria-hidden="true">🫙</span>心情罐</button>
     <button class="tab" data-view="play"><span aria-hidden="true">🎨</span>玩樂</button>
     <button class="tab" data-view="cats"><span aria-hidden="true">🐱</span>貓咪</button>
   </nav>
@@ -381,22 +382,22 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/quotes.js?v=37"></script>
-  <script src="js/db.js?v=37"></script>
-  <script src="js/stickers.js?v=37"></script>
-  <script src="js/weather.js?v=37"></script>
-  <script src="js/birthday.js?v=37"></script>
-  <script src="js/kitty.js?v=37"></script>
-  <script src="js/fishing.js?v=37"></script>
-  <script src="js/game.js?v=37"></script>
-  <script src="js/memory.js?v=37"></script>
-  <script src="js/coloring.js?v=37"></script>
-  <script src="js/fortune.js?v=37"></script>
-  <script src="js/relax.js?v=37"></script>
-  <script src="js/worry-talk.js?v=37"></script>
-  <script src="js/worry.js?v=37"></script>
-  <script src="js/gratitude.js?v=37"></script>
-  <script src="js/music.js?v=37"></script>
-  <script src="js/app.js?v=37"></script>
+  <script src="js/quotes.js?v=38"></script>
+  <script src="js/db.js?v=38"></script>
+  <script src="js/stickers.js?v=38"></script>
+  <script src="js/weather.js?v=38"></script>
+  <script src="js/birthday.js?v=38"></script>
+  <script src="js/kitty.js?v=38"></script>
+  <script src="js/fishing.js?v=38"></script>
+  <script src="js/game.js?v=38"></script>
+  <script src="js/memory.js?v=38"></script>
+  <script src="js/coloring.js?v=38"></script>
+  <script src="js/fortune.js?v=38"></script>
+  <script src="js/relax.js?v=38"></script>
+  <script src="js/worry-talk.js?v=38"></script>
+  <script src="js/worry.js?v=38"></script>
+  <script src="js/gratitude.js?v=38"></script>
+  <script src="js/music.js?v=38"></script>
+  <script src="js/app.js?v=38"></script>
 </body>
 </html>
