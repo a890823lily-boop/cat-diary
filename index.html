@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="貓咪日記">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=16">
+  <link rel="stylesheet" href="css/style.css?v=17">
 </head>
 <body>
   <header class="app-header">
@@ -47,6 +47,7 @@
       <div class="seg" role="tablist" aria-label="選擇玩樂項目">
         <button class="seg-btn" role="tab" data-mode="color">🎨 塗色</button>
         <button class="seg-btn" role="tab" data-mode="game">🐟 接魚乾</button>
+        <button class="seg-btn" role="tab" data-mode="fortune">🔮 運勢</button>
       </div>
 
       <div id="play-color" class="play-pane">
@@ -78,6 +79,10 @@
           <div id="game-overlay" class="game-overlay"></div>
         </div>
         <p class="hint game-help">手指在畫面上左右拖曳，讓貓咪去接東西。電腦可以用 ← → 鍵。</p>
+      </div>
+
+      <div id="play-fortune" class="play-pane" hidden>
+        <div id="fortune-box" class="fortune-box" aria-live="polite"></div>
       </div>
     </section>
 
@@ -212,11 +217,12 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/quotes.js?v=16"></script>
-  <script src="js/db.js?v=16"></script>
-  <script src="js/game.js?v=16"></script>
-  <script src="js/coloring.js?v=16"></script>
-  <script src="js/music.js?v=16"></script>
-  <script src="js/app.js?v=16"></script>
+  <script src="js/quotes.js?v=17"></script>
+  <script src="js/db.js?v=17"></script>
+  <script src="js/game.js?v=17"></script>
+  <script src="js/coloring.js?v=17"></script>
+  <script src="js/fortune.js?v=17"></script>
+  <script src="js/music.js?v=17"></script>
+  <script src="js/app.js?v=17"></script>
 </body>
 </html>

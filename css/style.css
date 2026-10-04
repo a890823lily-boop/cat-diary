@@ -400,6 +400,50 @@ button { cursor: pointer; }
 .quote-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .quote-card .quote-color { margin-top: 8px; padding: 4px 14px; font-size: 0.85rem; }
 
+/* ---------- 今日貓咪運勢 ---------- */
+.fortune-start { text-align: center; padding: 16px 0 8px; }
+.tube { width: 130px; margin: 8px auto 0; }
+.tube-svg { width: 100%; height: auto; overflow: visible; }
+.tube-svg .tube-stick { transition: transform 0.6s cubic-bezier(.2, 1.6, .5, 1); }
+.tube.is-shaking { animation: tube-shake 0.18s ease-in-out infinite; transform-origin: 50% 90%; }
+.tube.is-out .tube-stick { transform: translateY(-34px); }
+@keyframes tube-shake { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
+.fortune-ask { font-size: 1.1rem; font-weight: 700; margin: 12px 0; }
+.fortune-btn { padding: 12px 22px; font-size: 1rem; }
+.fortune-card {
+  position: relative;
+  margin: 14px auto 0;
+  max-width: 420px;
+  background: #fffaf2;
+  color: #3a2f28;
+  border: 3px solid #d94f3d;
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.fortune-card.reveal { animation: fortune-in 0.7s cubic-bezier(.2, 1.3, .4, 1); }
+@keyframes fortune-in { from { opacity: 0; transform: translateY(30px) scale(0.85) rotate(-4deg); } to { opacity: 1; transform: none; } }
+.fortune-head { display: flex; justify-content: space-between; align-items: center; background: #d94f3d; color: #fff; padding: 8px 14px; font-weight: 700; }
+.fortune-date { font-size: 0.85rem; font-weight: 500; opacity: 0.9; }
+.fortune-main { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 16px 14px 4px; }
+.fortune-img { width: 96px; height: 96px; object-fit: contain; }
+.fortune-img.is-photo { border-radius: 50%; object-fit: cover; border: 4px solid #f2c14e; }
+.fortune-level { margin: 0; font-size: 3rem; font-weight: 900; letter-spacing: 0.1em; color: #d94f3d; }
+.level-meow .fortune-level { color: #c48a12; text-shadow: 0 0 12px rgba(242, 193, 78, 0.8); }
+.level-meow { border-color: #f2c14e; }
+.level-meow .fortune-head { background: linear-gradient(90deg, #f2c14e, #e9a23b); }
+.level-late .fortune-level, .level-meh .fortune-level { color: #6b7f99; }
+.fortune-msg { margin: 6px 18px 12px; text-align: center; line-height: 1.7; }
+.fortune-rows { display: grid; grid-template-columns: auto 1fr; margin: 0; border-top: 2px dashed #e8d5c0; }
+.fortune-rows dt, .fortune-rows dd { margin: 0; padding: 9px 14px; border-bottom: 1px solid #f0e3d3; }
+.fortune-rows dt { font-weight: 700; color: #d94f3d; white-space: nowrap; }
+.fortune-rows dd { display: flex; align-items: center; gap: 8px; }
+.fortune-swatch { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, 0.15); flex: none; }
+.fortune-foot { text-align: center; margin-top: 12px; }
+@media (prefers-reduced-motion: reduce) {
+  .tube.is-shaking, .fortune-card.reveal { animation: none; }
+}
+
 /* ---------- 小遊戲 ---------- */
 .game-hud {
   display: flex;

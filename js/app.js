@@ -544,7 +544,7 @@
   let playMode = readPref('play', 'color');
 
   function setPlayMode(mode) {
-    playMode = mode === 'game' ? 'game' : 'color';
+    playMode = ['color', 'game', 'fortune'].indexOf(mode) !== -1 ? mode : 'color';
     writePref('play', playMode);
     document.querySelectorAll('.seg-btn').forEach(function (b) {
       const on = b.dataset.mode === playMode;
@@ -553,7 +553,10 @@
     });
     $('#play-color').hidden = playMode !== 'color';
     $('#play-game').hidden = playMode !== 'game';
-    if (playMode === 'game') { CatGame.show(); } else { CatGame.pause(); Coloring.show(); }
+    $('#play-fortune').hidden = playMode !== 'fortune';
+    if (playMode === 'game') { CatGame.show(); return; }
+    CatGame.pause();
+    if (playMode === 'color') Coloring.show(); else Fortune.show();
   }
 
   document.querySelectorAll('.seg-btn').forEach(function (b) {
