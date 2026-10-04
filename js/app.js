@@ -326,35 +326,10 @@
     card.appendChild(body);
   }
 
-  /* 我家貓咪的影片：點了才全螢幕播放 */
-  function videoCard() {
-    return el('button', { class: 'video-card', onclick: openVideo }, [
-      el('img', { class: 'video-poster', src: 'images/video-poster.jpg', alt: '' }),
-      el('span', { class: 'video-info' }, [
-        el('strong', { text: '🎬 我家貓咪的影片' }),
-        el('span', { class: 'hint', text: '我家的貓咪 可愛日記・26 秒' }),
-        el('span', { class: 'video-play', text: '▶ 播放' })
-      ])
-    ]);
-  }
-
-  function openVideo() {
-    const video = $('#cat-video');
-    if (!video.getAttribute('src')) video.src = 'cat-video.mp4';
-    $('#video-dialog').showModal();
-    video.currentTime = 0;
-    video.play().catch(function () { /* 需要使用者再點一次播放 */ });
-  }
-
-  // 影片播放時暫停背景音樂；關閉影片就停止播放
-  $('#cat-video').addEventListener('play', function () { Music.pause(); });
-  $('#video-dialog').addEventListener('close', function () { $('#cat-video').pause(); });
-
   function renderDiary() {
     const list = $('#diary-list');
     list.textContent = '';
     list.appendChild(quoteCard());
-    list.appendChild(videoCard());
     if (!state.cats.length) {
       list.appendChild(emptyState('images/cat-window.jpg', '歡迎使用貓咪日記', '先新增你的貓咪，再開始記錄每天的照片與生活。', '新增第一隻貓咪', function () { openCatDialog(); }));
       return;

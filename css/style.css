@@ -673,34 +673,6 @@ dialog { color: var(--text); }
   font-size: 0.88rem;
 }
 
-/* ---------- 我家貓咪的影片 ---------- */
-.video-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  margin: 12px 0 4px;
-  padding: 10px;
-  border: 0;
-  border-radius: var(--radius);
-  background: var(--surface);
-  box-shadow: var(--shadow);
-  text-align: left;
-}
-.video-poster { width: 76px; height: 135px; object-fit: cover; border-radius: 10px; flex: none; }
-.video-info { display: flex; flex-direction: column; gap: 4px; }
-.video-play {
-  align-self: flex-start;
-  margin-top: 6px;
-  padding: 4px 14px;
-  border-radius: 999px;
-  background: var(--primary);
-  color: var(--primary-ink);
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-.video-viewer video { max-width: 100%; max-height: 100%; background: #000; }
-
 /* ---------- 提示訊息 ---------- */
 .toast {
   position: fixed;
