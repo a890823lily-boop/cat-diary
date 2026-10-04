@@ -331,7 +331,7 @@
     list.textContent = '';
     list.appendChild(quoteCard());
     if (!state.cats.length) {
-      list.appendChild(emptyState('images/cat-window.jpg', '歡迎使用貓咪日記', '先新增你的貓咪，再開始記錄每天的照片與生活。', '新增第一隻貓咪', function () { openCatDialog(); }));
+      list.appendChild(emptyState('images/cat-cuddle.jpg', '歡迎使用貓咪日記', '先新增你的貓咪，再開始記錄每天的照片與生活。', '新增第一隻貓咪', function () { openCatDialog(); }));
       return;
     }
     const entries = sortedEntries();
@@ -398,7 +398,7 @@
       });
     });
     if (!list.length) {
-      grid.appendChild(emptyState('images/cat-window.jpg', '相簿是空的', '在日記裡加入照片，就會出現在這裡。', state.cats.length ? '新增照片日記' : null, function () { openEntryDialog(); }));
+      grid.appendChild(emptyState('images/cat-peek.jpg', '相簿是空的', '在日記裡加入照片，就會出現在這裡。', state.cats.length ? '新增照片日記' : null, function () { openEntryDialog(); }));
       return;
     }
     const photos = list.map(function (x) { return x.photo; });
