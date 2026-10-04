@@ -108,6 +108,7 @@ const Breathe = (function () {
     root.classList.remove('is-running');
     startBtn.textContent = '▶ 開始';
     if (finished) {
+      Stickers.award('sleep');
       label.textContent = '做得很好 🐾';
       count.textContent = '身體有沒有放鬆一點了呢？';
       timeLeftEl.textContent = fmt(0);
@@ -135,7 +136,8 @@ const Breathe = (function () {
 
   return {
     show: init,
-    pause: function () { if (running) stop(false); }
+    pause: function () { if (running) stop(false); },
+    art: CAT
   };
 })();
 
@@ -238,6 +240,7 @@ const Pet = (function () {
     }
     belly = Math.max(0, belly - d * 0.3);
     happy = Math.min(100, happy + d * 0.025);
+    if (happy >= 100) Stickers.award('happy');
     travel += d;
     if (travel > 110) { travel = 0; heartAt(e, happy > 80 ? '💕' : happy > 40 ? '❤️' : '✨'); }
   }
@@ -289,5 +292,5 @@ const Pet = (function () {
     Music.purr(0);
   }
 
-  return { show: init, pause: pause };
+  return { show: init, pause: pause, art: CAT };
 })();

@@ -149,8 +149,47 @@ const Coloring = (function () {
         '<path ' + R + ' d="M141 186 H159 L150 196 Z"/>' +
         '<path ' + INK + ' d="M150 196 V204"/>' +
         whiskers(66, 176, -1) + whiskers(234, 176, 1)
+    },
+    {
+      // 隱藏圖：貓咪圖鑑集滿才會出現
+      id: 'crown',
+      name: '皇冠貓',
+      secret: true,
+      svg:
+        '<rect ' + R + ' x="2" y="2" width="296" height="296" rx="18"/>' +
+        star(40, 44, 16) + star(262, 46, 16) + star(34, 150, 10) + star(268, 156, 10) +
+        '<path ' + R + ' d="M64 232 Q150 272 236 232 L250 298 H50 Z"/>' +
+        '<circle ' + R + ' cx="150" cy="276" r="11"/>' +
+        '<path ' + R + ' d="M70 150 L62 76 L122 108 Z"/>' +
+        '<path ' + R + ' d="M230 150 L238 76 L178 108 Z"/>' +
+        '<path ' + R + ' d="M78 134 L74 94 L108 112 Z"/>' +
+        '<path ' + R + ' d="M222 134 L226 94 L192 112 Z"/>' +
+        '<ellipse ' + R + ' cx="150" cy="168" rx="92" ry="74"/>' +
+        '<circle ' + R + ' cx="96" cy="190" r="12"/>' +
+        '<circle ' + R + ' cx="204" cy="190" r="12"/>' +
+        '<circle ' + R + ' cx="136" cy="204" r="17"/>' +
+        '<circle ' + R + ' cx="164" cy="204" r="17"/>' +
+        '<path ' + R + ' d="M141 186 H159 L150 196 Z"/>' +
+        '<path ' + INK + ' d="M104 166 Q118 152 132 166 M168 166 Q182 152 196 166"/>' +
+        '<path ' + INK + ' d="M150 196 V204"/>' +
+        whiskers(78, 186, -1) + whiskers(222, 186, 1) +
+        '<path ' + R + ' d="M100 100 L110 46 L132 80 L150 36 L168 80 L190 46 L200 100 Z"/>' +
+        '<path ' + R + ' d="M98 98 H202 V116 H98 Z"/>' +
+        '<circle ' + R + ' cx="150" cy="107" r="6"/>' +
+        '<circle ' + R + ' cx="124" cy="107" r="5"/>' +
+        '<circle ' + R + ' cx="176" cy="107" r="5"/>' +
+        '<circle ' + R + ' cx="110" cy="44" r="6"/>' +
+        '<circle ' + R + ' cx="150" cy="34" r="7"/>' +
+        '<circle ' + R + ' cx="190" cy="44" r="6"/>'
     }
   ];
+
+  function unlockedSecret() {
+    try { return localStorage.getItem('cat-diary:stickers-complete') === '1'; } catch (e) { return false; }
+  }
+  function visiblePictures() {
+    return PICTURES.filter(function (p) { return !p.secret || unlockedSecret(); });
+  }
 
   const PALETTE = [
     '#ffffff', '#fbe3d0', '#f6c6a8', '#f4a261', '#e07a3f', '#c8553d', '#8d5a3b', '#4a3b33',
@@ -212,6 +251,7 @@ const Coloring = (function () {
       fills[i] = color;
       region.setAttribute('fill', color);
       save();
+      if (window.Stickers) Stickers.bump('paint', 10, 'painter');
     });
 
     undoBtn.addEventListener('click', function () {
@@ -259,7 +299,7 @@ const Coloring = (function () {
   }
 
   function open(id) {
-    current = PICTURES.find(function (p) { return p.id === id; }) || PICTURES[0];
+    current = visiblePictures().find(function (p) { return p.id === id; }) || PICTURES[0];
     write(KEY + 'last', current.id);
     fills = read(KEY + current.id, []);
     history = [];
@@ -275,7 +315,9 @@ const Coloring = (function () {
 
   function renderPicker() {
     picker.textContent = '';
-    PICTURES.forEach(function (p) {
+    const list = visiblePictures();
+    picker.style.gridTemplateColumns = 'repeat(' + list.length + ', 1fr)';
+    list.forEach(function (p) {
       const b = document.createElement('button');
       b.className = 'pic-thumb' + (p === current ? ' is-active' : '');
       b.setAttribute('aria-pressed', p === current ? 'true' : 'false');
@@ -322,5 +364,10 @@ const Coloring = (function () {
     });
   }
 
-  return { show: init, pictures: PICTURES };
+  return {
+    show: init,
+    pictures: PICTURES,
+    // 圖鑑集滿後重新整理圖案清單，並直接打開皇冠貓
+    refresh: function (openId) { if (board) { if (openId) open(openId); else renderPicker(); } else if (openId) write(KEY + 'last', openId); }
+  };
 })();

@@ -267,6 +267,7 @@
     const index = bag.pop();
     saved.bags[pool] = bag;
     writePref('quote', JSON.stringify({ index: index, pool: pool, bags: saved.bags }));
+    Stickers.award('wizard');
   }
 
   function quoteCard() {
@@ -652,6 +653,7 @@
       }
     });
     Music.onChange(function (st) {
+      if (st.playing) Stickers.award('sax');
       btn.classList.toggle('is-playing', st.playing);
       $('#music-toggle').textContent = st.playing ? '⏸ 暫停' : '▶ 播放';
       $('#music-volume').value = st.volume;
@@ -677,6 +679,7 @@
       ]);
       await loadAll();
       toast('已存到日記 📔');
+      checkDiaryStickers();
     } catch (e) {
       toast('存到日記失敗，請再試一次');
     }
@@ -800,6 +803,7 @@
     await loadAll();
     render();
     toast(old ? '已更新日記' : '已新增日記');
+    checkDiaryStickers();
   });
 
   $('#entry-delete').addEventListener('click', async function () {
@@ -992,6 +996,7 @@
     a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
     toast('已匯出備份');
+    Stickers.award('suit');
   });
 
   $('#import-input').addEventListener('change', async function (ev) {
@@ -1021,6 +1026,7 @@
     await loadAll();
     render();
     toast('匯入完成');
+    checkDiaryStickers();
   });
 
   /* ---------- 其他 ---------- */
@@ -1065,7 +1071,28 @@
   // 請瀏覽器不要自動清掉資料（照片很重要）
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});
 
-  loadAll().then(render).catch(function () {
+  /* ---------- 貓咪圖鑑 ---------- */
+  function checkDiaryStickers() {
+    const entries = state.entries;
+    if (entries.length >= 1) Stickers.award('skate');
+    if (entries.some(function (e) { return e.weight; })) Stickers.award('fish');
+    if (state.photos.size >= 10) Stickers.award('photo');
+    if (entries.length >= 7) Stickers.award('diary');
+  }
+
+  Stickers.init();
+  document.addEventListener('stickers:open', function () {
+    setView('cats');
+    const sec = document.getElementById('sticker-section');
+    if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  document.addEventListener('stickers:go-crown', function () {
+    Coloring.refresh('crown');
+    playMode = 'color';
+    setView('play');
+  });
+
+  loadAll().then(function () { render(); checkDiaryStickers(); }).catch(function () {
     $('#diary-list').appendChild(emptyState('⚠️', '無法開啟資料庫', '可能是無痕模式或瀏覽器不支援，請改用一般模式開啟。'));
   });
 })();

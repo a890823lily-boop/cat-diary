@@ -1,6 +1,6 @@
 /* 貓咪日記 Service Worker：預先快取所有檔案，讓 APP 離線也能開啟 */
 /* 改版時把 VERSION 加一，並同步修改 index.html 裡 css/js 網址後面的 ?v= */
-var VERSION = 20;
+var VERSION = 21;
 var CACHE_NAME = 'cat-diary-v' + VERSION;
 var PRECACHE = [
   './',
@@ -12,6 +12,7 @@ var PRECACHE = [
   'js/coloring.js?v=' + VERSION,
   'js/fortune.js?v=' + VERSION,
   'js/relax.js?v=' + VERSION,
+  'js/stickers.js?v=' + VERSION,
   'js/music.js?v=' + VERSION,
   'js/app.js?v=' + VERSION,
   'manifest.webmanifest',
@@ -27,6 +28,14 @@ var PRECACHE = [
   'images/game-fish.png',
   'images/game-shrimp.png',
   'images/game-cucumber.png',
+  'images/stickers/painter.png',
+  'images/stickers/sleep.png',
+  'images/stickers/happy.png',
+  'images/stickers/fortune.png',
+  'images/stickers/game.png',
+  'images/stickers/photo.png',
+  'images/stickers/diary.png',
+  'images/stickers/master.png',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/apple-touch-icon.png',

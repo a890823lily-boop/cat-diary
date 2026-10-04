@@ -71,6 +71,7 @@ const Fortune = (function () {
       color: rand(COLORS.length)
     };
     write(KEY, result);
+    Stickers.award('fortune');
     // 連續抽籤天數
     const streak = read(KEY + '-streak') || { last: null, count: 0 };
     streak.count = streak.last === yesterday() ? streak.count + 1 : streak.last === today() ? streak.count : 1;
@@ -172,5 +173,5 @@ const Fortune = (function () {
     render(false);
   }
 
-  return { show: show, levels: LEVELS };
+  return { show: show, levels: LEVELS, art: TUBE };
 })();

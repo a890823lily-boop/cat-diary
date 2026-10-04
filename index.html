@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="貓咪日記">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=20">
+  <link rel="stylesheet" href="css/style.css?v=21">
 </head>
 <body>
   <header class="app-header">
@@ -125,6 +125,14 @@
       <h2 class="section-title">我的貓咪</h2>
       <div id="cat-cards" class="cat-cards"></div>
       <button id="add-cat-btn" class="btn btn-outline btn-block">＋ 新增貓咪</button>
+
+      <section id="sticker-section" class="sticker-section">
+        <h2 class="section-title">📖 貓咪圖鑑 <span id="sticker-count" class="sticker-count">0 / 12</span></h2>
+        <div class="sticker-progress"><div id="sticker-bar" class="sticker-bar"></div></div>
+        <p class="hint">寫日記、塗色、玩遊戲、放鬆的時候都會收集到貓咪貼紙，集滿有驚喜喔！</p>
+        <div id="sticker-grid" class="sticker-grid"></div>
+        <button id="sticker-cert" class="btn btn-block" hidden>🏆 查看貓咪圖鑑大師證書</button>
+      </section>
 
       <h2 class="section-title">資料備份</h2>
       <div class="notice">
@@ -249,15 +257,19 @@
     <p class="hint">音樂由 App 即時演奏，沒網路也能聽。iPhone 若沒聲音，請關閉靜音模式或調高音量。</p>
   </div>
 
+  <!-- 貓咪圖鑑：獲得貼紙 -->
+  <dialog id="sticker-dialog" class="sticker-pop"></dialog>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/quotes.js?v=20"></script>
-  <script src="js/db.js?v=20"></script>
-  <script src="js/game.js?v=20"></script>
-  <script src="js/coloring.js?v=20"></script>
-  <script src="js/fortune.js?v=20"></script>
-  <script src="js/relax.js?v=20"></script>
-  <script src="js/music.js?v=20"></script>
-  <script src="js/app.js?v=20"></script>
+  <script src="js/quotes.js?v=21"></script>
+  <script src="js/db.js?v=21"></script>
+  <script src="js/stickers.js?v=21"></script>
+  <script src="js/game.js?v=21"></script>
+  <script src="js/coloring.js?v=21"></script>
+  <script src="js/fortune.js?v=21"></script>
+  <script src="js/relax.js?v=21"></script>
+  <script src="js/music.js?v=21"></script>
+  <script src="js/app.js?v=21"></script>
 </body>
 </html>

@@ -839,6 +839,70 @@ dialog { color: var(--text); }
   font-size: 0.88rem;
 }
 
+/* ---------- 貓咪圖鑑 ---------- */
+.sticker-count { font-size: 0.9rem; color: var(--primary); margin-left: 6px; }
+.sticker-progress { height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; margin: 0 4px 8px; }
+.sticker-bar { height: 100%; width: 0; background: linear-gradient(90deg, #ffd166, #f4a261); border-radius: 999px; transition: width 0.5s; }
+.sticker-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 10px 0 12px; }
+@media (min-width: 560px) { .sticker-grid { grid-template-columns: repeat(4, 1fr); } }
+.sticker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 6px 8px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+.sticker img { width: 72px; height: 72px; object-fit: contain; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.15)); }
+.sticker.is-locked img { filter: brightness(0); opacity: 0.12; }
+.sticker-name { font-weight: 700; font-size: 0.88rem; }
+.sticker-how { font-size: 0.72rem; color: var(--muted); line-height: 1.35; }
+.sticker.is-locked .sticker-name { color: var(--muted); }
+
+.sticker-pop {
+  width: min(340px, calc(100vw - 32px));
+  border: 0;
+  border-radius: 24px;
+  padding: 22px 18px 18px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: center;
+  overflow: hidden;
+}
+.sticker-pop::backdrop { background: rgba(0, 0, 0, 0.5); }
+.sticker-pop[open] { animation: pop-in 0.45s cubic-bezier(.2, 1.4, .4, 1); }
+@keyframes pop-in { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
+.pop-kicker { margin: 0; font-weight: 800; color: var(--primary); font-size: 1.1rem; }
+.pop-img { width: 150px; height: 150px; object-fit: contain; margin: 10px auto 4px; display: block; animation: sticker-bounce 1.6s ease-in-out infinite; }
+@keyframes sticker-bounce { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+.pop-name { font-size: 1.4rem; font-weight: 800; margin: 0; }
+.pop-count { margin: 8px 0 0; font-weight: 700; color: var(--primary); }
+.pop-unlock { font-weight: 700; margin: 12px 0 0; }
+.pop-actions { display: flex; gap: 10px; margin-top: 16px; }
+.pop-actions .btn { flex: 1; }
+.confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.confetti span { position: absolute; top: -12px; width: 8px; height: 12px; border-radius: 2px; animation: confetti-fall linear forwards; }
+@keyframes confetti-fall { to { top: 105%; transform: rotate(540deg); } }
+.certificate {
+  border: 4px double #c48a12;
+  border-radius: 16px;
+  padding: 14px;
+  background: #fffaf0;
+  color: #3a2f28;
+}
+.cert-title { margin: 0; font-size: 1.35rem; font-weight: 900; color: #c48a12; }
+.cert-img { width: 120px; height: 120px; display: block; margin: 8px auto; }
+.cert-text { margin: 4px 0; line-height: 1.7; }
+.cert-date { margin: 6px 0 0; font-size: 0.8rem; color: #8a7b70; }
+.is-master .pop-kicker { color: #c48a12; }
+@media (prefers-reduced-motion: reduce) {
+  .sticker-pop[open], .pop-img, .confetti span { animation: none; }
+  .confetti { display: none; }
+}
+
 /* ---------- 提示訊息 ---------- */
 .toast {
   position: fixed;

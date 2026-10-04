@@ -165,6 +165,7 @@ const CatGame = (function () {
     const best = readBest();
     const record = s.score > best;
     if (record) writeBest(s.score);
+    if (s.score >= 20) Stickers.award('game');
     s.cat.hurt = 0; // 結束畫面不要停在閃爍的半透明
     updateHud();
     draw();
