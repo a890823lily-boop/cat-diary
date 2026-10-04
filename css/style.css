@@ -1221,6 +1221,66 @@ dialog { color: var(--text); }
 .kw-off { font-size: 0.8rem; padding: 2px; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .kitty-window i, .kitty-window b, .kitty-window.sky-storm, .kitty-svg .k-umbrella { animation: none; } }
 
+/* 小貓釣魚 */
+.kitty-fish-btn { margin-top: 10px; }
+.fish-dialog[open] { display: flex; flex-direction: column; }
+.pond-scene {
+  position: relative;
+  height: 220px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #cfeafb 0 40%, #9dd38a 40% 100%);
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pond-water { position: absolute; left: 34%; right: -10%; top: 50%; bottom: -12%; border-radius: 50% 0 0 50% / 60% 0 0 40%; background: radial-gradient(ellipse at 40% 30%, #8fd0f2, #4c9ed1); box-shadow: inset 0 6px 0 rgba(255,255,255,0.35); }
+.ripple { position: absolute; left: 33%; top: 42%; width: 40px; height: 12px; margin: -6px 0 0 -20px; border: 2px solid rgba(255,255,255,0.7); border-radius: 50%; opacity: 0; }
+.pond-scene:not(.is-idle) .ripple { animation: ripple 1.6s ease-out infinite; }
+.ripple.r2 { animation-delay: 0.8s !important; }
+@keyframes ripple { from { transform: scale(0.4); opacity: 0.9; } to { transform: scale(1.8); opacity: 0; } }
+.pond-cat { position: absolute; left: 2%; bottom: 6%; width: 110px; height: 110px; }
+.pond-cat svg, .pond-cat img { width: 100%; height: 100%; object-fit: contain; overflow: visible; }
+.pond-rod { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.pond-rod .rod { stroke: #8d5a3b; stroke-width: 4; stroke-linecap: round; fill: none; }
+.pond-rod .line { stroke: rgba(60,60,60,0.7); stroke-width: 1.2; fill: none; opacity: 0; }
+.pond-scene:not(.is-idle) .pond-rod .line { opacity: 1; }
+.pond-scene.is-idle .pond-rod .rod { transform: rotate(-12deg); transform-origin: 78px 150px; }
+.bobber { position: absolute; left: 71%; top: 64%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: linear-gradient(#e85d4a 50%, #fff 50%); border: 1.5px solid #4a3b33; opacity: 0; }
+.pond-scene:not(.is-idle):not(.is-result) .bobber { opacity: 1; animation: bob 1.4s ease-in-out infinite; }
+.pond-scene.is-bite .bobber { animation: bite 0.18s linear infinite; }
+@keyframes bob { 50% { transform: translateY(3px); } }
+@keyframes bite { 50% { transform: translateY(7px); } }
+.bobber b { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); color: #e85d4a; font-size: 1.8rem; font-weight: 900; text-shadow: 0 0 6px #fff; opacity: 0; }
+.pond-scene.is-bite .bobber b { opacity: 1; }
+.fish-shadow { position: absolute; left: 82%; top: 78%; font-size: 1.4rem; opacity: 0; filter: brightness(0) opacity(0.25); }
+.pond-scene.is-waiting .fish-shadow, .pond-scene.is-bite .fish-shadow { opacity: 1; animation: swim 3s ease-in-out infinite; }
+.pond-scene.is-bite .fish-shadow { left: 74%; top: 70%; animation: none; }
+@keyframes swim { 50% { translate: -28px -6px; } }
+.fish-msg { min-height: 2.8em; margin: 10px 2px 8px; text-align: center; color: var(--muted); font-size: 0.9rem; }
+.fish-btn { display: block; width: 100%; padding: 16px; font-size: 1.1rem; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.fish-btn.is-waiting { background: #3d7bd9; }
+.fish-btn.is-bite { background: #e85d4a; animation: hurry 0.4s ease-in-out infinite; }
+.fish-result { margin-top: 12px; padding: 14px; border-radius: var(--radius); background: var(--surface); box-shadow: var(--shadow); text-align: center; animation: pop-in 0.45s cubic-bezier(.2,1.4,.4,1); }
+.fish-icon { font-size: 3.6rem; margin: 0; line-height: 1.2; }
+.fish-name { margin: 4px 0 0; font-size: 1.2rem; font-weight: 800; }
+.fish-meta { margin: 2px 0 10px; color: var(--muted); font-size: 0.88rem; }
+.fish-actions { display: flex; gap: 8px; }
+.fish-actions .btn { flex: 1; padding: 9px 6px; font-size: 0.9rem; }
+.fish-done { margin: 6px 0 0; font-weight: 700; color: var(--primary); line-height: 1.6; }
+.is-gold .fish-icon, .fish-cell.is-gold:not(.is-locked) .fc-icon { filter: sepia(1) saturate(6) hue-rotate(-12deg) brightness(1.15) drop-shadow(0 0 8px #ffd166); }
+.r-legend .fish-name { color: #c48a12; }
+.r-rare .fish-name { color: #a78bda; }
+.fish-dex-head { margin: 18px 2px 8px; font-weight: 800; font-size: 0.92rem; }
+.fish-dex { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.fish-cell { display: flex; flex-direction: column; align-items: center; padding: 8px 4px; border-radius: 14px; background: var(--surface); border: 1.5px solid var(--line); }
+.fish-cell.r-rare { border-color: #d7c4f2; }
+.fish-cell.r-legend { border-color: #f2c14e; background: linear-gradient(160deg, #fff8e1, var(--surface)); }
+.fc-icon { font-size: 1.8rem; }
+.fc-name { font-size: 0.8rem; font-weight: 700; }
+.fc-info { font-size: 0.7rem; color: var(--muted); }
+.fish-cell.is-locked .fc-icon { filter: brightness(0) opacity(0.15); }
+@media (prefers-reduced-motion: reduce) { .ripple, .bobber, .fish-shadow, .fish-btn.is-bite { animation: none !important; } }
+
 /* 小貓的禮物 */
 .kitty-gift { position: absolute; z-index: 3; transform: translate(-50%, -50%); border: 0; background: none; padding: 0; font-size: 2rem; cursor: pointer; animation: gift-wiggle 1.8s ease-in-out infinite; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)); }
 @keyframes gift-wiggle { 0%, 70%, 100% { rotate: 0deg; } 76% { rotate: -14deg; } 82% { rotate: 12deg; } 88% { rotate: -8deg; } 94% { rotate: 5deg; } }

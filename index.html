@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="貓咪日記">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=36">
+  <link rel="stylesheet" href="css/style.css?v=37">
 </head>
 <body>
   <header class="app-header">
@@ -348,6 +348,31 @@
   <!-- 感恩罐：掉出來的好事 -->
   <dialog id="g-dialog" class="sticker-pop g-dialog"></dialog>
 
+  <!-- 小貓釣魚 -->
+  <dialog id="fish-dialog" class="sheet fish-dialog">
+    <div class="sheet-head">
+      <button type="button" class="link-btn" data-close>關閉</button>
+      <h2>🎣 窗邊的池塘</h2>
+      <span class="talk-spacer"></span>
+    </div>
+    <div class="sheet-body">
+      <div class="pond-scene is-idle">
+        <div class="pond-water"><i class="ripple"></i><i class="ripple r2"></i></div>
+        <div class="pond-cat"></div>
+        <svg class="pond-rod" viewBox="0 0 300 200" preserveAspectRatio="none" aria-hidden="true">
+          <path class="rod" d="M78 150 L132 64"/>
+          <path class="line" d="M132 64 Q190 70 214 128"/>
+        </svg>
+        <span class="bobber"><b>!</b></span>
+        <span class="fish-shadow">🐟</span>
+      </div>
+      <p class="fish-msg" aria-live="polite"></p>
+      <button class="btn fish-btn is-idle" type="button">🎣 按住拋竿</button>
+      <div class="fish-result" hidden></div>
+      <div class="fish-dex-box"></div>
+    </div>
+  </dialog>
+
   <!-- 養成小貓：升級、換造型 -->
   <dialog id="kitty-dialog" class="sticker-pop"></dialog>
 
@@ -356,21 +381,22 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/quotes.js?v=36"></script>
-  <script src="js/db.js?v=36"></script>
-  <script src="js/stickers.js?v=36"></script>
-  <script src="js/weather.js?v=36"></script>
-  <script src="js/birthday.js?v=36"></script>
-  <script src="js/kitty.js?v=36"></script>
-  <script src="js/game.js?v=36"></script>
-  <script src="js/memory.js?v=36"></script>
-  <script src="js/coloring.js?v=36"></script>
-  <script src="js/fortune.js?v=36"></script>
-  <script src="js/relax.js?v=36"></script>
-  <script src="js/worry-talk.js?v=36"></script>
-  <script src="js/worry.js?v=36"></script>
-  <script src="js/gratitude.js?v=36"></script>
-  <script src="js/music.js?v=36"></script>
-  <script src="js/app.js?v=36"></script>
+  <script src="js/quotes.js?v=37"></script>
+  <script src="js/db.js?v=37"></script>
+  <script src="js/stickers.js?v=37"></script>
+  <script src="js/weather.js?v=37"></script>
+  <script src="js/birthday.js?v=37"></script>
+  <script src="js/kitty.js?v=37"></script>
+  <script src="js/fishing.js?v=37"></script>
+  <script src="js/game.js?v=37"></script>
+  <script src="js/memory.js?v=37"></script>
+  <script src="js/coloring.js?v=37"></script>
+  <script src="js/fortune.js?v=37"></script>
+  <script src="js/relax.js?v=37"></script>
+  <script src="js/worry-talk.js?v=37"></script>
+  <script src="js/worry.js?v=37"></script>
+  <script src="js/gratitude.js?v=37"></script>
+  <script src="js/music.js?v=37"></script>
+  <script src="js/app.js?v=37"></script>
 </body>
 </html>

@@ -17,6 +17,7 @@ const Kitty = (function () {
     worryAdd: { exp: 3, daily: 3, label: '放下煩惱' },
     worryPop: { exp: 5, daily: 3, label: '戳破煩惱' },
     gratitude: { exp: 5, daily: 3, label: '存好事' },
+    fishing: { exp: 4, daily: 5, label: '釣魚' },
     feed: { exp: 2, daily: 3, label: '餵食' },
     play: { exp: 2, daily: 5, label: '陪小貓玩' },
     pat: { exp: 1, daily: 5, label: '摸摸小貓' }
@@ -521,6 +522,7 @@ const Kitty = (function () {
       (editing
         ? '<div class="kitty-editbar"><span>🪄 用手指拖曳家具，擺到喜歡的位置</span><button class="btn" data-act="done">完成</button></div>'
         : '<div class="kitty-actions"><button data-act="feed">🐟<span>餵食</span></button><button data-act="pat">✋<span>摸摸</span></button><button data-act="play">🧶<span>玩耍</span></button><button data-act="wear">👗<span>換造型</span></button><button data-act="shop">🛒<span>商店</span></button><button data-act="arrange">🪄<span>布置</span></button></div>') +
+      (editing ? '' : '<button class="btn btn-outline btn-block kitty-fish-btn">🎣 去窗邊池塘釣魚</button>') +
       (data.whispers.length ? '<button class="link-btn kitty-whisper-btn">💌 收藏的悄悄話（' + data.whispers.length + '）</button>' : '') +
       '<details class="kitty-how"><summary>怎麼讓小貓長大？</summary><ul>' +
       Object.keys(GAINS).filter(function (k) { return ['feed', 'play', 'pat'].indexOf(k) === -1; }).map(function (k) {
@@ -533,6 +535,8 @@ const Kitty = (function () {
     root.querySelector('.kitty-bubble').textContent = bubbleText;
     root.querySelector('.kitty-cat').addEventListener('click', pat);
     const wb = root.querySelector('.kitty-weather');
+    const fbtn = root.querySelector('.kitty-fish-btn');
+    if (fbtn) fbtn.addEventListener('click', function () { Fishing.open(); });
     const wbtn = root.querySelector('.kitty-whisper-btn');
     if (wbtn) wbtn.addEventListener('click', showWhispers);
     const gb = root.querySelector('.kitty-gift');
@@ -849,5 +853,23 @@ const Kitty = (function () {
     bubbleTimer = setInterval(function () { if (root.offsetParent) render(); }, 60000);
   }
 
-  return { init: init, gain: gain, render: render, levelInfo: function () { load(); return levelInfo(data.exp); } };
+  /* 給釣魚用：把魚餵小貓、加小魚乾幣、取得小貓圖案 */
+  function treat(full, love, line, icon) {
+    load();
+    const now = Date.now();
+    data.lastFed = Math.min(now, Math.max(data.lastFed, now - 12.5 * 36e5) + full / 8 * 36e5);
+    data.lastPat = Math.min(now, Math.max(data.lastPat, now - 10 * 36e5) + love / 10 * 36e5);
+    save();
+    render(true);
+    if (root && root.querySelector('.kitty-room')) { hearts(icon || '🐟', 4); say(line, 3500); }
+  }
+  function addCoins(n) { load(); data.coins += n; save(); render(true); }
+
+  return {
+    init: init, gain: gain, render: render, treat: treat, addCoins: addCoins,
+    adopted: function () { load(); return data.adopted; },
+    name: function () { load(); return data.name; },
+    art: function () { load(); return catSvg('happy'); },
+    levelInfo: function () { load(); return levelInfo(data.exp); }
+  };
 })();
