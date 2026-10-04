@@ -78,6 +78,36 @@ const Kitty = (function () {
     { id: 'pudding', icon: '🍮', name: '貓咪布丁', price: 30, full: 30, love: 35, line: '軟軟的布丁，好幸福～' },
     { id: 'sashimi', icon: '🍣', name: '鮪魚生魚片', price: 60, full: 90, love: 50, line: '這、這是傳說中的生魚片！！✨' }
   ];
+  /* 稀有家具：只能從小貓的禮物拿到 */
+  const RARE = [
+    { id: 'r-unicorn', icon: '🦄', name: '獨角獸', x: 34, y: 70, rare: true },
+    { id: 'r-planet', icon: '🪐', name: '小行星', x: 62, y: 14, rare: true },
+    { id: 'r-carousel', icon: '🎠', name: '旋轉木馬', x: 12, y: 60, rare: true },
+    { id: 'r-trophy', icon: '🏆', name: '金獎盃', x: 46, y: 46, rare: true },
+    { id: 'r-crystal', icon: '🔮', name: '水晶球', x: 70, y: 66, rare: true },
+    { id: 'r-cake', icon: '🍰', name: '草莓蛋糕', x: 56, y: 86, rare: true },
+    { id: 'r-gem', icon: '💎', name: '大鑽石', x: 28, y: 36, rare: true },
+    { id: 'r-cloud', icon: '☁️', name: '軟綿綿雲朵', x: 40, y: 12, rare: true }
+  ];
+  // 只有小貓會說的悄悄話
+  const WHISPERS = [
+    '其實…我每天都在等你回家喔。',
+    '你睡著的時候，我有偷偷幫你守夜。🌙',
+    '你不用很厲害，我也最喜歡你。',
+    '今天你笑的時候，我尾巴偷偷搖了一下。',
+    '我把最喜歡的毛線球藏在你看不到的地方，送給你。',
+    '你的手是全世界最好摸的地方。',
+    '下雨的時候，我會想你有沒有帶傘。',
+    '如果你累了，就把頭靠過來，我借你呼嚕聲。',
+    '我記得你寫過的每一篇日記喔。',
+    '你今天很棒，比昨天還棒一點點。',
+    '這是我的祕密：我其實很怕寂寞，所以謝謝你在。',
+    '偷偷告訴你，你是我心中的第一名。🥇',
+    '我們一起慢慢長大吧。',
+    '你難過的時候，我也會跟著難過，所以要常常笑喔。',
+    '這個禮物盒裡最珍貴的，其實是我想你的心情。💛'
+  ];
+
   const WALLS = [
     { id: 'default', name: '奶茶木屋', price: 0, sw: 'linear-gradient(#fff3e3 60%, #e9c9a3 60%)' },
     { id: 'pink', name: '草莓牛奶', price: 60, sw: 'linear-gradient(#ffe4ec 60%, #f2b8c6 60%)' },
@@ -110,6 +140,7 @@ const Kitty = (function () {
     if (!data.placed) data.placed = {};
     if (!Array.isArray(data.walls)) data.walls = ['default'];
     if (!data.wall) data.wall = 'default';
+    if (!Array.isArray(data.whispers)) data.whispers = [];
     return data;
   }
   function save() {
@@ -481,7 +512,7 @@ const Kitty = (function () {
         const pos = data.placed[d.id] || d;
         return '<span class="kitty-decor" data-id="' + d.id + '" style="left:' + pos.x + '%;top:' + pos.y + '%">' + d.icon + '</span>';
       }).join('') +
-      windowHtml() +
+      windowHtml() + giftHtml() +
       '<p class="kitty-bubble"></p>' +
       '<div class="kitty-cat" style="--s:' + stage.scale + '">' + catSvg(st) + '</div>' +
       '</div>' +
@@ -490,6 +521,7 @@ const Kitty = (function () {
       (editing
         ? '<div class="kitty-editbar"><span>🪄 用手指拖曳家具，擺到喜歡的位置</span><button class="btn" data-act="done">完成</button></div>'
         : '<div class="kitty-actions"><button data-act="feed">🐟<span>餵食</span></button><button data-act="pat">✋<span>摸摸</span></button><button data-act="play">🧶<span>玩耍</span></button><button data-act="wear">👗<span>換造型</span></button><button data-act="shop">🛒<span>商店</span></button><button data-act="arrange">🪄<span>布置</span></button></div>') +
+      (data.whispers.length ? '<button class="link-btn kitty-whisper-btn">💌 收藏的悄悄話（' + data.whispers.length + '）</button>' : '') +
       '<details class="kitty-how"><summary>怎麼讓小貓長大？</summary><ul>' +
       Object.keys(GAINS).filter(function (k) { return ['feed', 'play', 'pat'].indexOf(k) === -1; }).map(function (k) {
         const g = GAINS[k];
@@ -501,6 +533,10 @@ const Kitty = (function () {
     root.querySelector('.kitty-bubble').textContent = bubbleText;
     root.querySelector('.kitty-cat').addEventListener('click', pat);
     const wb = root.querySelector('.kitty-weather');
+    const wbtn = root.querySelector('.kitty-whisper-btn');
+    if (wbtn) wbtn.addEventListener('click', showWhispers);
+    const gb = root.querySelector('.kitty-gift');
+    if (gb) gb.addEventListener('click', openGift);
     if (wb) wb.addEventListener('click', function (e) {
       const act = e.target.dataset.weather;
       if (act === 'on') Weather.enable();
@@ -520,7 +556,7 @@ const Kitty = (function () {
   /* 房間裡的東西：升級送的擺設＋買來而且擺出來的家具 */
   function roomItems(level) {
     const lv = DECOR.filter(function (d) { return level >= d.level && !(d.id === 'lv-window' && typeof Weather !== 'undefined' && Weather.enabled()); });
-    const bought = FURNITURE.filter(function (f) { return data.owned.indexOf(f.id) !== -1 && !(data.placed[f.id] && data.placed[f.id].off); });
+    const bought = FURNITURE.concat(RARE).filter(function (f) { return data.owned.indexOf(f.id) !== -1 && !(data.placed[f.id] && data.placed[f.id].off); });
     return lv.concat(bought);
   }
 
@@ -606,7 +642,8 @@ const Kitty = (function () {
     }
 
     if (shopTab === 'furniture') {
-      FURNITURE.forEach(function (f) {
+      // 從禮物拿到的稀有家具也列在這裡，可以擺出／收起
+      FURNITURE.concat(RARE.filter(function (r) { return data.owned.indexOf(r.id) !== -1; })).forEach(function (f) {
         const own = data.owned.indexOf(f.id) !== -1;
         const off = own && data.placed[f.id] && data.placed[f.id].off;
         const c = card(f.icon, f.name, f.price, own ? 'owned' : 'buy', function () {
@@ -627,6 +664,7 @@ const Kitty = (function () {
           drawShop('買到了 ' + f.icon + ' ' + f.name + '！按「布置」可以移動位置');
         });
         if (own) c.querySelector('.shop-price').textContent = off ? '擺出來' : '收起來';
+        if (f.rare) c.classList.add('is-rare');
         grid.appendChild(c);
       });
     } else if (shopTab === 'snack') {
@@ -665,6 +703,104 @@ const Kitty = (function () {
     close.textContent = '關閉';
     close.addEventListener('click', function () { dlg.close(); });
     dlg.append(head, tabs, note, grid, close);
+  }
+
+  /* ---------- 小貓的禮物 ---------- */
+  const GIFT_GAP = 6 * 36e5; // 打開一個禮物後，至少 6 小時才會有下一個
+  const GIFT_DAILY = 2;      // 每天最多 2 個
+
+  // 該不該放一個新禮物盒
+  function maybeGift() {
+    if (data.gift || editing || sleeping()) return;
+    if (data.giftDay && data.giftDay.date === today() && data.giftDay.count >= GIFT_DAILY) return;
+    if (data.lastGift && Date.now() - data.lastGift < GIFT_GAP) return;
+    data.gift = { x: 18 + Math.round(Math.random() * 64), y: 74 + Math.round(Math.random() * 12) };
+    save();
+  }
+
+  function giftHtml() {
+    maybeGift();
+    if (!data.gift || editing) return '';
+    return '<button class="kitty-gift" style="left:' + data.gift.x + '%;top:' + data.gift.y + '%" aria-label="小貓留下的禮物">🎁</button>';
+  }
+
+  function openGift() {
+    if (!data.gift) return;
+    // 抽獎：稀有家具 15%、悄悄話 30%、其餘是小魚乾幣
+    const notOwned = RARE.filter(function (r) { return data.owned.indexOf(r.id) === -1; });
+    const r = Math.random();
+    let prize;
+    if (r < 0.15 && notOwned.length) {
+      const item = notOwned[Math.floor(Math.random() * notOwned.length)];
+      data.owned.push(item.id);
+      prize = { kind: 'rare', icon: item.icon, title: '稀有家具：' + item.name + '！', text: '這是只有禮物盒才拿得到的珍藏，已經擺進房間了 ✨' };
+    } else if (r < 0.45) {
+      const fresh = WHISPERS.filter(function (w) { return data.whispers.indexOf(w) === -1; });
+      const w = (fresh.length ? fresh : WHISPERS)[Math.floor(Math.random() * (fresh.length || WHISPERS.length))];
+      if (data.whispers.indexOf(w) === -1) data.whispers.push(w);
+      prize = { kind: 'whisper', icon: '💌', title: data.name + '的悄悄話', text: '「' + w + '」' };
+    } else {
+      const n = 10 + Math.floor(Math.random() * 4) * 10;
+      data.coins += n;
+      prize = { kind: 'coins', icon: '🐟', title: '小魚乾幣 +' + n, text: data.name + '偷偷存下來的小魚乾，全部送給你！' };
+    }
+    const day = data.giftDay && data.giftDay.date === today() ? data.giftDay : { date: today(), count: 0 };
+    day.count++;
+    data.giftDay = day;
+    data.lastGift = Date.now();
+    data.gift = null;
+    save();
+    render(true);
+    showGift(prize);
+  }
+
+  function showGift(prize) {
+    const dlg = document.getElementById('kitty-dialog');
+    dlg.textContent = '';
+    dlg.className = 'sticker-pop kitty-giftpop is-' + prize.kind;
+    const box = document.createElement('div');
+    box.className = 'gift-box';
+    box.innerHTML = '<span class="gift-lid">🎀</span><span class="gift-body">🎁</span>';
+    const reveal = document.createElement('div');
+    reveal.className = 'gift-reveal';
+    const p = function (cls, t) { const n = document.createElement('p'); n.className = cls; n.textContent = t; return n; };
+    reveal.append(p('gift-icon', prize.icon), p('pop-name', prize.title), p('gift-text', prize.text));
+    const row = document.createElement('div');
+    row.className = 'pop-actions';
+    const ok = document.createElement('button');
+    ok.className = 'btn';
+    ok.textContent = prize.kind === 'whisper' ? '我也愛你 💕' : '謝謝你！';
+    ok.addEventListener('click', function () { dlg.close(); });
+    row.appendChild(ok);
+    if (data.whispers.length > 1 && prize.kind === 'whisper') {
+      const all = document.createElement('button');
+      all.className = 'btn btn-outline';
+      all.textContent = '收藏的悄悄話';
+      all.addEventListener('click', showWhispers);
+      row.prepend(all);
+    }
+    dlg.append(p('pop-kicker', '🎁 ' + data.name + '留下了一個禮物'), box, reveal, row);
+    dlg.showModal();
+    // 先晃一晃，再打開
+    setTimeout(function () { dlg.classList.add('is-open'); hearts(prize.icon, 5); }, 900);
+  }
+
+  function showWhispers() {
+    const dlg = document.getElementById('kitty-dialog');
+    dlg.textContent = '';
+    dlg.className = 'sticker-pop kitty-whispers';
+    const title = document.createElement('p');
+    title.className = 'pop-kicker';
+    title.textContent = '💌 ' + data.name + '的悄悄話（' + data.whispers.length + ' / ' + WHISPERS.length + '）';
+    const list = document.createElement('ul');
+    list.className = 'whisper-list';
+    data.whispers.forEach(function (w) { const li = document.createElement('li'); li.textContent = w; list.appendChild(li); });
+    const ok = document.createElement('button');
+    ok.className = 'btn btn-block';
+    ok.textContent = '關閉';
+    ok.addEventListener('click', function () { dlg.close(); });
+    dlg.append(title, list, ok);
+    if (!dlg.open) dlg.showModal();
   }
 
   /* ---------- 窗外天氣 ---------- */
