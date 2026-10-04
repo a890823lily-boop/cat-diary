@@ -560,6 +560,44 @@
     b.addEventListener('click', function () { setPlayMode(b.dataset.mode); });
   });
 
+  /* ---------- 背景音樂 ---------- */
+  (function () {
+    const btn = $('#music-btn');
+    const panel = $('#music-panel');
+    const list = $('#music-tracks');
+    Music.tracks.forEach(function (t) {
+      list.appendChild(el('button', {
+        class: 'music-track',
+        'data-id': t.id,
+        onclick: function () { Music.select(t.id); }
+      }, [el('span', { class: 'music-icon', text: t.icon }), t.name]));
+    });
+    $('#music-toggle').addEventListener('click', function () { Music.toggle(); });
+    $('#music-volume').addEventListener('input', function (e) { Music.setVolume(Number(e.target.value)); });
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      panel.hidden = !panel.hidden;
+      btn.setAttribute('aria-expanded', panel.hidden ? 'false' : 'true');
+    });
+    // 點面板外面就收起來
+    document.addEventListener('click', function (e) {
+      if (!panel.hidden && !panel.contains(e.target)) {
+        panel.hidden = true;
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+    Music.onChange(function (st) {
+      btn.classList.toggle('is-playing', st.playing);
+      $('#music-toggle').textContent = st.playing ? '⏸ 暫停' : '▶ 播放';
+      $('#music-volume').value = st.volume;
+      list.querySelectorAll('.music-track').forEach(function (b) {
+        const on = b.dataset.id === st.track.id;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    });
+  })();
+
   /* 塗色作品存到日記 */
   document.addEventListener('coloring:to-diary', async function (ev) {
     if (!state.cats.length) { toast('請先到「貓咪」分頁新增貓咪'); return; }
