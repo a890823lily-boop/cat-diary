@@ -1168,6 +1168,59 @@ dialog { color: var(--text); }
   .kitty-svg .k-head, .kitty-svg .k-tail, .kitty-cat.is-jump, .kitty-bubble.is-pop { animation: none; }
 }
 
+/* 小貓房間：窗外天氣 */
+.kitty-room.has-window .kitty-bubble { left: 4%; max-width: 58%; transform: none; text-align: left; }
+.kitty-room.has-window .kitty-bubble.is-pop { animation: bubble-pop-left 0.35s ease-out; }
+@keyframes bubble-pop-left { from { transform: scale(0.8); opacity: 0.4; } to { transform: scale(1); opacity: 1; } }
+.kitty-window {
+  position: absolute;
+  right: 5%;
+  top: 7%;
+  width: 92px;
+  height: 74px;
+  border: 5px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 0 2px #c9a37c, inset 0 0 0 1px rgba(0,0,0,0.05);
+  overflow: hidden;
+  z-index: 1;
+  background: #9fd3f5;
+}
+.kitty-window::before, .kitty-window::after { content: ''; position: absolute; background: #fff; z-index: 3; }
+.kitty-window::before { left: 50%; top: 0; bottom: 0; width: 4px; margin-left: -2px; }
+.kitty-window::after { top: 50%; left: 0; right: 0; height: 4px; margin-top: -2px; }
+.kitty-window.sky-clear { background: linear-gradient(#7cc4f2, #c9e9fb); }
+.kitty-window.sky-cloudy { background: linear-gradient(#a9cde6, #dceaf3); }
+.kitty-window.sky-fog { background: linear-gradient(#cfd6db, #eef1f3); }
+.kitty-window.sky-rain { background: linear-gradient(#7d8fa3, #b3c1cf); }
+.kitty-window.sky-storm { background: linear-gradient(#4b5263, #7e8798); animation: flash 5s infinite; }
+.kitty-window.sky-snow { background: linear-gradient(#c3d3e3, #eef4fa); }
+.kitty-window.is-night { background: linear-gradient(#1f2547, #3a4272); }
+.kitty-window.sky-loading { background: #dfe8ee; }
+@keyframes flash { 0%, 90%, 94%, 100% { filter: none; } 92% { filter: brightness(2.2); } }
+.kitty-window i { position: absolute; top: -12px; z-index: 2; }
+.sky-rain i, .sky-storm i { width: 2px; height: 12px; border-radius: 2px; background: rgba(255,255,255,0.85); animation: rain-fall linear infinite; }
+.sky-snow i { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: snow-fall linear infinite; }
+@keyframes rain-fall { to { transform: translate(-10px, 100px); } }
+@keyframes snow-fall { 0% { transform: translate(0, 0); } 50% { transform: translate(6px, 45px); } 100% { transform: translate(-4px, 92px); } }
+.kitty-window b { position: absolute; z-index: 1; }
+.kw-sun { width: 30px; height: 30px; left: 10px; top: 8px; border-radius: 50%; background: #ffd166; box-shadow: 0 0 14px 4px rgba(255, 209, 102, 0.8); animation: sun-glow 3s ease-in-out infinite; }
+.kw-sun.small { width: 22px; height: 22px; }
+@keyframes sun-glow { 50% { box-shadow: 0 0 20px 8px rgba(255, 209, 102, 0.9); } }
+.kw-moon { width: 22px; height: 22px; left: 14px; top: 10px; border-radius: 50%; box-shadow: 6px 4px 0 0 #fff3b0; }
+.kw-star { width: 3px; height: 3px; left: 64px; top: 14px; background: #fff; border-radius: 50%; box-shadow: -14px 20px 0 #fff, 6px 30px 0 #fff; }
+.kw-cloud { width: 40px; height: 14px; left: 30px; top: 16px; border-radius: 10px; background: rgba(255,255,255,0.95); animation: cloud-drift 9s ease-in-out infinite alternate; }
+.kw-cloud::before { content: ''; position: absolute; width: 20px; height: 20px; left: 8px; top: -10px; border-radius: 50%; background: inherit; }
+.kw-cloud.c2 { left: 2px; top: 34px; transform: scale(0.75); animation-duration: 12s; }
+.sky-rain .kw-cloud, .sky-storm .kw-cloud { background: #d7dde4; }
+.sky-fog .kw-cloud { opacity: 0.8; width: 70px; }
+@keyframes cloud-drift { to { translate: 16px 0; } }
+.kw-label { position: absolute; right: 3px; bottom: 2px; z-index: 4; padding: 0 4px; border-radius: 6px; background: rgba(255,255,255,0.85); color: #3a2f28; font-size: 0.7rem; font-weight: 800; }
+.kitty-svg .k-umbrella { transform-box: fill-box; transform-origin: 50% 100%; animation: k-bob 3s ease-in-out infinite; }
+.kitty-weather { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 8px 12px; border-radius: 12px; background: var(--bg); font-size: 0.82rem; color: var(--muted); }
+.kitty-weather > span { flex: 1; min-width: 0; }
+.kw-off { font-size: 0.8rem; padding: 2px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .kitty-window i, .kitty-window b, .kitty-window.sky-storm, .kitty-svg .k-umbrella { animation: none; } }
+
 /* 小貓房間：壁紙、布置、商店 */
 .kitty-room.wall-pink { background: linear-gradient(180deg, #ffe4ec 0 62%, #f2b8c6 62% 100%); }
 .kitty-room.wall-pink::after { background: #e39aae; }

@@ -192,13 +192,25 @@ const Kitty = (function () {
     // 貓咪生日當天戴上派對帽
     const party = partyDay() ? '<g transform="translate(118 6) rotate(18)"><path d="M0 50 L18 0 L36 50 Z" fill="#f7a1b9" ' + B + '/><path d="M6 34 L30 34 M11 20 L25 20" stroke="#ffd166" stroke-width="5"/><circle cx="18" cy="0" r="6" fill="#ffd166" ' + B + '/></g>' : '';
     const onTop = (behindHead ? '' : (party && (data.outfit === 'hat' || data.outfit === 'crown') ? '' : acc)) + party;
+    // 天氣：下雨撐傘、冷天裹毯子、熱天冒汗
+    const w = state === 'sleep' ? null : (typeof Weather !== 'undefined' ? Weather.current() : null);
+    const blanket = w && w.cold
+      ? '<path d="M44 138 Q100 112 156 138 L162 188 Q100 198 38 188 Z" fill="#e76f6f" ' + B + '/>' +
+        '<path d="M60 128 L56 190 M80 120 L78 194 M100 118 L100 196 M120 120 L122 194 M140 128 L144 190 M44 156 Q100 140 158 156 M40 174 Q100 162 160 174" stroke="#fff3e3" stroke-width="3" fill="none" opacity="0.7"/>'
+      : '';
+    const umbrella = w && (w.kind === 'rain' || w.kind === 'storm')
+      ? '<g class="k-umbrella"><path d="M104 18 L158 136" stroke="#4a3b33" stroke-width="4" stroke-linecap="round"/><path d="M158 136 q4 10 -6 12" fill="none" stroke="#4a3b33" stroke-width="4" stroke-linecap="round"/>' +
+        '<path d="M24 34 Q100 -46 178 22 Q160 18 150 30 Q138 16 120 26 Q104 10 86 24 Q66 12 52 30 Q40 22 24 34 Z" fill="#6cb4e4" ' + B + '/>' +
+        '<path d="M100 -16 Q90 6 86 24 M100 -16 Q118 4 120 26 M100 -16 Q64 0 52 30 M100 -16 Q140 -2 150 30" fill="none" stroke="#3d7bd9" stroke-width="2.5"/></g>'
+      : '';
+    const sweat = w && w.hot ? '<path d="M152 62 q-8 12 0 16 q8 -4 0 -16 Z" fill="#b8e0f6" ' + B.replace('3"', '2"') + '/>' : '';
     return '<svg viewBox="0 0 200 200" class="kitty-svg" aria-hidden="true">' +
       '<ellipse cx="100" cy="190" rx="60" ry="8" fill="rgba(0,0,0,0.1)"/>' +
       '<path class="k-tail" d="M140 176 C186 178 192 128 170 112 C160 106 152 116 160 124 C172 134 166 160 136 158 Z" fill="' + f.fur + '" ' + Bk + '/>' +
       '<ellipse cx="100" cy="150" rx="50" ry="42" fill="' + f.fur + '" ' + Bk + '/>' +
       '<ellipse cx="100" cy="158" rx="26" ry="28" fill="#fffaf2" opacity="' + (data.fur === 'white' ? 0.6 : 1) + '"/>' +
       '<ellipse cx="80" cy="186" rx="15" ry="9" fill="#fffaf2" ' + Bk + '/><ellipse cx="120" cy="186" rx="15" ry="9" fill="#fffaf2" ' + Bk + '/>' +
-      behindHead +
+      blanket + behindHead +
       '<g class="k-head">' +
       '<path d="M50 80 L46 22 L92 52 Z M150 80 L154 22 L108 52 Z" fill="' + f.fur + '" ' + Bk + '/>' +
       '<path d="M56 68 L54 36 L80 54 Z M144 68 L146 36 L120 54 Z" fill="' + f.inner + '"/>' +
@@ -208,7 +220,7 @@ const Kitty = (function () {
       '<ellipse cx="66" cy="110" rx="9" ry="6" fill="#f7a1b9" opacity="' + (state === 'happy' ? 0.8 : 0.45) + '"/><ellipse cx="134" cy="110" rx="9" ry="6" fill="#f7a1b9" opacity="' + (state === 'happy' ? 0.8 : 0.45) + '"/>' +
       '<path d="M95 104 H105 L100 110 Z" fill="#e88a8a"/>' + mouth +
       '<path d="M60 104 l-24 -4 M60 112 l-24 4 M140 104 l24 -4 M140 112 l24 4" stroke="' + (data.fur === 'black' ? '#ccc' : '#4a3b33') + '" stroke-width="2" stroke-linecap="round"/>' +
-      onTop + '</g>' +
+      onTop + sweat + '</g>' + umbrella +
       (state === 'sleep' ? '<text class="k-z" x="150" y="40" font-size="22" font-weight="700" fill="#8a7b70" font-family="sans-serif">z z</text>' : '') +
       '</svg>';
   }
@@ -222,8 +234,23 @@ const Kitty = (function () {
 
   function partyDay() { return typeof Birthday !== 'undefined' && Birthday.todayCats().length > 0; }
 
+  function weatherLine() {
+    const w = typeof Weather !== 'undefined' ? Weather.current() : null;
+    if (!w) return null;
+    if (w.kind === 'storm') return '外面打雷了…我有點怕，可以待在你旁邊嗎？⛈️';
+    if (w.kind === 'rain') return ['下雨了！我撐著傘陪你 ☔', '外面在下雨，出門記得帶傘喔！'][Math.floor(Math.random() * 2)];
+    if (w.kind === 'snow') return '下雪了耶！好想去外面踩雪 ⛄';
+    if (w.cold) return '今天只有 ' + w.temp + '°C，好冷…我要裹著毯子 🧣 你也要穿暖一點喔';
+    if (w.hot) return '今天 ' + w.temp + '°C 好熱…記得多喝水 💧';
+    if (w.kind === 'clear' && w.isDay) return '外面出太陽了，好想去窗邊曬太陽 ☀️';
+    if (w.kind === 'fog') return '窗外霧霧的，像在雲裡面一樣～';
+    return null;
+  }
+
   function idleLine() {
     const st = moodState();
+    const wl = st !== 'sleep' && Math.random() < 0.5 ? weatherLine() : null;
+    if (wl && fullness() >= 35 && happiness() >= 30) return wl;
     if (st !== 'sleep' && partyDay()) {
       const names = Birthday.todayCats().map(function (c) { return c.name; }).join('、');
       return ['今天是' + names + '的生日！生日快樂 🎂', '我戴了派對帽！一起幫' + names + '慶生吧 🎉'][Math.floor(Math.random() * 2)];
@@ -449,15 +476,17 @@ const Kitty = (function () {
       '<div class="kitty-head"><p class="kitty-title"></p><span class="kitty-lv"></span></div>' +
       '<div class="kitty-exp"><div class="kitty-exp-fill" style="width:' + Math.round(info.cur / info.need * 100) + '%"></div></div>' +
       '<p class="kitty-exp-text hint">經驗 ' + info.cur + ' / ' + info.need + '・再 ' + (info.need - info.cur) + ' 就升級</p>' +
-      '<div class="kitty-room wall-' + data.wall + (sleeping() ? ' is-night' : '') + (editing ? ' is-editing' : '') + '">' +
+      '<div class="kitty-room wall-' + data.wall + (sleeping() ? ' is-night' : '') + (editing ? ' is-editing' : '') + (typeof Weather !== 'undefined' && Weather.enabled() ? ' has-window' : '') + '">' +
       roomItems(info.level).map(function (d) {
         const pos = data.placed[d.id] || d;
         return '<span class="kitty-decor" data-id="' + d.id + '" style="left:' + pos.x + '%;top:' + pos.y + '%">' + d.icon + '</span>';
       }).join('') +
+      windowHtml() +
       '<p class="kitty-bubble"></p>' +
       '<div class="kitty-cat" style="--s:' + stage.scale + '">' + catSvg(st) + '</div>' +
       '</div>' +
       '<div class="kitty-stats">' + bar('🐟 飽足', fullness(), 'fill-food') + bar('💗 心情', happiness(), 'fill-love') + '</div>' +
+      weatherBar() +
       (editing
         ? '<div class="kitty-editbar"><span>🪄 用手指拖曳家具，擺到喜歡的位置</span><button class="btn" data-act="done">完成</button></div>'
         : '<div class="kitty-actions"><button data-act="feed">🐟<span>餵食</span></button><button data-act="pat">✋<span>摸摸</span></button><button data-act="play">🧶<span>玩耍</span></button><button data-act="wear">👗<span>換造型</span></button><button data-act="shop">🛒<span>商店</span></button><button data-act="arrange">🪄<span>布置</span></button></div>') +
@@ -471,6 +500,13 @@ const Kitty = (function () {
     root.querySelector('.kitty-exp-text').appendChild(document.createTextNode('　🐟 小魚乾幣 ' + data.coins));
     root.querySelector('.kitty-bubble').textContent = bubbleText;
     root.querySelector('.kitty-cat').addEventListener('click', pat);
+    const wb = root.querySelector('.kitty-weather');
+    if (wb) wb.addEventListener('click', function (e) {
+      const act = e.target.dataset.weather;
+      if (act === 'on') Weather.enable();
+      else if (act === 'off') Weather.disable();
+      else if (act === 'refresh') Weather.refresh(true);
+    });
     root.querySelectorAll('.kitty-actions button, .kitty-editbar button').forEach(function (b) {
       b.addEventListener('click', function () {
         ({ feed: feed, pat: pat, play: play, wear: openWardrobe, shop: openShop,
@@ -483,7 +519,7 @@ const Kitty = (function () {
 
   /* 房間裡的東西：升級送的擺設＋買來而且擺出來的家具 */
   function roomItems(level) {
-    const lv = DECOR.filter(function (d) { return level >= d.level; });
+    const lv = DECOR.filter(function (d) { return level >= d.level && !(d.id === 'lv-window' && typeof Weather !== 'undefined' && Weather.enabled()); });
     const bought = FURNITURE.filter(function (f) { return data.owned.indexOf(f.id) !== -1 && !(data.placed[f.id] && data.placed[f.id].off); });
     return lv.concat(bought);
   }
@@ -631,11 +667,47 @@ const Kitty = (function () {
     dlg.append(head, tabs, note, grid, close);
   }
 
+  /* ---------- 窗外天氣 ---------- */
+  function windowHtml() {
+    if (typeof Weather === 'undefined' || !Weather.enabled()) return '';
+    const w = Weather.current();
+    if (!w) return '<div class="kitty-window sky-loading"><span class="kw-label">⏳</span></div>';
+    let fx = '';
+    const n = { rain: 14, storm: 16, snow: 12 }[w.kind] || 0;
+    for (let i = 0; i < n; i++) {
+      fx += '<i style="left:' + Math.round(Math.random() * 96) + '%;animation-delay:' + (Math.random() * 1.5).toFixed(2) + 's;animation-duration:' + (w.kind === 'snow' ? 2.5 + Math.random() * 2 : 0.6 + Math.random() * 0.4).toFixed(2) + 's"></i>';
+    }
+    if (w.kind === 'clear') fx = w.isDay ? '<b class="kw-sun"></b>' : '<b class="kw-moon"></b><b class="kw-star"></b>';
+    if (w.kind === 'cloudy' || w.kind === 'fog' || w.kind === 'rain' || w.kind === 'storm') fx += '<b class="kw-cloud"></b><b class="kw-cloud c2"></b>';
+    if (w.kind === 'cloudy' && w.isDay) fx = '<b class="kw-sun small"></b>' + fx;
+    return '<div class="kitty-window sky-' + w.kind + (w.isDay ? '' : ' is-night') + '">' + fx +
+      '<span class="kw-label">' + w.icon + ' ' + w.temp + '°</span></div>';
+  }
+
+  function weatherBar() {
+    if (typeof Weather === 'undefined') return '';
+    if (!Weather.enabled()) {
+      return '<div class="kitty-weather"><span>🌦️ 讓窗外跟著你那邊的天氣變化</span><button class="btn-small" data-weather="on">開啟</button></div>';
+    }
+    const w = Weather.current();
+    const err = Weather.error();
+    const text = Weather.loading() ? '查詢天氣中…' : w
+      ? w.icon + ' ' + (w.place || '') + '・' + w.text + ' ' + w.temp + '°C' + (err ? '（' + err + '）' : '')
+      : (err || '查詢天氣中…');
+    return '<div class="kitty-weather"><span class="kw-text"></span><button class="btn-small" data-weather="refresh">更新</button><button class="link-btn kw-off" data-weather="off">關閉</button></div>'
+      .replace('<span class="kw-text"></span>', '<span class="kw-text">' + text.replace(/[<>&]/g, '') + '</span>');
+  }
+
   function init() {
     root = document.getElementById('kitty');
     if (!root) return;
     load();
     render();
+    if (typeof Weather !== 'undefined') {
+      document.addEventListener('weather:update', function () { render(true); });
+      Weather.refresh();
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) Weather.refresh(); });
+    }
     // 每分鐘更新飽足與心情，偶爾換一句話
     clearInterval(bubbleTimer);
     bubbleTimer = setInterval(function () { if (root.offsetParent) render(); }, 60000);
