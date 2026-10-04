@@ -422,6 +422,34 @@ button { cursor: pointer; }
 .quote-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .quote-card .quote-color { margin-top: 8px; padding: 4px 14px; font-size: 0.85rem; }
 
+/* ---------- 生日倒數 ---------- */
+.bday-list { display: flex; flex-direction: column; gap: 8px; margin: 12px 0 4px; }
+.bday-strip { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border: 0; border-radius: var(--radius); background: var(--surface); color: var(--text); box-shadow: var(--shadow); text-align: left; }
+.bday-strip.is-empty { margin: 12px 0 4px; font-size: 0.88rem; color: var(--muted); }
+.bday-icon { font-size: 1.5rem; }
+.bday-text { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.bday-days { display: flex; flex-direction: column; align-items: center; min-width: 48px; padding: 4px 6px; border-radius: 12px; background: var(--primary-soft); color: var(--primary); line-height: 1.1; }
+.bday-days strong { font-size: 1.3rem; }
+.bday-days small { font-size: 0.7rem; }
+.bday-strip.is-today { background: linear-gradient(120deg, #ffe4ec, #fff3b0 60%, #e2f6ec); color: #3a2f28; }
+.bday-strip.is-today .hint { color: #8a6f60; }
+.bday-btn { padding: 6px 12px; font-size: 0.85rem; flex: none; }
+.bday-party { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; background: rgba(40, 25, 20, 0.45); overflow: hidden; animation: bday-fade 0.3s ease-out; }
+.bday-party.is-out { opacity: 0; transition: opacity 0.4s; }
+@keyframes bday-fade { from { opacity: 0; } }
+.bday-confetti { position: absolute; top: -14px; width: 9px; height: 14px; border-radius: 2px; animation: confetti-fall linear infinite; }
+.bday-balloon { position: absolute; bottom: -60px; font-size: 2.6rem; animation: balloon-up 4s ease-in infinite; }
+@keyframes balloon-up { to { transform: translateY(-120vh) rotate(-12deg); } }
+.bday-card { position: relative; width: min(320px, calc(100vw - 48px)); padding: 20px 18px 14px; border-radius: 24px; background: #fffaf2; color: #3a2f28; text-align: center; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); animation: pop-in 0.5s cubic-bezier(.2, 1.4, .4, 1); }
+.bday-cake { font-size: 3.4rem; animation: sticker-bounce 1.4s ease-in-out infinite; }
+.bday-title { margin: 4px 0; font-size: 1.4rem; font-weight: 900; color: #e07a3f; }
+.bday-sub { margin: 0 0 6px; line-height: 1.6; }
+.bday-cat { width: 110px; height: auto; }
+.level-bday { border-color: #f7a1b9; }
+.level-bday .fortune-head { background: linear-gradient(90deg, #f7a1b9, #ffd166); }
+.level-bday .fortune-level { color: #e76f96; }
+@media (prefers-reduced-motion: reduce) { .bday-confetti, .bday-balloon { display: none; } .bday-cake, .bday-card { animation: none; } }
+
 /* ---------- 小日曆 ---------- */
 .cal-card { margin: 12px 0 4px; padding: 12px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); }
 .cal-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }

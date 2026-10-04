@@ -152,6 +152,8 @@
     state.entries = results[1];
     state.photos = new Map(results[2].map(function (p) { return [p.id, p]; }));
     if (state.filter !== 'all' && !catById(state.filter)) state.filter = 'all';
+    Birthday.setCats(state.cats);
+    Kitty.render(true);
   }
 
   function catById(id) {
@@ -385,6 +387,33 @@
     return card;
   }
 
+  /* ---------- 生日倒數 ---------- */
+  function birthdayCard() {
+    if (!state.cats.length) return null;
+    const list = Birthday.upcoming().filter(function (b) { return state.filter === 'all' || b.cat.id === state.filter; });
+    if (!list.length) {
+      // 還沒填生日：提示一下
+      return el('button', { class: 'bday-strip is-empty', onclick: function () { setView('cats'); } }, [
+        el('span', { class: 'bday-icon', text: '🎂' }),
+        el('span', { text: '到「貓咪」分頁填上生日，就能倒數貓咪的生日喔！' })
+      ]);
+    }
+    const box = el('section', { class: 'bday-list', 'aria-label': '貓咪生日' });
+    list.forEach(function (b) {
+      const isToday = b.days === 0;
+      box.appendChild(el('div', { class: 'bday-strip' + (isToday ? ' is-today' : '') }, [
+        avatarNode(b.cat, 'sm'),
+        el('span', { class: 'bday-text' }, isToday
+          ? [el('strong', { text: '🎉 今天是' + b.cat.name + '的 ' + b.age + ' 歲生日！' }), el('span', { class: 'hint', text: '生日快樂！今天的運勢籤和小貓都有驚喜喔' })]
+          : [el('strong', { text: '距離' + b.cat.name + '生日還有 ' + b.days + ' 天' }), el('span', { class: 'hint', text: (b.next.getMonth() + 1) + '/' + b.next.getDate() + ' 就要滿 ' + b.age + ' 歲囉 🎂' })]),
+        isToday
+          ? el('button', { class: 'btn bday-btn', text: '🎉 慶祝', onclick: function () { Birthday.celebrate([b.cat.name]); } })
+          : el('span', { class: 'bday-days' }, [el('strong', { text: String(b.days) }), el('small', { text: '天' })])
+      ]));
+    });
+    return box;
+  }
+
   /* ---------- 小日曆 ---------- */
   const cal = { month: null, selected: null, el: null };
 
@@ -534,6 +563,8 @@
     const list = $('#diary-list');
     list.textContent = '';
     list.appendChild(quoteCard());
+    const bday = birthdayCard();
+    if (bday) list.appendChild(bday);
     list.appendChild(calendarCard());
     list.appendChild(catPicCard());
     if (!state.cats.length) {
@@ -1237,7 +1268,7 @@
     setView('play');
   });
 
-  loadAll().then(function () { render(); checkDiaryStickers(); }).catch(function () {
+  loadAll().then(function () { render(); checkDiaryStickers(); Birthday.autoCelebrate(); }).catch(function () {
     $('#diary-list').appendChild(emptyState('⚠️', '無法開啟資料庫', '可能是無痕模式或瀏覽器不支援，請改用一般模式開啟。'));
   });
 })();

@@ -3,6 +3,8 @@ const Fortune = (function () {
   'use strict';
 
   const LEVELS = [
+    { id: 'bday', name: '壽星吉', weight: 0, img: 'images/deco-love.png',
+      msgs: ['全世界最可愛的壽星，今天什麼都會很順利 🎂', '今天的好運加倍再加倍，記得給壽星一個大擁抱！🎉', '生日快樂！今天的小魚乾要多給一份喔 🐟'] },
     { id: 'meow', name: '喵吉', weight: 3, img: 'icons/icon-512.png', photo: true,
       msgs: ['超稀有！今天被貓咪選中了，什麼事都會很順利。', '傳說中的喵吉！今天的你被全世界的貓咪祝福著。'] },
     { id: 'great', name: '大吉', weight: 17, img: 'images/deco-sax.png',
@@ -60,7 +62,9 @@ const Fortune = (function () {
   }
 
   function draw() {
-    const level = pickLevel();
+    // 貓咪生日當天一定抽到「壽星吉」
+    const bdayCats = Birthday.todayCats();
+    const level = bdayCats.length ? LEVELS.find(function (l) { return l.id === 'bday'; }) : pickLevel();
     const result = {
       date: today(),
       level: level.id,
@@ -68,7 +72,8 @@ const Fortune = (function () {
       yi: pickTwo(YI.length),
       ji: rand(JI.length),
       item: rand(ITEMS.length),
-      color: rand(COLORS.length)
+      color: rand(COLORS.length),
+      bday: bdayCats.map(function (c) { return c.name; }).join('、')
     };
     write(KEY, result);
     Stickers.award('fortune');
@@ -146,7 +151,7 @@ const Fortune = (function () {
     img.src = level.img;
     img.alt = '';
     main.append(img, el('p', 'fortune-level', level.name));
-    const msg = el('p', 'fortune-msg', level.msgs[r.msg] || level.msgs[0]);
+    const msg = el('p', 'fortune-msg', (level.id === 'bday' && r.bday ? '今天是' + r.bday + '的生日！' : '') + (level.msgs[r.msg] || level.msgs[0]));
 
     const rows = el('dl', 'fortune-rows');
     function row(label, value, extra) {

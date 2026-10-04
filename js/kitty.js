@@ -189,7 +189,9 @@ const Kitty = (function () {
       crown: '<path d="M68 48 L74 16 L90 34 L100 8 L110 34 L126 16 L132 48 Z" fill="#ffd166" ' + B + '/><circle cx="100" cy="40" r="5" fill="#e76f96"/><circle cx="82" cy="42" r="4" fill="#6cb4e4"/><circle cx="118" cy="42" r="4" fill="#7fc8a9"/>'
     }[data.outfit] || '';
     const behindHead = data.outfit === 'scarf' || data.outfit === 'bowtie' ? acc : '';
-    const onTop = behindHead ? '' : acc;
+    // 貓咪生日當天戴上派對帽
+    const party = partyDay() ? '<g transform="translate(118 6) rotate(18)"><path d="M0 50 L18 0 L36 50 Z" fill="#f7a1b9" ' + B + '/><path d="M6 34 L30 34 M11 20 L25 20" stroke="#ffd166" stroke-width="5"/><circle cx="18" cy="0" r="6" fill="#ffd166" ' + B + '/></g>' : '';
+    const onTop = (behindHead ? '' : (party && (data.outfit === 'hat' || data.outfit === 'crown') ? '' : acc)) + party;
     return '<svg viewBox="0 0 200 200" class="kitty-svg" aria-hidden="true">' +
       '<ellipse cx="100" cy="190" rx="60" ry="8" fill="rgba(0,0,0,0.1)"/>' +
       '<path class="k-tail" d="M140 176 C186 178 192 128 170 112 C160 106 152 116 160 124 C172 134 166 160 136 158 Z" fill="' + f.fur + '" ' + Bk + '/>' +
@@ -218,8 +220,14 @@ const Kitty = (function () {
     return 'normal';
   }
 
+  function partyDay() { return typeof Birthday !== 'undefined' && Birthday.todayCats().length > 0; }
+
   function idleLine() {
     const st = moodState();
+    if (st !== 'sleep' && partyDay()) {
+      const names = Birthday.todayCats().map(function (c) { return c.name; }).join('、');
+      return ['今天是' + names + '的生日！生日快樂 🎂', '我戴了派對帽！一起幫' + names + '慶生吧 🎉'][Math.floor(Math.random() * 2)];
+    }
     if (st === 'sleep') return '呼…呼…（小貓在睡覺）';
     if (fullness() < 35) return '肚子好餓喔…可以給我小魚乾嗎？🐟';
     if (happiness() < 30) return '想要被摸摸…';
