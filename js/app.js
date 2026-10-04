@@ -326,10 +326,57 @@
     card.appendChild(body);
   }
 
+  /* ---------- 今日貓咪：每次打開隨機一張，點一下換一張 ---------- */
+  const HOME_PHOTOS = ['images/cat-cuddle.jpg', 'images/cat-peek.jpg', 'images/cat-window.jpg', 'images/cat-floor.jpg'];
+  const PIC_CAPTIONS = [
+    '今天也要被我可愛到 ♡', '看什麼看，快來摸摸我', '本喵今日營業中 🐾', '你今天辛苦了，給你看我',
+    '肚子餓了，罐罐呢？', '偷偷看你一眼 👀', '世界上最可愛的貓咪', '要抱抱嗎？只給你抱喔'
+  ];
+  let catPick = null;
+
+  // 內建照片＋日記裡的照片都會被抽到
+  function catPicPool() {
+    const pool = HOME_PHOTOS.map(function (src) { return { key: src, url: function () { return src; } }; });
+    state.photos.forEach(function (p) {
+      if (p.blob) pool.push({ key: 'p:' + p.id, url: function () { return blobUrl('full:' + p.id, p.blob); } });
+    });
+    return pool;
+  }
+
+  function pickCatPic(avoid) {
+    const pool = catPicPool();
+    const choices = pool.length > 1 ? pool.filter(function (x) { return x.key !== avoid; }) : pool;
+    const item = choices[Math.floor(Math.random() * choices.length)];
+    catPick = { key: item.key, caption: PIC_CAPTIONS[Math.floor(Math.random() * PIC_CAPTIONS.length)] };
+    writePref('catpic', item.key);
+  }
+
+  function catPicCard() {
+    // 這次打開 App 第一次顯示時抽一張（和上次打開不同）；照片被刪掉也重抽
+    if (!catPick || !catPicPool().some(function (x) { return x.key === catPick.key; })) {
+      pickCatPic(readPref('catpic', ''));
+    }
+    const card = el('section', { class: 'catpic-card', 'aria-label': '今日貓咪' });
+    function fill(animate) {
+      const item = catPicPool().find(function (x) { return x.key === catPick.key; });
+      card.textContent = '';
+      const img = el('img', { class: 'catpic-img' + (animate ? ' pop' : ''), src: item.url(), alt: '我家的貓咪' });
+      card.appendChild(el('button', { class: 'catpic-photo', 'aria-label': '換一張貓咪照片', onclick: next }, [img]));
+      card.appendChild(el('div', { class: 'catpic-row' }, [
+        el('p', { class: 'catpic-caption', text: catPick.caption }),
+        el('button', { class: 'btn btn-outline catpic-btn', text: '🔀 換一張', onclick: next })
+      ]));
+    }
+    function next() { pickCatPic(catPick.key); fill(true); }
+    fill(false);
+    return card;
+  }
+
   function renderDiary() {
     const list = $('#diary-list');
     list.textContent = '';
     list.appendChild(quoteCard());
+    list.appendChild(catPicCard());
     if (!state.cats.length) {
       list.appendChild(emptyState('images/cat-cuddle.jpg', '歡迎使用貓咪日記', '先新增你的貓咪，再開始記錄每天的照片與生活。', '新增第一隻貓咪', function () { openCatDialog(); }));
       return;
