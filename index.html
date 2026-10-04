@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="貓咪日記">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=26">
+  <link rel="stylesheet" href="css/style.css?v=27">
 </head>
 <body>
   <header class="app-header">
@@ -45,7 +45,7 @@
         <button class="seg-btn" role="tab" data-mode="breathe"><span aria-hidden="true">🫁</span>呼吸</button>
         <button class="seg-btn" role="tab" data-mode="pet"><span aria-hidden="true">🐈</span>擼貓</button>
         <button class="seg-btn" role="tab" data-mode="fortune"><span aria-hidden="true">🔮</span>運勢</button>
-        <button class="seg-btn" role="tab" data-mode="game"><span aria-hidden="true">🐟</span>接魚乾</button>
+        <button class="seg-btn" role="tab" data-mode="game"><span aria-hidden="true">🎮</span>遊戲</button>
       </div>
 
       <div id="play-worry" class="play-pane" hidden>
@@ -85,17 +85,43 @@
       </div>
 
       <div id="play-game" class="play-pane" hidden>
-        <div class="game-hud">
-          <span>分數 <strong id="game-score">0</strong></span>
-          <span class="game-timer">⏱ <strong id="game-time">60</strong></span>
-          <span id="game-lives" aria-label="剩下的命">❤️❤️❤️</span>
-          <span>最高 <strong id="game-best">0</strong></span>
+        <div class="game-switch" role="tablist" aria-label="選擇遊戲">
+          <button class="game-pick" data-game="catch">🐟 接魚乾</button>
+          <button class="game-pick" data-game="memory">🃏 翻翻樂</button>
         </div>
-        <div class="game-stage">
-          <canvas id="game-canvas" aria-label="貓咪接魚乾遊戲畫面"></canvas>
-          <div id="game-overlay" class="game-overlay"></div>
+        <div id="game-catch">
+          <div class="game-hud">
+            <span>分數 <strong id="game-score">0</strong></span>
+            <span class="game-timer">⏱ <strong id="game-time">60</strong></span>
+            <span id="game-lives" aria-label="剩下的命">❤️❤️❤️</span>
+            <span>最高 <strong id="game-best">0</strong></span>
+          </div>
+          <div class="game-stage">
+            <canvas id="game-canvas" aria-label="貓咪接魚乾遊戲畫面"></canvas>
+            <div id="game-overlay" class="game-overlay"></div>
+          </div>
+          <p class="hint game-help">手指在畫面上左右拖曳，讓貓咪去接東西。電腦可以用 ← → 鍵。</p>
         </div>
-        <p class="hint game-help">手指在畫面上左右拖曳，讓貓咪去接東西。電腦可以用 ← → 鍵。</p>
+        <div id="game-memory" hidden>
+          <div id="memory" class="memory">
+            <div class="mem-levels" role="group" aria-label="難度">
+              <button class="mem-level" data-level="easy">簡單 12 張</button>
+              <button class="mem-level" data-level="normal">普通 16 張</button>
+              <button class="mem-level" data-level="hard">困難 20 張</button>
+            </div>
+            <div class="game-hud">
+              <span>步數 <strong id="mem-moves">0</strong></span>
+              <span>⏱ <strong id="mem-time">0:00</strong></span>
+              <span>最佳 <strong id="mem-best">—</strong></span>
+            </div>
+            <div class="mem-wrap">
+              <div id="mem-board" class="mem-board"></div>
+              <div id="mem-overlay" class="game-overlay mem-overlay" hidden></div>
+            </div>
+            <div class="mem-actions"><button id="mem-restart" class="btn btn-outline">🔀 重新洗牌</button></div>
+            <p class="hint game-help">一次翻兩張，找出一樣的貓咪。卡片會優先用你日記裡的照片喔！</p>
+          </div>
+        </div>
       </div>
 
       <div id="play-fortune" class="play-pane" hidden>
@@ -305,16 +331,17 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/quotes.js?v=26"></script>
-  <script src="js/db.js?v=26"></script>
-  <script src="js/stickers.js?v=26"></script>
-  <script src="js/game.js?v=26"></script>
-  <script src="js/coloring.js?v=26"></script>
-  <script src="js/fortune.js?v=26"></script>
-  <script src="js/relax.js?v=26"></script>
-  <script src="js/worry-talk.js?v=26"></script>
-  <script src="js/worry.js?v=26"></script>
-  <script src="js/music.js?v=26"></script>
-  <script src="js/app.js?v=26"></script>
+  <script src="js/quotes.js?v=27"></script>
+  <script src="js/db.js?v=27"></script>
+  <script src="js/stickers.js?v=27"></script>
+  <script src="js/game.js?v=27"></script>
+  <script src="js/memory.js?v=27"></script>
+  <script src="js/coloring.js?v=27"></script>
+  <script src="js/fortune.js?v=27"></script>
+  <script src="js/relax.js?v=27"></script>
+  <script src="js/worry-talk.js?v=27"></script>
+  <script src="js/worry.js?v=27"></script>
+  <script src="js/music.js?v=27"></script>
+  <script src="js/app.js?v=27"></script>
 </body>
 </html>

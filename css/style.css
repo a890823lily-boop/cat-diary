@@ -694,6 +694,43 @@ button { cursor: pointer; }
   .tube.is-shaking, .fortune-card.reveal { animation: none; }
 }
 
+/* ---------- 遊戲切換、翻翻樂 ---------- */
+.game-switch { display: flex; gap: 8px; margin: 12px 0 4px; }
+.game-pick { flex: 1; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); border-radius: 999px; padding: 7px 10px; font-weight: 700; }
+.game-pick.is-active { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
+.mem-levels { display: flex; gap: 6px; justify-content: center; margin: 10px 0 2px; }
+.mem-level { border: 1.5px solid var(--line); background: var(--surface); color: var(--text); border-radius: 999px; padding: 4px 10px; font-size: 0.85rem; }
+.mem-level.is-active { border-color: var(--primary); background: var(--primary); color: var(--primary-ink); font-weight: 700; }
+.mem-wrap { position: relative; }
+.mem-board { display: grid; gap: 7px; max-width: 420px; margin: 0 auto; }
+.mem-card { aspect-ratio: 1; border: 0; padding: 0; background: none; perspective: 600px; }
+.mem-inner { position: relative; display: block; width: 100%; height: 100%; transition: transform 0.4s; transform-style: preserve-3d; }
+.mem-card.is-open .mem-inner { transform: rotateY(180deg); }
+.mem-back, .mem-front {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: var(--shadow);
+}
+.mem-back {
+  background: var(--primary) radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25) 0 18%, transparent 19%) 0 0 / 28px 28px;
+  color: #fff;
+  font-size: 1.3rem;
+}
+.mem-front { background: #fff; transform: rotateY(180deg); overflow: hidden; }
+.mem-front img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.mem-front img[src*="deco-"], .mem-front img[src*="stickers/"] { object-fit: contain; padding: 8%; }
+.mem-card.is-matched .mem-front { box-shadow: 0 0 0 3px #f7a1b9, 0 0 14px rgba(247, 161, 185, 0.8); }
+.mem-card.is-matched .mem-front::after { content: '💕'; position: absolute; right: 4px; top: 2px; font-size: 1rem; }
+.mem-overlay { border-radius: var(--radius); overflow: hidden; }
+.mem-actions { text-align: center; margin-top: 12px; }
+@media (prefers-reduced-motion: reduce) { .mem-inner { transition: none; } }
+
 /* ---------- 小遊戲 ---------- */
 .game-hud {
   display: flex;

@@ -656,7 +656,7 @@
     });
     window.scrollTo(0, 0);
     render();
-    if (view === 'play') setPlayMode(playMode); else { CatGame.pause(); Breathe.pause(); Pet.pause(); Worry.pause(); }
+    if (view === 'play') setPlayMode(playMode); else { CatGame.pause(); Memory.pause(); Breathe.pause(); Pet.pause(); Worry.pause(); }
   }
 
   /* ---------- 玩樂：塗色／小遊戲 ---------- */
@@ -677,16 +677,37 @@
     $('#play-pet').hidden = playMode !== 'pet';
     $('#play-worry').hidden = playMode !== 'worry';
     if (playMode !== 'worry') Worry.pause();
-    if (playMode !== 'game') CatGame.pause();
+    if (playMode !== 'game') { CatGame.pause(); Memory.pause(); }
     if (playMode !== 'breathe') Breathe.pause();
     if (playMode !== 'pet') Pet.pause();
-    if (playMode === 'game') CatGame.show();
+    if (playMode === 'game') setGame(gameSub);
     else if (playMode === 'color') Coloring.show();
     else if (playMode === 'breathe') Breathe.show();
     else if (playMode === 'pet') Pet.show();
     else if (playMode === 'worry') Worry.show();
     else Fortune.show();
   }
+
+  /* 遊戲：接魚乾／翻翻樂 */
+  let gameSub = readPref('game', 'catch');
+  function setGame(sub) {
+    gameSub = sub === 'memory' ? 'memory' : 'catch';
+    writePref('game', gameSub);
+    document.querySelectorAll('.game-pick').forEach(function (b) { b.classList.toggle('is-active', b.dataset.game === gameSub); });
+    $('#game-catch').hidden = gameSub !== 'catch';
+    $('#game-memory').hidden = gameSub !== 'memory';
+    if (gameSub === 'catch') { Memory.pause(); CatGame.show(); }
+    else {
+      CatGame.pause();
+      // 翻翻樂優先用日記裡的照片
+      Memory.show(function () {
+        return Array.from(state.photos.values()).map(function (p) { return blobUrl('thumb:' + p.id, p.thumb); });
+      });
+    }
+  }
+  document.querySelectorAll('.game-pick').forEach(function (b) {
+    b.addEventListener('click', function () { setGame(b.dataset.game); });
+  });
 
   // 其他地方要切換到某個玩樂項目（例如聊天室結束後去呼吸）
   document.addEventListener('play:go', function (e) { playMode = e.detail; setView('play'); });
