@@ -42,13 +42,49 @@ const Kitty = (function () {
   ];
 
   const DECOR = [
-    { icon: '🧶', level: 1, x: 12, y: 78 },
-    { icon: '🥣', level: 1, x: 80, y: 80 },
-    { icon: '🪴', level: 3, x: 88, y: 40 },
-    { icon: '📦', level: 4, x: 8, y: 52 },
-    { icon: '🖼️', level: 6, x: 10, y: 26 },
-    { icon: '🪟', level: 8, x: 90, y: 24 },
-    { icon: '🏰', level: 10, x: 86, y: 62 }
+    { id: 'lv-yarn', icon: '🧶', level: 1, x: 12, y: 78 },
+    { id: 'lv-bowl', icon: '🥣', level: 1, x: 80, y: 80 },
+    { id: 'lv-plant', icon: '🪴', level: 3, x: 88, y: 40 },
+    { id: 'lv-box', icon: '📦', level: 4, x: 8, y: 52 },
+    { id: 'lv-frame', icon: '🖼️', level: 6, x: 10, y: 26 },
+    { id: 'lv-window', icon: '🪟', level: 8, x: 90, y: 24 },
+    { id: 'lv-castle', icon: '🏰', level: 10, x: 86, y: 62 }
+  ];
+
+  /* ---------- 商店：用小魚乾幣買 ---------- */
+  const FURNITURE = [
+    { id: 'ball', icon: '🎾', name: '小球', price: 15, x: 30, y: 86 },
+    { id: 'yoyo', icon: '🪀', name: '溜溜球', price: 15, x: 70, y: 88 },
+    { id: 'cactus', icon: '🌵', name: '仙人掌', price: 25, x: 20, y: 46 },
+    { id: 'chair', icon: '🪑', name: '小椅子', price: 30, x: 24, y: 66 },
+    { id: 'basket', icon: '🧺', name: '貓窩籃', price: 30, x: 64, y: 74 },
+    { id: 'lamp', icon: '💡', name: '吊燈', price: 35, x: 16, y: 10 },
+    { id: 'clock', icon: '🕰️', name: '時鐘', price: 40, x: 30, y: 18 },
+    { id: 'bear', icon: '🧸', name: '熊熊', price: 40, x: 76, y: 60 },
+    { id: 'lantern', icon: '🏮', name: '燈籠', price: 45, x: 70, y: 12 },
+    { id: 'books', icon: '📚', name: '書堆', price: 50, x: 14, y: 64 },
+    { id: 'cake', icon: '🎂', name: '蛋糕', price: 50, x: 40, y: 84 },
+    { id: 'sofa', icon: '🛋️', name: '沙發', price: 60, x: 22, y: 76 },
+    { id: 'rainbow', icon: '🌈', name: '彩虹掛飾', price: 70, x: 50, y: 30 },
+    { id: 'bed', icon: '🛏️', name: '小床', price: 80, x: 78, y: 76 },
+    { id: 'tree', icon: '🎄', name: '聖誕樹', price: 100, x: 92, y: 50 },
+    { id: 'fishtank', icon: '🐠', name: '熱帶魚', price: 120, x: 74, y: 44 }
+  ];
+  // 零食：買了馬上餵；full／love 是增加的飽足、心情
+  const SNACKS = [
+    { id: 'dried', icon: '🐟', name: '小魚乾', price: 10, full: 25, love: 5, line: '喀滋喀滋～小魚乾好香！' },
+    { id: 'grass', icon: '🌿', name: '貓草', price: 20, full: 0, love: 60, line: '喵嗚～好開心～（在地上打滾）' },
+    { id: 'can', icon: '🥫', name: '罐罐', price: 25, full: 55, love: 20, line: '是罐罐！最喜歡你了！😻' },
+    { id: 'pudding', icon: '🍮', name: '貓咪布丁', price: 30, full: 30, love: 35, line: '軟軟的布丁，好幸福～' },
+    { id: 'sashimi', icon: '🍣', name: '鮪魚生魚片', price: 60, full: 90, love: 50, line: '這、這是傳說中的生魚片！！✨' }
+  ];
+  const WALLS = [
+    { id: 'default', name: '奶茶木屋', price: 0, sw: 'linear-gradient(#fff3e3 60%, #e9c9a3 60%)' },
+    { id: 'pink', name: '草莓牛奶', price: 60, sw: 'linear-gradient(#ffe4ec 60%, #f2b8c6 60%)' },
+    { id: 'mint', name: '薄荷森林', price: 60, sw: 'linear-gradient(#e2f6ec 60%, #a9d8bd 60%)' },
+    { id: 'sky', name: '藍天白雲', price: 60, sw: 'linear-gradient(#ddf0fb 60%, #b9d3e6 60%)' },
+    { id: 'lavender', name: '薰衣草', price: 80, sw: 'linear-gradient(#eee6fb 60%, #c9b6e8 60%)' },
+    { id: 'starry', name: '星空夜晚', price: 120, sw: 'linear-gradient(#2f3363 60%, #565b8f 60%)' }
   ];
 
   const STAGES = [
@@ -68,6 +104,12 @@ const Kitty = (function () {
     if (data) return data;
     try { data = JSON.parse(localStorage.getItem(KEY)); } catch (e) { data = null; }
     data = Object.assign({ adopted: false, name: '', fur: 'tabby', outfit: 'none', exp: 0, lastFed: Date.now(), lastPat: Date.now(), daily: { date: '', counts: {} } }, data || {});
+    // 商店上線前累積的經驗，換一半當開店禮
+    if (typeof data.coins !== 'number') data.coins = Math.floor((data.exp || 0) / 2);
+    if (!Array.isArray(data.owned)) data.owned = [];
+    if (!data.placed) data.placed = {};
+    if (!Array.isArray(data.walls)) data.walls = ['default'];
+    if (!data.wall) data.wall = 'default';
     return data;
   }
   function save() {
@@ -109,6 +151,7 @@ const Kitty = (function () {
     if (!got) return;
     const before = levelInfo(data.exp).level;
     data.exp += got;
+    data.coins += got;
     save();
     const after = levelInfo(data.exp).level;
     if (data.adopted) {
@@ -398,15 +441,18 @@ const Kitty = (function () {
       '<div class="kitty-head"><p class="kitty-title"></p><span class="kitty-lv"></span></div>' +
       '<div class="kitty-exp"><div class="kitty-exp-fill" style="width:' + Math.round(info.cur / info.need * 100) + '%"></div></div>' +
       '<p class="kitty-exp-text hint">經驗 ' + info.cur + ' / ' + info.need + '・再 ' + (info.need - info.cur) + ' 就升級</p>' +
-      '<div class="kitty-room' + (sleeping() ? ' is-night' : '') + '">' +
-      DECOR.filter(function (d) { return info.level >= d.level; }).map(function (d) {
-        return '<span class="kitty-decor" style="left:' + d.x + '%;top:' + d.y + '%">' + d.icon + '</span>';
+      '<div class="kitty-room wall-' + data.wall + (sleeping() ? ' is-night' : '') + (editing ? ' is-editing' : '') + '">' +
+      roomItems(info.level).map(function (d) {
+        const pos = data.placed[d.id] || d;
+        return '<span class="kitty-decor" data-id="' + d.id + '" style="left:' + pos.x + '%;top:' + pos.y + '%">' + d.icon + '</span>';
       }).join('') +
       '<p class="kitty-bubble"></p>' +
       '<div class="kitty-cat" style="--s:' + stage.scale + '">' + catSvg(st) + '</div>' +
       '</div>' +
       '<div class="kitty-stats">' + bar('🐟 飽足', fullness(), 'fill-food') + bar('💗 心情', happiness(), 'fill-love') + '</div>' +
-      '<div class="kitty-actions"><button data-act="feed">🐟<span>餵食</span></button><button data-act="pat">✋<span>摸摸</span></button><button data-act="play">🧶<span>玩耍</span></button><button data-act="wear">👗<span>換造型</span></button></div>' +
+      (editing
+        ? '<div class="kitty-editbar"><span>🪄 用手指拖曳家具，擺到喜歡的位置</span><button class="btn" data-act="done">完成</button></div>'
+        : '<div class="kitty-actions"><button data-act="feed">🐟<span>餵食</span></button><button data-act="pat">✋<span>摸摸</span></button><button data-act="play">🧶<span>玩耍</span></button><button data-act="wear">👗<span>換造型</span></button><button data-act="shop">🛒<span>商店</span></button><button data-act="arrange">🪄<span>布置</span></button></div>') +
       '<details class="kitty-how"><summary>怎麼讓小貓長大？</summary><ul>' +
       Object.keys(GAINS).filter(function (k) { return ['feed', 'play', 'pat'].indexOf(k) === -1; }).map(function (k) {
         const g = GAINS[k];
@@ -414,13 +460,167 @@ const Kitty = (function () {
       }).join('') + '</ul></details>';
     root.querySelector('.kitty-title').textContent = '🏠 ' + data.name + ' 的房間';
     root.querySelector('.kitty-lv').textContent = 'Lv ' + info.level + '・' + stage.label;
+    root.querySelector('.kitty-exp-text').appendChild(document.createTextNode('　🐟 小魚乾幣 ' + data.coins));
     root.querySelector('.kitty-bubble').textContent = bubbleText;
     root.querySelector('.kitty-cat').addEventListener('click', pat);
-    root.querySelectorAll('.kitty-actions button').forEach(function (b) {
+    root.querySelectorAll('.kitty-actions button, .kitty-editbar button').forEach(function (b) {
       b.addEventListener('click', function () {
-        ({ feed: feed, pat: pat, play: play, wear: openWardrobe })[b.dataset.act]();
+        ({ feed: feed, pat: pat, play: play, wear: openWardrobe, shop: openShop,
+          arrange: function () { editing = true; render(true); },
+          done: function () { editing = false; save(); render(true); say('房間變得好漂亮！謝謝你 😻', 3000); } })[b.dataset.act]();
       });
     });
+    if (editing) enableDrag();
+  }
+
+  /* 房間裡的東西：升級送的擺設＋買來而且擺出來的家具 */
+  function roomItems(level) {
+    const lv = DECOR.filter(function (d) { return level >= d.level; });
+    const bought = FURNITURE.filter(function (f) { return data.owned.indexOf(f.id) !== -1 && !(data.placed[f.id] && data.placed[f.id].off); });
+    return lv.concat(bought);
+  }
+
+  /* ---------- 布置：拖曳家具 ---------- */
+  let editing = false;
+  function enableDrag() {
+    const room = root.querySelector('.kitty-room');
+    room.querySelectorAll('.kitty-decor').forEach(function (node) {
+      node.addEventListener('pointerdown', function (e) {
+        e.preventDefault();
+        node.setPointerCapture && node.setPointerCapture(e.pointerId);
+        node.classList.add('is-dragging');
+        const move = function (ev) {
+          const r = room.getBoundingClientRect();
+          const x = Math.max(4, Math.min(96, (ev.clientX - r.left) / r.width * 100));
+          const y = Math.max(6, Math.min(94, (ev.clientY - r.top) / r.height * 100));
+          node.style.left = x + '%';
+          node.style.top = y + '%';
+          const prev = data.placed[node.dataset.id] || {};
+          data.placed[node.dataset.id] = { x: Math.round(x), y: Math.round(y), off: prev.off };
+        };
+        const up = function () {
+          node.classList.remove('is-dragging');
+          node.removeEventListener('pointermove', move);
+          node.removeEventListener('pointerup', up);
+          node.removeEventListener('pointercancel', up);
+          save();
+        };
+        node.addEventListener('pointermove', move);
+        node.addEventListener('pointerup', up);
+        node.addEventListener('pointercancel', up);
+      });
+    });
+  }
+
+  /* ---------- 商店 ---------- */
+  let shopTab = 'furniture';
+  function openShop() {
+    const dlg = document.getElementById('kitty-dialog');
+    dlg.className = 'sticker-pop kitty-shop';
+    drawShop();
+    if (!dlg.open) dlg.showModal();
+  }
+
+  function drawShop(msg) {
+    const dlg = document.getElementById('kitty-dialog');
+    dlg.textContent = '';
+    const head = document.createElement('div');
+    head.className = 'shop-head';
+    head.innerHTML = '<p class="pop-kicker">🛒 小貓商店</p><span class="shop-coins"></span>';
+    head.querySelector('.shop-coins').textContent = '🐟 ' + data.coins;
+    const tabs = document.createElement('div');
+    tabs.className = 'shop-tabs';
+    [['furniture', '🛋️ 家具'], ['snack', '🍮 零食'], ['wall', '🎨 壁紙']].forEach(function (t) {
+      const b = document.createElement('button');
+      b.className = 'shop-tab' + (shopTab === t[0] ? ' is-active' : '');
+      b.textContent = t[1];
+      b.addEventListener('click', function () { shopTab = t[0]; drawShop(); });
+      tabs.appendChild(b);
+    });
+    const grid = document.createElement('div');
+    grid.className = 'shop-grid' + (shopTab === 'wall' ? ' is-walls' : '');
+    const note = document.createElement('p');
+    note.className = 'shop-msg';
+    note.textContent = msg || { furniture: '買來的家具可以按「布置」拖到喜歡的位置', snack: '零食買了會馬上餵給小貓吃', wall: '換一個房間的顏色吧' }[shopTab];
+
+    function card(icon, name, price, state, onClick, swatch) {
+      const b = document.createElement('button');
+      b.className = 'shop-item' + (state === 'owned' || state === 'using' ? ' is-owned' : '') + (state === 'using' ? ' is-active' : '');
+      const top = document.createElement('span');
+      top.className = swatch ? 'shop-swatch' : 'shop-icon';
+      if (swatch) top.style.background = swatch; else top.textContent = icon;
+      const n = document.createElement('span');
+      n.className = 'shop-name';
+      n.textContent = name;
+      const p = document.createElement('span');
+      p.className = 'shop-price';
+      p.textContent = state === 'using' ? '使用中' : state === 'owned' ? (shopTab === 'wall' ? '換上' : '已擁有') : price ? '🐟 ' + price : '免費';
+      if (state === 'buy' && price > data.coins) b.classList.add('is-poor');
+      b.append(top, n, p);
+      b.addEventListener('click', onClick);
+      return b;
+    }
+
+    if (shopTab === 'furniture') {
+      FURNITURE.forEach(function (f) {
+        const own = data.owned.indexOf(f.id) !== -1;
+        const off = own && data.placed[f.id] && data.placed[f.id].off;
+        const c = card(f.icon, f.name, f.price, own ? 'owned' : 'buy', function () {
+          if (own) {
+            // 已擁有：切換擺出來／收起來
+            const pos = data.placed[f.id] || { x: f.x, y: f.y };
+            pos.off = !off;
+            data.placed[f.id] = pos;
+            save(); render(true);
+            drawShop(pos.off ? f.name + ' 收起來了' : f.name + ' 擺出來了！');
+            return;
+          }
+          if (data.coins < f.price) { drawShop('小魚乾幣不夠喔，再寫寫日記、陪小貓玩吧 🐾'); return; }
+          data.coins -= f.price;
+          data.owned.push(f.id);
+          save(); render(true);
+          say('哇！新的' + f.name + '！謝謝你 😺', 3000);
+          drawShop('買到了 ' + f.icon + ' ' + f.name + '！按「布置」可以移動位置');
+        });
+        if (own) c.querySelector('.shop-price').textContent = off ? '擺出來' : '收起來';
+        grid.appendChild(c);
+      });
+    } else if (shopTab === 'snack') {
+      SNACKS.forEach(function (sn) {
+        grid.appendChild(card(sn.icon, sn.name, sn.price, 'buy', function () {
+          if (data.coins < sn.price) { drawShop('小魚乾幣不夠喔，再寫寫日記、陪小貓玩吧 🐾'); return; }
+          data.coins -= sn.price;
+          const now = Date.now();
+          // 把「上次吃飯／被摸的時間」往後推，等於提高飽足與心情
+          data.lastFed = Math.min(now, Math.max(data.lastFed, now - 12.5 * 36e5) + sn.full / 8 * 36e5);
+          data.lastPat = Math.min(now, Math.max(data.lastPat, now - 10 * 36e5) + sn.love / 10 * 36e5);
+          save();
+          document.getElementById('kitty-dialog').close();
+          render(true);
+          hearts(sn.icon, 5);
+          say(sn.line, 3500);
+        }));
+      });
+    } else {
+      WALLS.forEach(function (w) {
+        const own = data.walls.indexOf(w.id) !== -1;
+        grid.appendChild(card('', w.name, w.price, data.wall === w.id ? 'using' : own ? 'owned' : 'buy', function () {
+          if (!own) {
+            if (data.coins < w.price) { drawShop('小魚乾幣不夠喔，再寫寫日記、陪小貓玩吧 🐾'); return; }
+            data.coins -= w.price;
+            data.walls.push(w.id);
+          }
+          data.wall = w.id;
+          save(); render(true);
+          drawShop('換成「' + w.name + '」了！');
+        }, w.sw));
+      });
+    }
+    const close = document.createElement('button');
+    close.className = 'btn btn-block';
+    close.textContent = '關閉';
+    close.addEventListener('click', function () { dlg.close(); });
+    dlg.append(head, tabs, note, grid, close);
   }
 
   function init() {
