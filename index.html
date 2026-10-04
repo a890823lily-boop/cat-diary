@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="貓咪日記">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=21">
+  <link rel="stylesheet" href="css/style.css?v=23">
 </head>
 <body>
   <header class="app-header">
@@ -45,11 +45,29 @@
     <!-- 玩樂：塗色、小遊戲 -->
     <section id="view-play" class="view" aria-label="玩樂" hidden>
       <div class="seg" role="tablist" aria-label="選擇玩樂項目">
+        <button class="seg-btn" role="tab" data-mode="worry"><span aria-hidden="true">🫧</span>內耗</button>
         <button class="seg-btn" role="tab" data-mode="color"><span aria-hidden="true">🎨</span>塗色</button>
         <button class="seg-btn" role="tab" data-mode="breathe"><span aria-hidden="true">🫁</span>呼吸</button>
         <button class="seg-btn" role="tab" data-mode="pet"><span aria-hidden="true">🐈</span>擼貓</button>
         <button class="seg-btn" role="tab" data-mode="fortune"><span aria-hidden="true">🔮</span>運勢</button>
         <button class="seg-btn" role="tab" data-mode="game"><span aria-hidden="true">🐟</span>接魚乾</button>
+      </div>
+
+      <div id="play-worry" class="play-pane" hidden>
+        <form id="worry-form" class="worry-form">
+          <label for="worry-input" class="worry-title">有什麼事一直在腦袋裡轉嗎？</label>
+          <textarea id="worry-input" rows="2" maxlength="120" placeholder="把讓你內耗的事情打出來，它就會變成一顆球…"></textarea>
+          <div class="worry-row">
+            <span class="worry-size-label">有多困擾</span>
+            <label class="chip"><input type="radio" name="worry-size" value="s"><span>一點點</span></label>
+            <label class="chip"><input type="radio" name="worry-size" value="m" checked><span>普通</span></label>
+            <label class="chip"><input type="radio" name="worry-size" value="l"><span>很大</span></label>
+            <button class="btn worry-add" type="submit">變成球 🫧</button>
+          </div>
+        </form>
+        <div id="worry-jar" class="worry-jar is-empty"><p class="worry-empty">把煩惱放進來吧 🫙</p></div>
+        <p id="worry-count" class="hint worry-count"></p>
+        <p class="hint worry-help">點一下球可以跟貓咪聊聊，或戳破它把煩惱放下；也可以用手指拖著球甩來甩去。</p>
       </div>
 
       <div id="play-color" class="play-pane">
@@ -257,19 +275,49 @@
     <p class="hint">音樂由 App 即時演奏，沒網路也能聽。iPhone 若沒聲音，請關閉靜音模式或調高音量。</p>
   </div>
 
+  <!-- 內耗球：點球後的選單 -->
+  <dialog id="worry-sheet" class="sticker-pop worry-sheet">
+    <p class="pop-kicker">🫧 這顆球裡裝著</p>
+    <p id="worry-sheet-text" class="worry-sheet-text"></p>
+    <p id="worry-sheet-date" class="hint"></p>
+    <div class="worry-sheet-actions">
+      <button id="worry-talk" class="btn">💬 跟貓咪聊聊</button>
+      <button id="worry-pop" class="btn btn-outline">🫧 戳破它，先放下</button>
+      <button class="link-btn" data-close>先放著</button>
+    </div>
+  </dialog>
+
+  <!-- 喵喵聊天室 -->
+  <dialog id="talk-dialog" class="sheet talk-dialog">
+    <div class="sheet-head">
+      <button type="button" class="link-btn" data-close>關閉</button>
+      <h2>💬 喵喵聊天室</h2>
+      <span class="talk-spacer"></span>
+    </div>
+    <div id="talk-list" class="talk-list" aria-live="polite"></div>
+    <div id="talk-quick" class="talk-quick"></div>
+    <form id="talk-form" class="talk-form">
+      <input id="talk-input" type="text" maxlength="300" placeholder="想說什麼都可以…" autocomplete="off">
+      <button class="btn" type="submit">送出</button>
+    </form>
+    <p class="talk-note">這是 App 內建的貓咪回覆，不是真人或 AI。如果你很痛苦，請撥 <a href="tel:1925">1925 安心專線</a>（24 小時）。</p>
+  </dialog>
+
   <!-- 貓咪圖鑑：獲得貼紙 -->
   <dialog id="sticker-dialog" class="sticker-pop"></dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/quotes.js?v=21"></script>
-  <script src="js/db.js?v=21"></script>
-  <script src="js/stickers.js?v=21"></script>
-  <script src="js/game.js?v=21"></script>
-  <script src="js/coloring.js?v=21"></script>
-  <script src="js/fortune.js?v=21"></script>
-  <script src="js/relax.js?v=21"></script>
-  <script src="js/music.js?v=21"></script>
-  <script src="js/app.js?v=21"></script>
+  <script src="js/quotes.js?v=23"></script>
+  <script src="js/db.js?v=23"></script>
+  <script src="js/stickers.js?v=23"></script>
+  <script src="js/game.js?v=23"></script>
+  <script src="js/coloring.js?v=23"></script>
+  <script src="js/fortune.js?v=23"></script>
+  <script src="js/relax.js?v=23"></script>
+  <script src="js/worry-talk.js?v=23"></script>
+  <script src="js/worry.js?v=23"></script>
+  <script src="js/music.js?v=23"></script>
+  <script src="js/app.js?v=23"></script>
 </body>
 </html>

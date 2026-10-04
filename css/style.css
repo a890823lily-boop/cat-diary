@@ -357,7 +357,7 @@ button { cursor: pointer; }
 /* ---------- 玩樂：切換 ---------- */
 .seg {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 4px;
   margin: 12px 0 4px;
   padding: 4px;
@@ -436,6 +436,99 @@ button { cursor: pointer; }
 /* 心情不好時的塗色建議 */
 .quote-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .quote-card .quote-color { margin-top: 8px; padding: 4px 14px; font-size: 0.85rem; }
+
+/* ---------- 內耗球 ---------- */
+.worry-form { margin: 12px 0 10px; }
+.worry-title { display: block; font-weight: 700; margin: 0 2px 6px; }
+.worry-form textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 16px;
+  resize: none;
+}
+.worry-form textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
+.worry-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
+.worry-size-label { font-size: 0.85rem; color: var(--muted); }
+.worry-row .chip span { padding: 4px 10px; font-size: 0.85rem; }
+.worry-add { margin-left: auto; padding: 8px 16px; }
+.worry-jar {
+  position: relative;
+  height: min(52vh, 420px);
+  min-height: 300px;
+  border-radius: 24px 24px 32px 32px;
+  border: 3px solid var(--line);
+  border-top-width: 6px;
+  background: linear-gradient(180deg, rgba(184, 224, 246, 0.25), rgba(184, 224, 246, 0.55));
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.worry-empty { position: absolute; inset: 0; margin: 0; display: none; align-items: center; justify-content: center; color: var(--muted); }
+.worry-jar.is-empty .worry-empty { display: flex; }
+.worry-ball {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border: 0;
+  border-radius: 50%;
+  color: #3a2f28;
+  line-height: 1.3;
+  text-align: center;
+  box-shadow: inset -6px -8px 14px rgba(0, 0, 0, 0.08), inset 6px 6px 12px rgba(255, 255, 255, 0.7), 0 3px 8px rgba(0, 0, 0, 0.12);
+  cursor: grab;
+  touch-action: none;
+  will-change: transform;
+}
+.worry-ball span { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; word-break: break-all; pointer-events: none; }
+.worry-ball.is-grabbed { cursor: grabbing; filter: brightness(1.05); z-index: 2; }
+.worry-ball.is-new { animation: ball-in 0.4s ease-out; }
+@keyframes ball-in { from { opacity: 0; } to { opacity: 1; } }
+.worry-ball.is-popping { transition: opacity 0.3s, scale 0.3s; opacity: 0; scale: 1.5; pointer-events: none; }
+.worry-bit {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: bit 0.7s ease-out forwards;
+}
+@keyframes bit { to { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; } }
+.worry-count { text-align: center; margin-top: 8px; font-weight: 700; }
+.worry-help { text-align: center; }
+.worry-sheet-text { font-size: 1.15rem; line-height: 1.7; margin: 10px 0 4px; white-space: pre-wrap; word-break: break-word; }
+.worry-sheet-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+
+/* 喵喵聊天室 */
+.talk-dialog[open] { display: flex; flex-direction: column; height: 92vh; height: 92dvh; }
+.talk-spacer { width: 40px; }
+.talk-list { flex: 1; overflow-y: auto; padding: 14px 12px; display: flex; flex-direction: column; gap: 10px; }
+.talk-row { display: flex; align-items: flex-end; gap: 8px; max-width: 88%; }
+.talk-row.me { align-self: flex-end; }
+.talk-avatar { width: 34px; height: 34px; border-radius: 50%; flex: none; }
+.talk-bubble { margin: 0; padding: 9px 13px; border-radius: 18px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+.talk-row.cat .talk-bubble { background: var(--surface); border-bottom-left-radius: 6px; box-shadow: var(--shadow); }
+.talk-row.me .talk-bubble { background: var(--primary); color: var(--primary-ink); border-bottom-right-radius: 6px; }
+.talk-row.is-typing .talk-bubble { color: var(--muted); letter-spacing: 3px; animation: typing 1s ease-in-out infinite; }
+@keyframes typing { 50% { opacity: 0.4; } }
+.talk-quick { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 12px 8px; }
+.talk-chip { border: 1.5px solid var(--primary); background: var(--surface); color: var(--primary); border-radius: 999px; padding: 6px 12px; font-size: 0.9rem; }
+.talk-chip.is-primary { background: var(--primary); color: var(--primary-ink); }
+.talk-form { display: flex; gap: 8px; padding: 8px 12px; border-top: 1px solid var(--line); background: var(--surface); }
+.talk-form input { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px; font-size: 16px; background: var(--bg); color: var(--text); }
+.talk-form .btn { padding: 8px 16px; }
+.talk-dialog .talk-form { flex-direction: row; max-height: none; }
+.talk-note { margin: 0; padding: 6px 12px calc(10px + env(safe-area-inset-bottom)); font-size: 0.75rem; color: var(--muted); text-align: center; background: var(--surface); }
+.talk-note a { color: var(--primary); font-weight: 700; }
 
 /* ---------- 呼吸練習 ---------- */
 .breathe { text-align: center; }

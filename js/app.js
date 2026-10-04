@@ -593,14 +593,14 @@
     });
     window.scrollTo(0, 0);
     render();
-    if (view === 'play') setPlayMode(playMode); else { CatGame.pause(); Breathe.pause(); Pet.pause(); }
+    if (view === 'play') setPlayMode(playMode); else { CatGame.pause(); Breathe.pause(); Pet.pause(); Worry.pause(); }
   }
 
   /* ---------- 玩樂：塗色／小遊戲 ---------- */
   let playMode = readPref('play', 'color');
 
   function setPlayMode(mode) {
-    playMode = ['color', 'breathe', 'pet', 'fortune', 'game'].indexOf(mode) !== -1 ? mode : 'color';
+    playMode = ['worry', 'color', 'breathe', 'pet', 'fortune', 'game'].indexOf(mode) !== -1 ? mode : 'color';
     writePref('play', playMode);
     document.querySelectorAll('.seg-btn').forEach(function (b) {
       const on = b.dataset.mode === playMode;
@@ -612,6 +612,8 @@
     $('#play-fortune').hidden = playMode !== 'fortune';
     $('#play-breathe').hidden = playMode !== 'breathe';
     $('#play-pet').hidden = playMode !== 'pet';
+    $('#play-worry').hidden = playMode !== 'worry';
+    if (playMode !== 'worry') Worry.pause();
     if (playMode !== 'game') CatGame.pause();
     if (playMode !== 'breathe') Breathe.pause();
     if (playMode !== 'pet') Pet.pause();
@@ -619,8 +621,12 @@
     else if (playMode === 'color') Coloring.show();
     else if (playMode === 'breathe') Breathe.show();
     else if (playMode === 'pet') Pet.show();
+    else if (playMode === 'worry') Worry.show();
     else Fortune.show();
   }
+
+  // 其他地方要切換到某個玩樂項目（例如聊天室結束後去呼吸）
+  document.addEventListener('play:go', function (e) { playMode = e.detail; setView('play'); });
 
   document.querySelectorAll('.seg-btn').forEach(function (b) {
     b.addEventListener('click', function () { setPlayMode(b.dataset.mode); });
