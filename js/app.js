@@ -181,7 +181,6 @@
     renderFilter();
     if (state.view === 'diary') renderDiary();
     if (state.view === 'album') renderAlbum();
-    if (state.view === 'weight') renderWeight();
     if (state.view === 'cats') renderCats();
     $('#fab').hidden = state.view === 'cats' || state.view === 'play';
   }
@@ -612,79 +611,6 @@
         onclick: function () { openViewer(photos, i); }
       }, [el('img', { src: blobUrl('thumb:' + x.photo.id, x.photo.thumb), alt: '', loading: 'lazy' })]));
     });
-  }
-
-  function renderWeight() {
-    const box = $('#weight-charts');
-    box.textContent = '';
-    const cats = state.filter === 'all' ? state.cats : state.cats.filter(function (c) { return c.id === state.filter; });
-    if (!cats.length) {
-      box.appendChild(emptyState('images/deco-fish.png', '還沒有貓咪', '先新增貓咪，才能記錄體重。', '新增貓咪', function () { openCatDialog(); }));
-      return;
-    }
-    cats.forEach(function (cat) {
-      const points = state.entries
-        .filter(function (e) { return e.catId === cat.id && e.weight; })
-        .sort(function (a, b) { return (a.date + (a.time || '')) < (b.date + (b.time || '')) ? -1 : 1; });
-      const card = el('section', { class: 'weight-card' }, [
-        el('div', { class: 'entry-head' }, [avatarNode(cat, 'sm'), el('span', { class: 'entry-cat', text: cat.name })])
-      ]);
-      if (!points.length) {
-        card.appendChild(el('p', { class: 'hint', text: '還沒有體重紀錄。新增日記時填入體重，就會畫出曲線。' }));
-      } else {
-        const last = points[points.length - 1];
-        const stats = [el('div', { class: 'stat' }, [el('span', { class: 'stat-num', text: last.weight + ' kg' }), el('span', { class: 'hint', text: '最新（' + shortDate(last.date) + '）' })])];
-        if (points.length > 1) {
-          const prev = points[points.length - 2];
-          const diff = Math.round((last.weight - prev.weight) * 100) / 100;
-          stats.push(el('div', { class: 'stat' }, [
-            el('span', { class: 'stat-num ' + (diff > 0 ? 'up' : diff < 0 ? 'down' : ''), text: (diff > 0 ? '+' : '') + diff + ' kg' }),
-            el('span', { class: 'hint', text: '比上次' })
-          ]));
-        }
-        card.appendChild(el('div', { class: 'stats' }, stats));
-        if (points.length > 1) card.appendChild(weightChart(points));
-        const recent = points.slice(-5).reverse();
-        card.appendChild(el('ul', { class: 'weight-list' }, recent.map(function (p) {
-          return el('li', {}, [el('span', { text: formatDate(p.date) }), el('strong', { text: p.weight + ' kg' })]);
-        })));
-      }
-      box.appendChild(card);
-    });
-    box.appendChild(listEnd('images/deco-fish.png', 'deco-float', '健康長大，記得定期量體重喔'));
-  }
-
-  function weightChart(points) {
-    const NS = 'http://www.w3.org/2000/svg';
-    const W = 320, H = 160, L = 40, R = 12, T = 14, B = 26;
-    const ws = points.map(function (p) { return p.weight; });
-    let min = Math.min.apply(null, ws), max = Math.max.apply(null, ws);
-    const padding = Math.max(0.1, (max - min) * 0.15);
-    min -= padding; max += padding;
-    const x = function (i) { return L + (W - L - R) * (points.length === 1 ? 0.5 : i / (points.length - 1)); };
-    const y = function (w) { return T + (H - T - B) * (1 - (w - min) / (max - min)); };
-
-    function s(tag, attrs, text) {
-      const n = document.createElementNS(NS, tag);
-      Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); });
-      if (text != null) n.textContent = text;
-      return n;
-    }
-    const svg = s('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'chart', role: 'img', 'aria-label': '體重變化曲線' });
-    [max - padding, (max + min) / 2, min + padding].forEach(function (v) {
-      svg.appendChild(s('line', { x1: L, x2: W - R, y1: y(v), y2: y(v), class: 'grid' }));
-      svg.appendChild(s('text', { x: L - 6, y: y(v) + 4, 'text-anchor': 'end', class: 'axis' }, v.toFixed(2)));
-    });
-    const d = points.map(function (p, i) { return (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(p.weight).toFixed(1); }).join(' ');
-    svg.appendChild(s('path', { d: d, class: 'line' }));
-    points.forEach(function (p, i) {
-      const c = s('circle', { cx: x(i), cy: y(p.weight), r: 3.5, class: 'dot' });
-      c.appendChild(s('title', {}, p.date + '：' + p.weight + ' kg'));
-      svg.appendChild(c);
-    });
-    svg.appendChild(s('text', { x: L, y: H - 6, class: 'axis' }, shortDate(points[0].date)));
-    svg.appendChild(s('text', { x: W - R, y: H - 6, 'text-anchor': 'end', class: 'axis' }, shortDate(points[points.length - 1].date)));
-    return svg;
   }
 
   function renderCats() {
