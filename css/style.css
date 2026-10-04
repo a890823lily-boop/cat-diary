@@ -451,6 +451,14 @@ button { cursor: pointer; }
   resize: none;
 }
 .worry-form textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
+.worry-mood-label { margin: 8px 2px 4px; font-size: 0.85rem; font-weight: 700; }
+.worry-mood-label .hint { font-weight: 400; font-size: 0.78rem; }
+.worry-moods { display: flex; flex-wrap: wrap; gap: 5px; }
+.worry-moods.is-center { justify-content: center; margin-top: 8px; }
+.worry-moods .mood-chip { position: relative; padding: 3px 9px; font-size: 0.82rem; }
+.worry-moods .mood-chip.is-active { background: var(--mood); border-color: #4a3b33; color: #3a2f28; }
+.mood-auto { margin-left: 4px; font-size: 0.65rem; color: var(--primary); font-weight: 700; }
+.worry-mood { position: absolute; top: 6%; left: 50%; transform: translateX(-50%); font-style: normal; font-size: 1.15em; line-height: 1; pointer-events: none; }
 .worry-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
 .worry-size-label { font-size: 0.85rem; color: var(--muted); }
 .worry-row .chip span { padding: 4px 10px; font-size: 0.85rem; }

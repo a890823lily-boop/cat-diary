@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="貓咪日記">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=23">
+  <link rel="stylesheet" href="css/style.css?v=24">
 </head>
 <body>
   <header class="app-header">
@@ -57,6 +57,8 @@
         <form id="worry-form" class="worry-form">
           <label for="worry-input" class="worry-title">有什麼事一直在腦袋裡轉嗎？</label>
           <textarea id="worry-input" rows="2" maxlength="120" placeholder="把讓你內耗的事情打出來，它就會變成一顆球…"></textarea>
+          <p class="worry-mood-label">這顆球的心情 <span class="hint">（打字時自動偵測，也可以自己改）</span></p>
+          <div id="worry-moods" class="worry-moods" role="group" aria-label="這顆球的心情"></div>
           <div class="worry-row">
             <span class="worry-size-label">有多困擾</span>
             <label class="chip"><input type="radio" name="worry-size" value="s"><span>一點點</span></label>
@@ -280,6 +282,7 @@
     <p class="pop-kicker">🫧 這顆球裡裝著</p>
     <p id="worry-sheet-text" class="worry-sheet-text"></p>
     <p id="worry-sheet-date" class="hint"></p>
+    <div id="worry-sheet-moods" class="worry-moods is-center" role="group" aria-label="修改這顆球的心情"></div>
     <div class="worry-sheet-actions">
       <button id="worry-talk" class="btn">💬 跟貓咪聊聊</button>
       <button id="worry-pop" class="btn btn-outline">🫧 戳破它，先放下</button>
@@ -308,16 +311,16 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/quotes.js?v=23"></script>
-  <script src="js/db.js?v=23"></script>
-  <script src="js/stickers.js?v=23"></script>
-  <script src="js/game.js?v=23"></script>
-  <script src="js/coloring.js?v=23"></script>
-  <script src="js/fortune.js?v=23"></script>
-  <script src="js/relax.js?v=23"></script>
-  <script src="js/worry-talk.js?v=23"></script>
-  <script src="js/worry.js?v=23"></script>
-  <script src="js/music.js?v=23"></script>
-  <script src="js/app.js?v=23"></script>
+  <script src="js/quotes.js?v=24"></script>
+  <script src="js/db.js?v=24"></script>
+  <script src="js/stickers.js?v=24"></script>
+  <script src="js/game.js?v=24"></script>
+  <script src="js/coloring.js?v=24"></script>
+  <script src="js/fortune.js?v=24"></script>
+  <script src="js/relax.js?v=24"></script>
+  <script src="js/worry-talk.js?v=24"></script>
+  <script src="js/worry.js?v=24"></script>
+  <script src="js/music.js?v=24"></script>
+  <script src="js/app.js?v=24"></script>
 </body>
 </html>

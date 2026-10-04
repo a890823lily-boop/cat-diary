@@ -5,7 +5,6 @@ const Worry = (function () {
   const KEY = 'cat-diary:worries';
   const POP_KEY = 'cat-diary:worries-popped';
   const SIZES = { s: 40, m: 52, l: 66 };
-  const COLORS = ['#ffd6e0', '#fff3b0', '#c7e9b0', '#b8e0f6', '#d7c4f2', '#fbe3d0', '#ffe0b8', '#d0f0ec'];
 
   let jar, input, countEl, sheet;
   let balls = [];
@@ -21,7 +20,52 @@ const Worry = (function () {
     try { localStorage.setItem(key, JSON.stringify(v)); } catch (e) { /* 忽略 */ }
   }
   function save() {
-    write(KEY, balls.map(function (b) { return { id: b.id, text: b.text, size: b.size, color: b.color, date: b.date }; }));
+    write(KEY, balls.map(function (b) { return { id: b.id, text: b.text, size: b.size, mood: b.mood, date: b.date }; }));
+  }
+
+  /* ---------- 心情偵測 ---------- */
+  function moodById(id) {
+    return WORRY_MOODS.find(function (m) { return m.id === id; }) || WORRY_MOOD_NONE;
+  }
+
+  // 依關鍵字計分：越長的詞越可信；同分時，比較早出現的優先
+  function detectMood(text) {
+    let best = WORRY_MOOD_NONE, bestScore = 0, bestPos = Infinity;
+    WORRY_MOODS.forEach(function (m) {
+      let score = 0, pos = Infinity;
+      m.words.forEach(function (w) {
+        let i = text.indexOf(w);
+        while (i !== -1) {
+          score += w.length >= 2 ? 1 : 0.6;
+          pos = Math.min(pos, i);
+          i = text.indexOf(w, i + w.length);
+        }
+      });
+      if (score > bestScore || (score === bestScore && score > 0 && pos < bestPos)) {
+        best = m; bestScore = score; bestPos = pos;
+      }
+    });
+    return best;
+  }
+
+  function moodChips(box, selected, detected, onPick) {
+    box.textContent = '';
+    WORRY_MOODS.concat([WORRY_MOOD_NONE]).forEach(function (m) {
+      const b = el('button', 'mood-chip' + (m.id === selected ? ' is-active' : ''), m.icon + ' ' + m.label);
+      b.type = 'button';
+      b.style.setProperty('--mood', m.color);
+      b.setAttribute('aria-pressed', m.id === selected ? 'true' : 'false');
+      if (detected && m.id === detected) b.appendChild(el('small', 'mood-auto', '偵測'));
+      b.addEventListener('click', function () { onPick(m.id); });
+      box.appendChild(b);
+    });
+  }
+
+  function applyMood(b) {
+    const m = moodById(b.mood);
+    b.el.style.background = m.color;
+    b.el.querySelector('.worry-mood').textContent = m.icon;
+    b.el.setAttribute('aria-label', m.label + '的煩惱：' + b.text);
   }
 
   function el(tag, cls, text) {
@@ -37,12 +81,16 @@ const Worry = (function () {
     const r = SIZES[data.size] * scale();
     const node = el('button', 'worry-ball');
     node.style.width = node.style.height = (r * 2) + 'px';
-    node.style.background = data.color;
     node.style.fontSize = Math.max(11, r * 0.27) + 'px';
-    node.setAttribute('aria-label', '煩惱：' + data.text);
+    // 內距依球的大小計算（上面留位置給心情表情）
+    node.style.padding = (r * 0.42) + 'px ' + (r * 0.2) + 'px ' + (r * 0.18) + 'px';
+    node.appendChild(el('i', 'worry-mood'));
     node.appendChild(el('span', null, data.text));
     jar.appendChild(node);
+    // 舊資料沒有心情，就自動偵測
+    if (!data.mood) data.mood = detectMood(data.text).id;
     const b = Object.assign({}, data, { r: r, x: x, y: y, vx: (Math.random() - 0.5) * 60, vy: 0, el: node });
+    applyMood(b);
     node.addEventListener('pointerdown', function (e) { startDrag(e, b); });
     return b;
   }
@@ -54,8 +102,14 @@ const Worry = (function () {
 
   function updateCount() {
     const popped = read(POP_KEY, 0);
+    // 罐子裡最多的心情
+    const tally = {};
+    balls.forEach(function (b) { if (b.mood !== 'unknown') tally[b.mood] = (tally[b.mood] || 0) + 1; });
+    let top = null;
+    Object.keys(tally).forEach(function (k) { if (!top || tally[k] > tally[top]) top = k; });
+    const topText = top && balls.length > 1 ? '・最多的是 ' + moodById(top).icon + ' ' + moodById(top).label + '（' + tally[top] + ' 顆）' : '';
     countEl.textContent = balls.length
-      ? '罐子裡有 ' + balls.length + ' 顆球' + (popped ? '・已經放下 ' + popped + ' 件事 🌈' : '')
+      ? '罐子裡有 ' + balls.length + ' 顆球' + topText + (popped ? '・已經放下 ' + popped + ' 件事 🌈' : '')
       : (popped ? '罐子空空的，已經放下 ' + popped + ' 件事 🌈' : '罐子空空的，心裡也輕輕的。');
     jar.classList.toggle('is-empty', !balls.length);
   }
@@ -156,14 +210,14 @@ const Worry = (function () {
   }
 
   /* ---------- 新增、戳破 ---------- */
-  function add(text, size) {
+  function add(text, size, mood) {
     text = text.trim().slice(0, 120);
     if (!text) return;
     const data = {
       id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
       text: text,
       size: size,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      mood: mood || detectMood(text).id,
       date: new Date().toISOString().slice(0, 10)
     };
     measure();
@@ -185,7 +239,7 @@ const Worry = (function () {
       const a = Math.PI * 2 * i / 10;
       p.style.left = b.x + 'px';
       p.style.top = b.y + 'px';
-      p.style.background = b.color;
+      p.style.background = moodById(b.mood).color;
       p.style.setProperty('--dx', Math.cos(a) * (b.r + 30) + 'px');
       p.style.setProperty('--dy', Math.sin(a) * (b.r + 30) + 'px');
       jar.appendChild(p);
@@ -202,7 +256,30 @@ const Worry = (function () {
     current = b;
     document.getElementById('worry-sheet-text').textContent = b.text;
     document.getElementById('worry-sheet-date').textContent = '放進罐子：' + b.date.replace(/-/g, '/');
+    renderSheetMood();
     sheet.showModal();
+  }
+
+  function renderSheetMood() {
+    const b = current;
+    moodChips(document.getElementById('worry-sheet-moods'), b.mood, null, function (id) {
+      b.mood = id;
+      applyMood(b);
+      save();
+      updateCount();
+      renderSheetMood();
+    });
+  }
+
+  /* 表單：邊打字邊偵測心情，也可以自己改 */
+  let override = null;
+  function renderFormMood() {
+    const detected = detectMood(input.value);
+    const selected = override || (input.value.trim() ? detected.id : null);
+    moodChips(document.getElementById('worry-moods'), selected, input.value.trim() ? detected.id : null, function (id) {
+      override = override === id ? null : id;
+      renderFormMood();
+    });
   }
 
   function init() {
@@ -216,10 +293,18 @@ const Worry = (function () {
       e.preventDefault();
       const size = (document.querySelector('input[name="worry-size"]:checked') || {}).value || 'm';
       if (!input.value.trim()) { input.focus(); return; }
-      add(input.value, size);
+      add(input.value, size, override || detectMood(input.value).id);
       input.value = '';
+      override = null;
+      renderFormMood();
       input.blur();
     });
+    let typingTimer = null;
+    input.addEventListener('input', function () {
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(renderFormMood, 200);
+    });
+    renderFormMood();
     jar.addEventListener('pointermove', onMove);
     jar.addEventListener('pointerup', onUp);
     jar.addEventListener('pointercancel', onUp);
@@ -227,7 +312,7 @@ const Worry = (function () {
 
     document.getElementById('worry-talk').addEventListener('click', function () {
       sheet.close();
-      CatTalk.open(current ? current.text : '');
+      CatTalk.open(current ? current.text : '', current ? current.mood : null);
     });
     document.getElementById('worry-pop').addEventListener('click', function () {
       sheet.close();
@@ -267,7 +352,7 @@ const Worry = (function () {
     cancelAnimationFrame(frame);
   }
 
-  return { show: init, pause: pause, popCurrent: function () { document.dispatchEvent(new CustomEvent('worry:pop-current')); } };
+  return { show: init, pause: pause, detect: detectMood, popCurrent: function () { document.dispatchEvent(new CustomEvent('worry:pop-current')); } };
 })();
 
 /* ---------- 喵喵聊天室：內建回覆 ---------- */
@@ -416,7 +501,7 @@ const CatTalk = (function () {
     dlg.querySelector('[data-close]').addEventListener('click', close);
   }
 
-  function open(worry) {
+  function open(worry, moodId) {
     init();
     list.textContent = '';
     stage = 0;
@@ -426,9 +511,11 @@ const CatTalk = (function () {
     dlg.showModal();
     if (worry && isCrisis(worry)) { bubble('me', worry); crisis(); return; }
     const t = topic || WORRY_TALK.general;
+    const mood = WORRY_MOODS.find(function (m) { return m.id === moodId; });
     const lines = [];
     if (worry) lines.push('喵～我看到你放進罐子裡的這件事了：\n「' + worry + '」');
-    lines.push(pick(t.reflect));
+    // 依這顆球的心情先接住感受
+    lines.push(mood ? mood.open : pick(t.reflect));
     lines.push(pick(t.tip));
     lines.push('想多說一點嗎？可以點下面的選項，或直接打字告訴我。');
     catSay(lines, function () { setQuick(WORRY_TALK.firstReplies); });
