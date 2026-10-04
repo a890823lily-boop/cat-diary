@@ -233,6 +233,12 @@ const Worry = (function () {
     balls = balls.filter(function (x) { return x !== b; });
     save();
     write(POP_KEY, read(POP_KEY, 0) + 1);
+    // 依日期記錄戳破了幾顆，小日曆會顯示
+    const log = read(POP_KEY + '-log', {});
+    const d = new Date();
+    const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    log[key] = (log[key] || 0) + 1;
+    write(POP_KEY + '-log', log);
     // 爆開的小泡泡
     for (let i = 0; i < 10; i++) {
       const p = el('span', 'worry-bit');

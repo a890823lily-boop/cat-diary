@@ -294,10 +294,12 @@
             if (on) {
               // 再點一次取消心情
               writePref('mood', JSON.stringify({ date: today(), mood: null }));
+              logMood(null);
               fillQuoteCard(card, false);
               return;
             }
             writePref('mood', JSON.stringify({ date: today(), mood: m.id }));
+            logMood(m.id);
             drawQuote(quotePool(m.id));
             fillQuoteCard(card, true);
           }
@@ -381,10 +383,145 @@
     return card;
   }
 
+  /* ---------- 小日曆 ---------- */
+  const cal = { month: null, selected: null, el: null };
+
+  // 每天選的心情都存起來，日曆才看得到過去的心情
+  function moodLog() { return readJson('mood-log') || {}; }
+  function logMood(id) {
+    const log = moodLog();
+    if (id) log[today()] = id; else delete log[today()];
+    writePref('mood-log', JSON.stringify(log));
+    refreshCal();
+  }
+  (function migrateMood() {
+    const m = todayMood();
+    const log = moodLog();
+    if (m && !log[today()]) { log[today()] = m; writePref('mood-log', JSON.stringify(log)); }
+  })();
+
+  function worriesByDate() {
+    let list = [];
+    try { list = JSON.parse(localStorage.getItem('cat-diary:worries')) || []; } catch (e) { /* 忽略 */ }
+    const map = {};
+    list.forEach(function (w) { (map[w.date] = map[w.date] || []).push(w); });
+    return map;
+  }
+  function poppedByDate() {
+    try { return JSON.parse(localStorage.getItem('cat-diary:worries-popped-log')) || {}; } catch (e) { return {}; }
+  }
+  function dateKey(d) {
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+  function moodInfo(id) { return MOODS.find(function (m) { return m.id === id; }); }
+
+  function refreshCal() {
+    if (cal.el && cal.el.isConnected) renderCal(cal.el);
+  }
+
+  function calendarCard() {
+    cal.el = el('section', { class: 'cal-card', 'aria-label': '小日曆' });
+    renderCal(cal.el);
+    return cal.el;
+  }
+
+  function renderCal(card) {
+    card.textContent = '';
+    const now = new Date();
+    if (!cal.month) cal.month = new Date(now.getFullYear(), now.getMonth(), 1);
+    const y = cal.month.getFullYear(), mo = cal.month.getMonth();
+    const todayKey = today();
+    const moods = moodLog();
+    const worries = worriesByDate();
+    const popped = poppedByDate();
+    const entriesByDate = {};
+    state.entries.forEach(function (e) {
+      if (state.filter !== 'all' && e.catId !== state.filter) return;
+      (entriesByDate[e.date] = entriesByDate[e.date] || []).push(e);
+    });
+
+    function go(delta) { cal.month = new Date(y, mo + delta, 1); renderCal(card); }
+    const isThisMonth = y === now.getFullYear() && mo === now.getMonth();
+    card.appendChild(el('div', { class: 'cal-head' }, [
+      el('button', { class: 'cal-nav', 'aria-label': '上個月', onclick: function () { go(-1); } }, ['‹']),
+      el('strong', { class: 'cal-title', text: '🗓 ' + y + ' 年 ' + (mo + 1) + ' 月' }),
+      el('button', { class: 'cal-nav', 'aria-label': '下個月', onclick: function () { go(1); } }, ['›']),
+      isThisMonth ? null : el('button', { class: 'btn-small cal-today', text: '回到今天', onclick: function () { cal.month = null; cal.selected = todayKey; renderCal(card); } })
+    ]));
+
+    const grid = el('div', { class: 'cal-grid' });
+    '日一二三四五六'.split('').forEach(function (w) { grid.appendChild(el('span', { class: 'cal-wd', text: w })); });
+    const first = new Date(y, mo, 1).getDay();
+    for (let i = 0; i < first; i++) grid.appendChild(el('span'));
+    const days = new Date(y, mo + 1, 0).getDate();
+    for (let d = 1; d <= days; d++) {
+      const key = y + '-' + pad(mo + 1) + '-' + pad(d);
+      const ents = entriesByDate[key] || [];
+      let photo = null;
+      ents.some(function (e) { return (e.photoIds || []).some(function (id) { photo = state.photos.get(id); return !!photo; }); });
+      const mood = moodInfo(moods[key]);
+      const hasWorry = (worries[key] || []).length || popped[key];
+      const cell = el('button', {
+        class: 'cal-day' + (key === todayKey ? ' is-today' : '') + (key === cal.selected ? ' is-selected' : '') + (photo ? ' has-photo' : '') + (key > todayKey ? ' is-future' : ''),
+        'aria-label': (mo + 1) + ' 月 ' + d + ' 日' + (ents.length ? '，' + ents.length + ' 篇日記' : '') + (mood ? '，心情' + mood.label : ''),
+        onclick: function () { cal.selected = cal.selected === key ? null : key; renderCal(card); }
+      }, [
+        el('span', { class: 'cal-num', text: String(d) }),
+        mood ? el('span', { class: 'cal-mood', text: mood.icon }) : null,
+        !photo && ents.length ? el('span', { class: 'cal-dot' }) : null,
+        hasWorry ? el('span', { class: 'cal-worry', text: '🫧' }) : null
+      ]);
+      if (photo) cell.style.backgroundImage = 'url(' + blobUrl('thumb:' + photo.id, photo.thumb) + ')';
+      grid.appendChild(cell);
+    }
+    card.appendChild(grid);
+    card.appendChild(el('p', { class: 'cal-legend hint', text: '📷／• 日記　😊 心情　🫧 內耗球' }));
+
+    if (cal.selected && cal.selected.slice(0, 7) === y + '-' + pad(mo + 1)) card.appendChild(dayDetail(cal.selected, entriesByDate[cal.selected] || [], moods, worries, popped));
+  }
+
+  function dayDetail(key, ents, moods, worries, popped) {
+    const box = el('div', { class: 'cal-detail' }, [el('p', { class: 'cal-detail-title', text: formatDate(key) })]);
+    const mood = moodInfo(moods[key]);
+    box.appendChild(el('p', { class: 'cal-line', text: mood ? '心情：' + mood.icon + ' ' + mood.label : '心情：沒有記錄' }));
+
+    if (ents.length) {
+      box.appendChild(el('p', { class: 'cal-sub', text: '📔 日記（' + ents.length + '）' }));
+      ents.slice().sort(function (a, b) { return (a.time || '') < (b.time || '') ? -1 : 1; }).forEach(function (e) {
+        const cat = catById(e.catId);
+        const p = (e.photoIds || []).map(function (id) { return state.photos.get(id); }).filter(Boolean)[0];
+        const tags = (e.tags || []).map(function (t) { return TAG_MAP[t] ? TAG_MAP[t].icon : ''; }).join('');
+        box.appendChild(el('button', { class: 'cal-entry', onclick: function () { openEntryDialog(e); } }, [
+          p ? el('img', { src: blobUrl('thumb:' + p.id, p.thumb), alt: '' }) : el('span', { class: 'cal-entry-icon', text: '📝' }),
+          el('span', { class: 'cal-entry-text' }, [
+            el('strong', { text: (e.time ? e.time + ' ' : '') + (cat ? cat.name : '') + ' ' + tags }),
+            el('span', { text: e.note || (e.weight ? '體重 ' + e.weight + ' kg' : '（沒有文字）') })
+          ])
+        ]));
+      });
+    }
+
+    const ws = worries[key] || [];
+    if (ws.length || popped[key]) {
+      box.appendChild(el('p', { class: 'cal-sub', text: '🫧 內耗球' + (popped[key] ? '（這天放下了 ' + popped[key] + ' 件事 🌈）' : '') }));
+      ws.forEach(function (w) {
+        const m = (typeof WORRY_MOODS !== 'undefined' && WORRY_MOODS.find(function (x) { return x.id === w.mood; })) || null;
+        box.appendChild(el('p', { class: 'cal-worry-item', text: (m ? m.icon + ' ' : '🫧 ') + w.text }));
+      });
+    }
+
+    if (!ents.length && !ws.length && !popped[key] && !mood) box.appendChild(el('p', { class: 'hint', text: '這天沒有紀錄。' }));
+    if (key <= today() && state.cats.length) {
+      box.appendChild(el('button', { class: 'btn btn-outline btn-block cal-add', text: '＋ 寫這天的日記', onclick: function () { openEntryDialog(null, key); } }));
+    }
+    return box;
+  }
+
   function renderDiary() {
     const list = $('#diary-list');
     list.textContent = '';
     list.appendChild(quoteCard());
+    list.appendChild(calendarCard());
     list.appendChild(catPicCard());
     if (!state.cats.length) {
       list.appendChild(emptyState('images/cat-cuddle.jpg', '歡迎使用貓咪日記', '先新增你的貓咪，再開始記錄每天的照片與生活。', '新增第一隻貓咪', function () { openCatDialog(); }));
@@ -694,7 +831,7 @@
   /* ---------- 日記表單 ---------- */
   const entryForm = { editing: null, photos: [], removed: [] };
 
-  function openEntryDialog(entry) {
+  function openEntryDialog(entry, presetDate) {
     if (!state.cats.length) { openCatDialog(); return; }
     entryForm.editing = entry || null;
     entryForm.removed = [];
@@ -708,7 +845,7 @@
     sel.textContent = '';
     state.cats.forEach(function (c) { sel.appendChild(el('option', { value: c.id, text: c.name })); });
     sel.value = entry ? entry.catId : (state.filter !== 'all' ? state.filter : state.cats[0].id);
-    $('#entry-date').value = entry ? entry.date : today();
+    $('#entry-date').value = entry ? entry.date : (presetDate || today());
     $('#entry-time').value = entry ? (entry.time || '') : nowTime();
     $('#entry-weight').value = entry && entry.weight ? entry.weight : '';
     $('#entry-note').value = entry ? entry.note || '' : '';

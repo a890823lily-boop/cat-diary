@@ -437,6 +437,48 @@ button { cursor: pointer; }
 .quote-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .quote-card .quote-color { margin-top: 8px; padding: 4px 14px; font-size: 0.85rem; }
 
+/* ---------- 小日曆 ---------- */
+.cal-card { margin: 12px 0 4px; padding: 12px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); }
+.cal-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.cal-title { flex: 1; text-align: center; }
+.cal-nav { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--bg); color: var(--text); font-size: 1.3rem; line-height: 1; padding: 0; }
+.cal-today { flex: none; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-wd { text-align: center; font-size: 0.75rem; color: var(--muted); padding-bottom: 2px; }
+.cal-day {
+  position: relative;
+  aspect-ratio: 1;
+  min-width: 0;
+  border: 0;
+  border-radius: 10px;
+  background: var(--bg);
+  background-size: cover;
+  background-position: center;
+  color: var(--text);
+  padding: 0;
+  font-size: 0.82rem;
+}
+.cal-day.has-photo .cal-num { background: rgba(255, 255, 255, 0.85); color: #3a2f28; border-radius: 6px; padding: 0 3px; }
+.cal-day.is-future { opacity: 0.45; }
+.cal-day.is-today { box-shadow: inset 0 0 0 2px var(--primary); }
+.cal-day.is-today .cal-num { color: var(--primary); font-weight: 800; }
+.cal-day.is-selected { box-shadow: 0 0 0 3px var(--primary); }
+.cal-num { position: absolute; top: 3px; left: 4px; line-height: 1.2; }
+.cal-mood { position: absolute; right: 2px; bottom: 1px; font-size: 0.95rem; line-height: 1; }
+.cal-dot { position: absolute; left: 50%; bottom: 5px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: var(--primary); }
+.cal-worry { position: absolute; left: 2px; bottom: 1px; font-size: 0.7rem; line-height: 1; }
+.cal-legend { text-align: center; margin: 8px 0 0; font-size: 0.75rem; }
+.cal-detail { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.cal-detail-title { margin: 0 0 4px; font-weight: 800; }
+.cal-line { margin: 2px 0; font-size: 0.92rem; }
+.cal-sub { margin: 10px 0 4px; font-weight: 700; font-size: 0.9rem; }
+.cal-entry { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px; margin-bottom: 4px; border: 0; border-radius: 10px; background: var(--bg); color: var(--text); text-align: left; }
+.cal-entry img, .cal-entry-icon { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; flex: none; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; background: var(--primary-soft); }
+.cal-entry-text { display: flex; flex-direction: column; min-width: 0; font-size: 0.85rem; }
+.cal-entry-text span { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cal-worry-item { margin: 2px 0; font-size: 0.88rem; }
+.cal-add { margin-top: 10px; }
+
 /* ---------- 內耗球 ---------- */
 .worry-form { margin: 12px 0 10px; }
 .worry-title { display: block; font-weight: 700; margin: 0 2px 6px; }
