@@ -227,12 +227,14 @@ const Worry = (function () {
     balls.push(b);
     save();
     updateCount();
+    Kitty.gain('worryAdd');
   }
 
   function pop(b) {
     balls = balls.filter(function (x) { return x !== b; });
     save();
     write(POP_KEY, read(POP_KEY, 0) + 1);
+    Kitty.gain('worryPop');
     // 依日期記錄戳破了幾顆，小日曆會顯示
     const log = read(POP_KEY + '-log', {});
     const d = new Date();

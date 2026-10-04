@@ -252,6 +252,7 @@ const Coloring = (function () {
       region.setAttribute('fill', color);
       save();
       if (window.Stickers) Stickers.bump('paint', 10, 'painter');
+      if (window.Kitty) Kitty.gain('paint');
     });
 
     undoBtn.addEventListener('click', function () {

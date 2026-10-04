@@ -114,6 +114,7 @@ const Memory = (function () {
 
   function win() {
     clearInterval(timer);
+    Kitty.gain('game');
     const time = elapsed();
     const all = read(BEST_KEY, {});
     const prev = all[level];

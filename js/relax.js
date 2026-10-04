@@ -109,6 +109,7 @@ const Breathe = (function () {
     startBtn.textContent = '▶ 開始';
     if (finished) {
       Stickers.award('sleep');
+      Kitty.gain('breathe');
       label.textContent = '做得很好 🐾';
       count.textContent = '身體有沒有放鬆一點了呢？';
       timeLeftEl.textContent = fmt(0);
@@ -239,8 +240,10 @@ const Pet = (function () {
       return;
     }
     belly = Math.max(0, belly - d * 0.3);
+    const before = happy;
     happy = Math.min(100, happy + d * 0.025);
     if (happy >= 100) Stickers.award('happy');
+    if (before < 100 && happy >= 100) Kitty.gain('pet');
     travel += d;
     if (travel > 110) { travel = 0; heartAt(e, happy > 80 ? '💕' : happy > 40 ? '❤️' : '✨'); }
   }

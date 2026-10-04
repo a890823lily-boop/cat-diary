@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="貓咪日記">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=27">
+  <link rel="stylesheet" href="css/style.css?v=28">
 </head>
 <body>
   <header class="app-header">
@@ -163,6 +163,8 @@
 
     <!-- 貓咪與設定 -->
     <section id="view-cats" class="view" aria-label="貓咪" hidden>
+      <section id="kitty" class="kitty-card" aria-label="養成小貓"></section>
+
       <h2 class="section-title">我的貓咪</h2>
       <div id="cat-cards" class="cat-cards"></div>
       <button id="add-cat-btn" class="btn btn-outline btn-block">＋ 新增貓咪</button>
@@ -326,22 +328,26 @@
     <p class="talk-note">這是 App 內建的貓咪回覆，不是真人或 AI。如果你很痛苦，請撥 <a href="tel:1925">1925 安心專線</a>（24 小時）。</p>
   </dialog>
 
+  <!-- 養成小貓：升級、換造型 -->
+  <dialog id="kitty-dialog" class="sticker-pop"></dialog>
+
   <!-- 貓咪圖鑑：獲得貼紙 -->
   <dialog id="sticker-dialog" class="sticker-pop"></dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/quotes.js?v=27"></script>
-  <script src="js/db.js?v=27"></script>
-  <script src="js/stickers.js?v=27"></script>
-  <script src="js/game.js?v=27"></script>
-  <script src="js/memory.js?v=27"></script>
-  <script src="js/coloring.js?v=27"></script>
-  <script src="js/fortune.js?v=27"></script>
-  <script src="js/relax.js?v=27"></script>
-  <script src="js/worry-talk.js?v=27"></script>
-  <script src="js/worry.js?v=27"></script>
-  <script src="js/music.js?v=27"></script>
-  <script src="js/app.js?v=27"></script>
+  <script src="js/quotes.js?v=28"></script>
+  <script src="js/db.js?v=28"></script>
+  <script src="js/stickers.js?v=28"></script>
+  <script src="js/kitty.js?v=28"></script>
+  <script src="js/game.js?v=28"></script>
+  <script src="js/memory.js?v=28"></script>
+  <script src="js/coloring.js?v=28"></script>
+  <script src="js/fortune.js?v=28"></script>
+  <script src="js/relax.js?v=28"></script>
+  <script src="js/worry-talk.js?v=28"></script>
+  <script src="js/worry.js?v=28"></script>
+  <script src="js/music.js?v=28"></script>
+  <script src="js/app.js?v=28"></script>
 </body>
 </html>

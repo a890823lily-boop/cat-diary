@@ -267,6 +267,7 @@
     saved.bags[pool] = bag;
     writePref('quote', JSON.stringify({ index: index, pool: pool, bags: saved.bags }));
     Stickers.award('wizard');
+    Kitty.gain('quote');
   }
 
   function quoteCard() {
@@ -894,6 +895,12 @@
     render();
     toast(old ? '已更新日記' : '已新增日記');
     checkDiaryStickers();
+    // 養成小貓：新日記、新照片都有經驗值
+    if (!old) Kitty.gain('diary');
+    const newPhotos = ops.filter(function (o) {
+      return o.store === 'photos' && o.put && !(old && (old.photoIds || []).indexOf(o.put.id) !== -1);
+    }).length;
+    if (newPhotos) Kitty.gain('photo', newPhotos);
   });
 
   $('#entry-delete').addEventListener('click', async function () {
@@ -1171,6 +1178,20 @@
   }
 
   Stickers.init();
+  Kitty.init();
+  // 小貓得到經驗時，稍等一下再提示，避免蓋掉其他訊息
+  const kittyToasts = [];
+  let kittyToastBusy = false;
+  function nextKittyToast() {
+    if (kittyToastBusy || !kittyToasts.length) return;
+    kittyToastBusy = true;
+    toast(kittyToasts.shift());
+    setTimeout(function () { kittyToastBusy = false; nextKittyToast(); }, 1800);
+  }
+  document.addEventListener('kitty:gain', function (e) {
+    kittyToasts.push(e.detail.text);
+    setTimeout(nextKittyToast, 1300);
+  });
   document.addEventListener('stickers:open', function () {
     setView('cats');
     const sec = document.getElementById('sticker-section');

@@ -72,6 +72,7 @@ const Fortune = (function () {
     };
     write(KEY, result);
     Stickers.award('fortune');
+    Kitty.gain('fortune');
     // 連續抽籤天數
     const streak = read(KEY + '-streak') || { last: null, count: 0 };
     streak.count = streak.last === yesterday() ? streak.count + 1 : streak.last === today() ? streak.count : 1;
