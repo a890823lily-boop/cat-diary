@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="貓咪日記">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=40">
+  <link rel="stylesheet" href="css/style.css?v=41">
 </head>
 <body>
   <header class="app-header">
@@ -348,25 +348,7 @@
     <div class="sheet-head">
       <button type="button" class="link-btn" data-close>關閉</button>
       <h2>💬 喵喵聊天室</h2>
-      <button type="button" class="link-btn talk-gear" id="talk-gear" aria-label="AI 回覆設定">⚙️</button>
-    </div>
-    <div id="talk-settings" class="talk-settings" hidden>
-      <p class="ts-title">🤖 讓喵喵用 AI 回覆</p>
-      <p class="ts-text">填入你自己的 Claude API 金鑰，喵喵就會用 AI（Claude）認真讀你寫的話再回覆你。沒有金鑰時，會用 App 內建的溫柔回覆。</p>
-      <ul class="ts-list">
-        <li>金鑰只存在這支手機裡，不會傳到別的地方。</li>
-        <li>開啟後，你在聊天室打的內容會送到 Anthropic 產生回覆。</li>
-        <li>依用量向你的 API 帳戶計費，聊一次通常不到新台幣 1 元。</li>
-        <li>金鑰可在 <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Anthropic 後台</a> 建立（sk-ant- 開頭）。</li>
-      </ul>
-      <form id="ts-form" class="ts-form">
-        <input id="ts-key" type="password" placeholder="sk-ant-…" autocomplete="off" spellcheck="false">
-        <button class="btn" type="submit">儲存</button>
-      </form>
-      <div class="ts-row">
-        <span id="ts-status" class="ts-status"></span>
-        <button type="button" class="link-btn" id="ts-clear">移除金鑰</button>
-      </div>
+      <span class="talk-spacer"></span>
     </div>
     <div id="talk-list" class="talk-list" aria-live="polite"></div>
     <div id="talk-quick" class="talk-quick"></div>
@@ -374,7 +356,7 @@
       <input id="talk-input" type="text" maxlength="300" placeholder="想說什麼都可以…" autocomplete="off">
       <button class="btn" type="submit">送出</button>
     </form>
-    <p class="talk-note"><span id="talk-mode">這是 App 內建的貓咪回覆，不是真人或 AI。</span>如果你很痛苦，請撥 <a href="tel:1925">1925 安心專線</a>（24 小時）。</p>
+    <p class="talk-note">這是 App 內建的貓咪回覆，不是真人或 AI。如果你很痛苦，請撥 <a href="tel:1925">1925 安心專線</a>（24 小時）。</p>
   </dialog>
 
   <!-- 感恩罐：掉出來的好事 -->
@@ -413,24 +395,23 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/quotes.js?v=40"></script>
-  <script src="js/db.js?v=40"></script>
-  <script src="js/stickers.js?v=40"></script>
-  <script src="js/weather.js?v=40"></script>
-  <script src="js/birthday.js?v=40"></script>
-  <script src="js/kitty.js?v=40"></script>
-  <script src="js/fishing.js?v=40"></script>
-  <script src="js/game.js?v=40"></script>
-  <script src="js/memory.js?v=40"></script>
-  <script src="js/runner.js?v=40"></script>
-  <script src="js/coloring.js?v=40"></script>
-  <script src="js/fortune.js?v=40"></script>
-  <script src="js/relax.js?v=40"></script>
-  <script src="js/worry-talk.js?v=40"></script>
-  <script src="js/cat-ai.js?v=40"></script>
-  <script src="js/worry.js?v=40"></script>
-  <script src="js/gratitude.js?v=40"></script>
-  <script src="js/music.js?v=40"></script>
-  <script src="js/app.js?v=40"></script>
+  <script src="js/quotes.js?v=41"></script>
+  <script src="js/db.js?v=41"></script>
+  <script src="js/stickers.js?v=41"></script>
+  <script src="js/weather.js?v=41"></script>
+  <script src="js/birthday.js?v=41"></script>
+  <script src="js/kitty.js?v=41"></script>
+  <script src="js/fishing.js?v=41"></script>
+  <script src="js/game.js?v=41"></script>
+  <script src="js/memory.js?v=41"></script>
+  <script src="js/runner.js?v=41"></script>
+  <script src="js/coloring.js?v=41"></script>
+  <script src="js/fortune.js?v=41"></script>
+  <script src="js/relax.js?v=41"></script>
+  <script src="js/worry-talk.js?v=41"></script>
+  <script src="js/worry.js?v=41"></script>
+  <script src="js/gratitude.js?v=41"></script>
+  <script src="js/music.js?v=41"></script>
+  <script src="js/app.js?v=41"></script>
 </body>
 </html>

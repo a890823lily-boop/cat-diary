@@ -370,33 +370,82 @@ const CatTalk = (function () {
   let dlg, list, quick, form, field;
   let stage = 0, topic = null, listenIdx = 0, typing = false;
   let said = [];
-  // AI 模式：有填 API 金鑰時，用 Claude 回覆；history 是送給 AI 的對話紀錄
-  let ai = false, history = [], aiMood = null, currentWorry = '';
-  let gen = 0; // 每次打開聊天室加一，讓上一次還沒說完的話不會跑進新的對話
-  let settings, keyField, keyStatus, modeNote;
+  let gen = 0;          // 每次打開聊天室加一，讓上一次還沒說完的話不會跑進新的對話
+  let seen = [];        // 這次聊天提過的主題
+  let freeTurns = 0;    // 自己打字聊了幾次
+  let echoed = 0;       // 用「你說的話」回應過幾次
+  let lateSaid = false, ended = false, awaiting = false;
 
   // 隨機挑一句，盡量不重複已經說過的
   function pick(arr) {
+    if (!arr || !arr.length) return '';
     const fresh = arr.filter(function (x) { return said.indexOf(x) === -1; });
     const x = (fresh.length ? fresh : arr)[Math.floor(Math.random() * (fresh.length || arr.length))];
     said.push(x);
     return x;
   }
+  function fresh(arr) { return (arr || []).some(function (x) { return said.indexOf(x) === -1; }); }
 
+  // 長的關鍵字優先：「男朋友」裡的「朋友」不會被算成朋友的事
+  let allWords = null;
   function findTopic(text) {
+    if (!allWords) {
+      allWords = [];
+      WORRY_TALK.topics.forEach(function (t) { t.words.forEach(function (w) { allWords.push({ w: w, t: t }); }); });
+      allWords.sort(function (a, b) { return b.w.length - a.w.length; });
+    }
+    const used = new Array(text.length).fill(false);
+    const hits = new Map();
+    allWords.forEach(function (k) {
+      let i = text.indexOf(k.w);
+      while (i !== -1) {
+        if (!used.slice(i, i + k.w.length).some(Boolean)) {
+          // 同一個字串可能同時是兩個主題的關鍵字，所以先算分，整段再標記
+          hits.set(k.t, (hits.get(k.t) || 0) + 1);
+          k.mark = k.mark || [];
+          k.mark.push(i);
+        }
+        i = text.indexOf(k.w, i + 1);
+      }
+      (k.mark || []).forEach(function (j) { for (let x = j; x < j + k.w.length; x++) used[x] = true; });
+      k.mark = null;
+    });
     let best = null, bestHits = 0;
     WORRY_TALK.topics.forEach(function (t) {
-      const hits = t.words.filter(function (w) { return text.indexOf(w) !== -1; }).length;
-      if (hits > bestHits) { best = t; bestHits = hits; }
+      const h = hits.get(t) || 0;
+      if (h > bestHits) { best = t; bestHits = h; }
     });
     return best;
+  }
+
+  function findIntent(text) {
+    const plain = text.replace(/[\s，。！？!?,.～~…]+/g, '');
+    return WORRY_TALK.intents.find(function (it) {
+      if (it.short && plain.length > it.short) return false;
+      return it.words.some(function (w) { return text.indexOf(w) !== -1; });
+    }) || null;
+  }
+
+  function moodOf(text) {
+    const m = typeof Worry !== 'undefined' ? Worry.detect(text) : null;
+    return m && WORRY_TALK.moodFeel[m.id] ? m : null;
+  }
+
+  // 從你打的字裡，挑一小段帶有感受的話，回應時引用
+  function clauseOf(text, t) {
+    const parts = text.split(/[，。！？!?,.、\n～~…；;]+/).map(function (x) { return x.trim().replace(/^(而且|可是|但是|但|然後|所以|因為|就是|其實|反正)/, ''); })
+      .filter(function (x) { return x.length >= 4 && x.length <= 18; });
+    if (!parts.length) return '';
+    const words = [].concat.apply(t ? t.words.slice() : [], WORRY_MOODS.map(function (m) { return m.words; }));
+    const hit = parts.find(function (p) { return words.some(function (w) { return p.indexOf(w) !== -1; }); });
+    return hit || '';
   }
 
   function isCrisis(text) {
     return WORRY_TALK.crisis.some(function (w) { return text.indexOf(w) !== -1; });
   }
 
-  function aiOn() { return typeof CatAI !== 'undefined' && CatAI.enabled(); }
+  function isLate() { const h = new Date().getHours(); return h >= 0 && h < 5; }
 
   function bubble(who, text) {
     const row = document.createElement('div');
@@ -418,7 +467,7 @@ const CatTalk = (function () {
   }
 
   /* 貓咪「打字中」後再說話，比較像在聊天 */
-  function catSay(lines, then, fast) {
+  function catSay(lines, then) {
     lines = [].concat(lines).filter(Boolean);
     typing = true;
     setQuick([]);
@@ -435,7 +484,7 @@ const CatTalk = (function () {
         dots.remove();
         bubble('cat', text);
         nextLine();
-      }, fast ? 350 : Math.min(1600, 500 + text.length * 25));
+      }, Math.min(1600, 500 + text.length * 25));
     })();
   }
 
@@ -453,12 +502,7 @@ const CatTalk = (function () {
     requestAnimationFrame(function () { list.scrollTop = list.scrollHeight; });
   }
 
-  function crisis(text) {
-    // 危機字詞一律先在手機上偵測，馬上給求助資訊，不等 AI
-    if (ai) {
-      history.push({ role: 'user', content: text || '' });
-      history.push({ role: 'assistant', content: [].concat(WORRY_TALK.crisisReply).join('\n') });
-    }
+  function crisis() {
     catSay(WORRY_TALK.crisisReply, function () {
       setQuick([{ label: '📞 撥打 1925 安心專線', primary: true, onClick: function () { location.href = 'tel:1925'; } },
         { label: '我想再聊聊', onClick: function () { userSay('我想再聊聊'); } }]);
@@ -467,33 +511,86 @@ const CatTalk = (function () {
 
   function userSay(text, option) {
     bubble('me', text);
-    if (isCrisis(text)) { crisis(text); return; }
-    if (ai) { aiTurn(text, function () { builtinReply(text); }); return; }
-    builtinReply(text, option);
-  }
-
-  function builtinReply(text, option) {
+    if (isCrisis(text)) { crisis(); return; }
     if (option && option.reply) {
       stage++;
       catSay(option.reply, nextStage);
       return;
     }
-    // 自己打字：依內容回應
-    const t = findTopic(text) || topic;
-    const lines = [WORRY_TALK.listen[listenIdx++ % WORRY_TALK.listen.length]];
-    const found = findTopic(text);
-    if (found) lines.push(pick(found.reflect));
-    if (stage <= 2 && t) lines.push(pick(t.tip));
-    stage++;
-    catSay(lines, nextStage);
+    // 回答「如果是好朋友…」或「有沒有一小步…」時，先接住再往下聊
+    if (awaiting) {
+      awaiting = false;
+      const q = clauseOf(text, topic);
+      stage++;
+      catSay([q ? pick(WORRY_TALK.echo).replace('{q}', q) : WORRY_TALK.listen[listenIdx++ % WORRY_TALK.listen.length],
+        stage === 2 ? '你對別人好溫柔。那這份溫柔，也請你分一點給自己。' : '一步一步來就好，我會幫你加油的。'], nextStage);
+      return;
+    }
+    freeTurns++;
+    respond(text);
+  }
+
+  /* 自己打字：看你說了什麼、心情如何，組合出回應 */
+  function respond(text) {
+    const lines = [];
+    const intent = findIntent(text);
+    const t = findTopic(text);
+    const cur = t || topic || WORRY_TALK.general;
+
+    if (intent) {
+      if (intent.all) intent.reply.forEach(function (x) { lines.push(x); });
+      else lines.push(pick(intent.reply));
+      if (intent.tips) {
+        lines.push(pick(cur.tip));
+        if (fresh(cur.tip)) lines.push('還有，' + pick(cur.tip));
+      }
+      if (intent.id === 'greet' || intent.id === 'askCat' || intent.id === 'yes') lines.push(pick(fresh(cur.ask) ? cur.ask : WORRY_TALK.general.ask));
+      if (t) topic = t;
+      if (intent.end) { catSay(ended ? lines : lines.concat(WORRY_TALK.closing), endOptions); ended = true; return; }
+      catSay(lines, afterChat);
+      return;
+    }
+
+    if (isLate() && !lateSaid) { lateSaid = true; lines.push(pick(WORRY_TALK.lateNight)); }
+    const mood = moodOf(text);
+    const q = clauseOf(text, t);
+    if (q && echoed < 2 && Math.random() < 0.7) {
+      echoed++;
+      lines.push(pick(WORRY_TALK.echo).replace('{q}', q));
+    } else if (mood && fresh(WORRY_TALK.moodFeel[mood.id])) {
+      lines.push(pick(WORRY_TALK.moodFeel[mood.id]));
+    } else {
+      lines.push(WORRY_TALK.listen[listenIdx++ % WORRY_TALK.listen.length]);
+    }
+
+    if (t && seen.indexOf(t.id) === -1) {
+      // 聊到新的主題：如果前面聊過別的，把兩件事連起來
+      if (topic && topic !== t) lines.push(pick(WORRY_TALK.link).replace('{a}', topic.about).replace('{b}', t.about));
+      else lines.push(pick(t.reflect));
+      seen.push(t.id);
+      topic = t;
+    }
+    // 輪流：問一個問題讓你多說，或給一個小建議
+    if (freeTurns % 2 === 1 && fresh(cur.ask)) lines.push(pick(cur.ask));
+    else if (fresh(cur.tip)) lines.push(pick(cur.tip));
+    else lines.push(pick(WORRY_TALK.general.ask));
+
+    catSay(lines.slice(0, 4), afterChat);
+  }
+
+  function afterChat() {
+    // 聊了幾輪之後，溫柔地提議可以收尾，但還是可以繼續聊
+    if (freeTurns >= 4 && !ended) { ended = true; catSay(WORRY_TALK.closing, endOptions); return; }
+    setQuick([{ label: '🫧 戳破這顆球', primary: true, onClick: function () { close(); Worry.popCurrent(); } }].concat(WORRY_TALK.chatReplies));
   }
 
   function nextStage() {
     if (stage === 1) {
-      catSay(WORRY_TALK.friendQuestion, function () { setQuick(WORRY_TALK.friendReplies); });
+      catSay(WORRY_TALK.friendQuestion, function () { awaiting = true; setQuick(WORRY_TALK.friendReplies); });
     } else if (stage === 2) {
-      catSay(WORRY_TALK.stepQuestion, function () { setQuick(WORRY_TALK.stepReplies); });
+      catSay(WORRY_TALK.stepQuestion, function () { awaiting = true; setQuick(WORRY_TALK.stepReplies); });
     } else if (stage === 3) {
+      ended = true;
       catSay(WORRY_TALK.closing, endOptions);
     } else {
       endOptions();
@@ -501,58 +598,13 @@ const CatTalk = (function () {
   }
 
   function endOptions() {
+    awaiting = false;
     setQuick([
       { label: '🫧 戳破這顆球', primary: true, onClick: function () { close(); Worry.popCurrent(); } },
       { label: '🫁 跟貓咪呼吸', onClick: function () { close(); document.dispatchEvent(new CustomEvent('play:go', { detail: 'breathe' })); } },
       { label: '🐈 摸摸貓咪', onClick: function () { close(); document.dispatchEvent(new CustomEvent('play:go', { detail: 'pet' })); } },
       { label: '💬 再聊聊', onClick: function () { stage = 3; catSay('好呀，想說什麼都可以，我一直都在。', function () { setQuick([]); field.focus(); }); } }
     ]);
-  }
-
-  /* ---------- AI 回覆 ---------- */
-  function aiChips() {
-    return [
-      { label: '🫧 戳破這顆球', primary: true, onClick: function () { close(); Worry.popCurrent(); } },
-      { label: '給我一個小建議' },
-      { label: '我只想被陪著' },
-      { label: '🐈 摸摸貓咪', onClick: function () { close(); document.dispatchEvent(new CustomEvent('play:go', { detail: 'pet' })); } }
-    ];
-  }
-
-  // 送出一句話給 AI；失敗時 fallback() 改用內建回覆
-  function aiTurn(text, fallback) {
-    history.push({ role: 'user', content: text });
-    typing = true;
-    setQuick([]);
-    const dots = bubble('cat', '…');
-    dots.classList.add('is-typing');
-    const session = history;
-    CatAI.reply(history.slice()).then(function (reply) {
-      if (session !== history) return; // 聊天室已經關掉重開
-      dots.remove();
-      history.push({ role: 'assistant', content: reply });
-      typing = false;
-      catSay(reply.split(/\n+/).map(function (x) { return x.trim(); }), function () { setQuick(aiChips()); }, true);
-    }, function (err) {
-      if (session !== history) return;
-      dots.remove();
-      history.pop(); // 沒有回覆就把這句拿掉，保持一問一答
-      typing = false;
-      if (err && err.text) {
-        const row = bubble('cat', '（' + err.text + '）');
-        row.querySelector('.talk-bubble').classList.add('is-error');
-      }
-      if (err && err.code === 'key') { ai = false; updateMode(); }
-      fallback();
-    });
-  }
-
-  function updateMode() {
-    if (!modeNote) return;
-    const on = aiOn();
-    modeNote.textContent = on && ai ? '喵喵正在用 AI（Claude）回覆你，AI 也可能說錯話。' : '這是 App 內建的貓咪回覆，不是真人或 AI。';
-    keyStatus.textContent = on ? '✅ 已開啟 AI 回覆' : '目前使用內建回覆';
-    keyStatus.className = 'ts-status' + (on ? ' is-on' : '');
   }
 
   function close() { if (dlg.open) dlg.close(); }
@@ -572,34 +624,6 @@ const CatTalk = (function () {
       userSay(text);
     });
     dlg.querySelector('[data-close]').addEventListener('click', close);
-
-    settings = document.getElementById('talk-settings');
-    keyField = document.getElementById('ts-key');
-    keyStatus = document.getElementById('ts-status');
-    modeNote = document.getElementById('talk-mode');
-    document.getElementById('talk-gear').addEventListener('click', function () {
-      settings.hidden = !settings.hidden;
-      keyField.value = '';
-      keyField.placeholder = aiOn() ? '已儲存（輸入新的金鑰可替換）' : 'sk-ant-…';
-    });
-    document.getElementById('ts-form').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const k = keyField.value.trim();
-      if (!/^sk-ant-\S{10,}$/.test(k)) { keyStatus.textContent = '金鑰格式不對，應該是 sk-ant- 開頭喔'; keyStatus.className = 'ts-status'; return; }
-      CatAI.setKey(k);
-      keyField.value = '';
-      settings.hidden = true;
-      const was = ai;
-      ai = true;
-      updateMode();
-      if (!was && !typing) catSay('喵！接下來我會用 AI 認真讀你說的話再回覆你 ✨', function () { setQuick(aiChips()); field.focus(); });
-    });
-    document.getElementById('ts-clear').addEventListener('click', function () {
-      CatAI.setKey('');
-      ai = false;
-      updateMode();
-      keyField.placeholder = 'sk-ant-…';
-    });
   }
 
   function open(worry, moodId) {
@@ -608,36 +632,27 @@ const CatTalk = (function () {
     typing = false;
     list.textContent = '';
     stage = 0;
-    listenIdx = 0;
+    listenIdx = Math.floor(Math.random() * WORRY_TALK.listen.length);
     said = [];
+    seen = [];
+    freeTurns = 0;
+    echoed = 0;
+    lateSaid = false;
+    ended = false;
+    awaiting = false;
     topic = findTopic(worry || '');
-    ai = aiOn();
-    history = [];
-    currentWorry = worry || '';
-    aiMood = WORRY_MOODS.find(function (m) { return m.id === moodId; }) || null;
-    settings.hidden = true;
-    updateMode();
+    if (topic) seen.push(topic.id);
     dlg.showModal();
-    if (worry && isCrisis(worry)) { bubble('me', worry); crisis(worry); return; }
-    if (ai) {
-      if (worry) bubble('cat', '喵～我看到你放進罐子裡的這件事了：\n「' + worry + '」');
-      const first = worry
-        ? '這是我放進「內耗罐」的事：「' + worry + '」' + (aiMood ? '（我的心情：' + aiMood.label + '）' : '') + '\n可以陪我聊聊嗎？'
-        : '我想跟你聊聊。';
-      aiTurn(first, function () { builtinOpen(worry, moodId, true); });
-      return;
-    }
-    builtinOpen(worry, moodId);
-  }
-
-  function builtinOpen(worry, moodId, quoted) {
+    if (worry && isCrisis(worry)) { bubble('me', worry); crisis(); return; }
     const t = topic || WORRY_TALK.general;
     const mood = WORRY_MOODS.find(function (m) { return m.id === moodId; });
     const lines = [];
-    if (worry && !quoted) lines.push('喵～我看到你放進罐子裡的這件事了：\n「' + worry + '」');
-    // 依這顆球的心情先接住感受
-    lines.push(mood ? mood.open : pick(t.reflect));
-    lines.push(pick(t.tip));
+    if (worry) lines.push('喵～我看到你放進罐子裡的這件事了：\n「' + worry + '」');
+    if (isLate()) { lateSaid = true; lines.push(pick(WORRY_TALK.lateNight)); }
+    // 依這顆球的心情先接住感受，再依主題說一句
+    lines.push(mood ? (Math.random() < 0.5 ? mood.open : pick(WORRY_TALK.moodFeel[mood.id]) || mood.open) : pick(t.reflect));
+    if (mood && topic) lines.push(pick(t.reflect));
+    else lines.push(pick(t.tip));
     lines.push('想多說一點嗎？可以點下面的選項，或直接打字告訴我。');
     catSay(lines, function () { setQuick(WORRY_TALK.firstReplies); });
   }
