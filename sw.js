@@ -1,6 +1,6 @@
 /* 貓咪日記 Service Worker：預先快取所有檔案，讓 APP 離線也能開啟 */
 /* 改版時把 VERSION 加一，並同步修改 index.html 裡 css/js 網址後面的 ?v= */
-var VERSION = 41;
+var VERSION = 42;
 var CACHE_NAME = 'cat-diary-v' + VERSION;
 var PRECACHE = [
   './',
@@ -14,6 +14,7 @@ var PRECACHE = [
   'js/coloring.js?v=' + VERSION,
   'js/fortune.js?v=' + VERSION,
   'js/relax.js?v=' + VERSION,
+  'js/focus.js?v=' + VERSION,
   'js/worry-talk.js?v=' + VERSION,
   'js/worry.js?v=' + VERSION,
   'js/gratitude.js?v=' + VERSION,

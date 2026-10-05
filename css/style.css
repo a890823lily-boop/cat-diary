@@ -342,7 +342,7 @@ button { cursor: pointer; }
 /* ---------- 玩樂：切換 ---------- */
 .seg {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 4px;
   margin: 12px 0 4px;
   padding: 4px;
@@ -1443,3 +1443,36 @@ dialog { color: var(--text); }
   white-space: nowrap;
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- 陪讀貓 ---------- */
+.focus { text-align: center; padding-top: 6px; }
+.focus-stage { position: relative; width: min(260px, 72vw); aspect-ratio: 1; margin: 6px auto 0; }
+.focus-ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.focus-ring circle { fill: none; stroke-width: 7; }
+.fr-bg { stroke: var(--line); }
+.fr-fg { stroke: var(--primary); stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset 0.5s linear; }
+.focus.is-done .fr-fg { stroke: #7cc47f; }
+.focus-cat { position: absolute; left: 16%; right: 16%; top: 12%; bottom: 22%; display: flex; align-items: center; justify-content: center; }
+.focus-cat svg, .focus-cat img { width: 100%; height: 100%; object-fit: contain; }
+.focus.is-running .focus-cat { animation: focus-breathe 4s ease-in-out infinite; transform-origin: 50% 90%; }
+.focus.is-woke .focus-cat { animation: focus-jump 0.5s ease-out 2; }
+.focus.is-done .focus-cat { animation: focus-jump 0.6s ease-out 3; }
+.focus-z { position: absolute; right: 0; top: 0; font-weight: 800; color: var(--muted); font-size: 1.3rem; animation: focus-z 2.4s ease-in-out infinite; }
+.focus-cat .k-z { animation: focus-z 2.4s ease-in-out infinite; }
+.focus-desk { position: absolute; left: 0; right: 0; bottom: 12%; font-size: 1.4rem; letter-spacing: 6px; }
+.focus-time { margin: 6px 0 0; font-size: 2.4rem; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+.focus-msg { min-height: 3em; margin: 2px 12px 8px; color: var(--muted); line-height: 1.5; }
+.focus.is-done .focus-msg, .focus.is-woke .focus-msg { color: var(--text); font-weight: 700; }
+.focus-task { width: min(320px, 100%); border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px; font-size: 16px; background: var(--surface); color: var(--text); text-align: center; }
+.focus-task:disabled { opacity: 0.6; }
+.focus-lens { display: flex; justify-content: center; gap: 8px; margin: 10px 0; }
+.focus-len { border: 1.5px solid var(--primary); background: var(--surface); color: var(--primary); border-radius: 999px; padding: 6px 14px; font-weight: 700; }
+.focus-len.is-active { background: var(--primary); color: var(--primary-ink); }
+.focus-len:disabled { opacity: 0.45; }
+.focus.is-running .focus-lens, .focus.is-running .focus-task { display: none; }
+.focus-actions { display: flex; justify-content: center; gap: 10px; }
+.focus-stats { margin: 10px 0 0; font-size: 0.85rem; color: var(--muted); }
+@keyframes focus-breathe { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.03, 0.97); } }
+@keyframes focus-jump { 0% { transform: translateY(0); } 40% { transform: translateY(-14px); } 100% { transform: translateY(0); } }
+@keyframes focus-z { 0%, 100% { opacity: 0.3; transform: translateY(4px); } 50% { opacity: 1; transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .focus-cat, .focus-z, .focus-cat .k-z { animation: none !important; } }

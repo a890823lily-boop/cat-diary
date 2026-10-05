@@ -714,7 +714,7 @@
   if (playMode === 'worry') playMode = 'color'; // 心情罐已經搬到自己的頁面
 
   function setPlayMode(mode) {
-    playMode = ['color', 'breathe', 'pet', 'fortune', 'game'].indexOf(mode) !== -1 ? mode : 'color';
+    playMode = ['color', 'focus', 'breathe', 'pet', 'fortune', 'game'].indexOf(mode) !== -1 ? mode : 'color';
     writePref('play', playMode);
     document.querySelectorAll('.seg-btn').forEach(function (b) {
       const on = b.dataset.mode === playMode;
@@ -726,6 +726,7 @@
     $('#play-fortune').hidden = playMode !== 'fortune';
     $('#play-breathe').hidden = playMode !== 'breathe';
     $('#play-pet').hidden = playMode !== 'pet';
+    $('#play-focus').hidden = playMode !== 'focus';
     if (playMode !== 'game') { CatGame.pause(); Memory.pause(); Runner.pause(); }
     if (playMode !== 'breathe') Breathe.pause();
     if (playMode !== 'pet') Pet.pause();
@@ -733,6 +734,7 @@
     else if (playMode === 'color') Coloring.show();
     else if (playMode === 'breathe') Breathe.show();
     else if (playMode === 'pet') Pet.show();
+    else if (playMode === 'focus') Focus.show();
     else Fortune.show();
   }
 

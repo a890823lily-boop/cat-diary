@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="貓咪日記">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="stylesheet" href="css/style.css?v=41">
+  <link rel="stylesheet" href="css/style.css?v=42">
 </head>
 <body>
   <header class="app-header">
@@ -78,6 +78,7 @@
     <section id="view-play" class="view" aria-label="玩樂" hidden>
       <div class="seg" role="tablist" aria-label="選擇玩樂項目">
         <button class="seg-btn" role="tab" data-mode="color"><span aria-hidden="true">🎨</span>塗色</button>
+        <button class="seg-btn" role="tab" data-mode="focus"><span aria-hidden="true">🍅</span>陪讀</button>
         <button class="seg-btn" role="tab" data-mode="breathe"><span aria-hidden="true">🫁</span>呼吸</button>
         <button class="seg-btn" role="tab" data-mode="pet"><span aria-hidden="true">🐈</span>擼貓</button>
         <button class="seg-btn" role="tab" data-mode="fortune"><span aria-hidden="true">🔮</span>運勢</button>
@@ -156,6 +157,33 @@
 
       <div id="play-fortune" class="play-pane" hidden>
         <div id="fortune-box" class="fortune-box" aria-live="polite"></div>
+      </div>
+
+      <div id="play-focus" class="play-pane" hidden>
+        <div id="focus" class="focus is-idle">
+          <div class="focus-stage">
+            <svg class="focus-ring" viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="fr-bg" cx="60" cy="60" r="54"/>
+              <circle class="fr-fg" cx="60" cy="60" r="54" pathLength="100"/>
+            </svg>
+            <div class="focus-cat"></div>
+            <div class="focus-desk" aria-hidden="true">📖 ✏️ ☕</div>
+          </div>
+          <p class="focus-time" aria-live="off"><strong id="focus-time">25:00</strong></p>
+          <p id="focus-msg" class="focus-msg" aria-live="polite">選好時間，按開始，小貓會在旁邊陪你。</p>
+          <input id="focus-task" class="focus-task" type="text" maxlength="30" placeholder="這輪要做什麼？（例如：讀英文）" autocomplete="off">
+          <div class="focus-lens" role="group" aria-label="專心時間">
+            <button class="focus-len" data-min="15">15 分</button>
+            <button class="focus-len is-active" data-min="25">25 分</button>
+            <button class="focus-len" data-min="45">45 分</button>
+          </div>
+          <div class="focus-actions">
+            <button id="focus-start" class="btn">▶ 開始專心</button>
+            <button id="focus-quit" class="btn btn-outline" hidden>放棄這輪</button>
+          </div>
+          <p id="focus-stats" class="focus-stats"></p>
+          <p class="hint">專心時請把 App 開著。中途切到別的 App 或鎖住螢幕，小貓就會被吵醒，這輪就不算囉。完成一輪可以拿小魚乾幣：15 分 🐟×5、25 分 🐟×10、45 分 🐟×20。</p>
+        </div>
       </div>
 
       <div id="play-breathe" class="play-pane" hidden>
@@ -395,23 +423,24 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/quotes.js?v=41"></script>
-  <script src="js/db.js?v=41"></script>
-  <script src="js/stickers.js?v=41"></script>
-  <script src="js/weather.js?v=41"></script>
-  <script src="js/birthday.js?v=41"></script>
-  <script src="js/kitty.js?v=41"></script>
-  <script src="js/fishing.js?v=41"></script>
-  <script src="js/game.js?v=41"></script>
-  <script src="js/memory.js?v=41"></script>
-  <script src="js/runner.js?v=41"></script>
-  <script src="js/coloring.js?v=41"></script>
-  <script src="js/fortune.js?v=41"></script>
-  <script src="js/relax.js?v=41"></script>
-  <script src="js/worry-talk.js?v=41"></script>
-  <script src="js/worry.js?v=41"></script>
-  <script src="js/gratitude.js?v=41"></script>
-  <script src="js/music.js?v=41"></script>
-  <script src="js/app.js?v=41"></script>
+  <script src="js/quotes.js?v=42"></script>
+  <script src="js/db.js?v=42"></script>
+  <script src="js/stickers.js?v=42"></script>
+  <script src="js/weather.js?v=42"></script>
+  <script src="js/birthday.js?v=42"></script>
+  <script src="js/kitty.js?v=42"></script>
+  <script src="js/fishing.js?v=42"></script>
+  <script src="js/game.js?v=42"></script>
+  <script src="js/memory.js?v=42"></script>
+  <script src="js/runner.js?v=42"></script>
+  <script src="js/coloring.js?v=42"></script>
+  <script src="js/fortune.js?v=42"></script>
+  <script src="js/relax.js?v=42"></script>
+  <script src="js/focus.js?v=42"></script>
+  <script src="js/worry-talk.js?v=42"></script>
+  <script src="js/worry.js?v=42"></script>
+  <script src="js/gratitude.js?v=42"></script>
+  <script src="js/music.js?v=42"></script>
+  <script src="js/app.js?v=42"></script>
 </body>
 </html>

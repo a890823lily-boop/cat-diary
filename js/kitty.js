@@ -18,6 +18,7 @@ const Kitty = (function () {
     worryPop: { exp: 5, daily: 3, label: '戳破煩惱' },
     gratitude: { exp: 5, daily: 3, label: '存好事' },
     fishing: { exp: 4, daily: 5, label: '釣魚' },
+    focus: { exp: 15, daily: 4, label: '專心陪讀' },
     feed: { exp: 2, daily: 3, label: '餵食' },
     play: { exp: 2, daily: 5, label: '陪小貓玩' },
     pat: { exp: 1, daily: 5, label: '摸摸小貓' }
@@ -870,6 +871,7 @@ const Kitty = (function () {
     adopted: function () { load(); return data.adopted; },
     name: function () { load(); return data.name; },
     art: function () { load(); return catSvg('happy'); },
+    artState: function (st) { load(); return catSvg(st); },
     levelInfo: function () { load(); return levelInfo(data.exp); }
   };
 })();
