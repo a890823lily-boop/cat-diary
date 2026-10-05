@@ -628,6 +628,20 @@ button { cursor: pointer; }
 .talk-dialog .talk-form { flex-direction: row; max-height: none; }
 .talk-note { margin: 0; padding: 6px 12px calc(10px + env(safe-area-inset-bottom)); font-size: 0.75rem; color: var(--muted); text-align: center; background: var(--surface); }
 .talk-note a { color: var(--primary); font-weight: 700; }
+.talk-gear { width: 40px; font-size: 1.15rem; text-align: right; }
+.talk-settings { padding: 12px 14px; background: var(--surface); border-bottom: 1px solid var(--line); font-size: 0.88rem; line-height: 1.6; max-height: 60%; overflow-y: auto; }
+.talk-settings[hidden] { display: none; }
+.ts-title { margin: 0 0 4px; font-weight: 800; }
+.ts-text { margin: 0 0 6px; }
+.ts-list { margin: 0 0 10px; padding-left: 1.2em; color: var(--muted); }
+.ts-list a { color: var(--primary); font-weight: 700; }
+.talk-dialog .ts-form { display: flex; flex-direction: row; gap: 8px; max-height: none; }
+.ts-form .btn { padding: 8px 16px; }
+.ts-form input { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-size: 16px; background: var(--bg); color: var(--text); }
+.ts-row { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+.ts-status { color: var(--muted); }
+.ts-status.is-on { color: var(--primary); font-weight: 700; }
+.talk-bubble.is-error { background: var(--bg) !important; color: var(--muted); font-size: 0.85rem; }
 
 /* ---------- 呼吸練習 ---------- */
 .breathe { text-align: center; }
